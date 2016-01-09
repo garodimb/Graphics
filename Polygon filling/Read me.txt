@@ -1,0 +1,4 @@
+Compile the source code by typing make in the source directory
+To the run the program type ./testPoly.bin
+
+This will display a window. You can use your mouse to place veritices of the polygon, right mouse button can be used to draw lines and fill the polygon.
