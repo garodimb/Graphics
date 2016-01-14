@@ -65,9 +65,6 @@ void keyboardHandelr(unsigned char key,int x,int y){
 		cout<<"ESC key pressed. Exiting Program"<<endl;
 		exit(0);
 		}
-	else if(key==KEY_ENTER){
-		drawPolygon();
-		}
 	}
 
 void reshape(int w,int h){
@@ -94,7 +91,6 @@ int displayVertex(){
 			glVertex2i((GLint)points[i].x,(GLint)points[i].y);
 			}
 	glEnd();
-	cout<<endl;
 	glutSwapBuffers();
 	return 0;	
 	}
