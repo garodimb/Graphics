@@ -16,7 +16,7 @@ void display(void);
 void mouseHandler(int button,int state,int x,int y);
 void keyboardHandelr(unsigned char key,int x,int y);
 int addVertex(int x,int y);
-int drawPolygon();
+int displayVertex();
 
 struct Point{
 	int x, y;	
@@ -28,7 +28,7 @@ int vCount=-1;
 int screenWidth,screenHeight;
 
 int initWindow(const char *title,int w,int h){
-	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutInitWindowSize(w,h);
 	screenWidth=w;
 	screenHeight=h;
@@ -39,7 +39,7 @@ int initWindow(const char *title,int w,int h){
 	
 void init(void){
 	glClearColor(0.0,0.0,0.0,0.0);
-	glPointSize(2.0);
+	glPointSize(5.0);
 	glShadeModel(GL_FLAT);	
 	}
 
@@ -68,47 +68,49 @@ void keyboardHandelr(unsigned char key,int x,int y){
 	else if(key==KEY_ENTER){
 		drawPolygon();
 		}
-	}	
-
+	}
 
 void reshape(int w,int h){
 	cout<<"In Reshape"<<endl;
-	glViewport(0, 0, (GLsizei) w, (GLsizei) h);
-	gluOrtho2D(0.0,(GLdouble) w,0.0, (GLdouble) h);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	screenWidth=w;
-	screenHeight=h;	
+	glViewport (0, 0, (GLsizei) w, (GLsizei) h);
+	glMatrixMode (GL_PROJECTION);
+	glLoadIdentity ();
+	gluOrtho2D (0.0, (GLdouble) w, 0.0, (GLdouble) h);	screenWidth=w;
+	screenHeight=h;
+	screenWidth=w;	
 	}
 	
 void display(){
 	glClear(GL_COLOR_BUFFER_BIT);
 	cout<<"In Display"<<endl;
-	glColor3f(1.0,1.0,1.0);
-	drawPolygon();
-	addVertex(100,100);
-	glFlush();
+	glColor3f(1.0,0.0,0.0);
+	displayVertex();
+	}
+	
+int displayVertex(){
+	int i=0;
+	glBegin(GL_POINTS);
+		for(i=0;i<=vCount;i++){
+			glVertex2i((GLint)points[i].x,(GLint)points[i].y);
+			}
+	glEnd();
+	cout<<endl;
+	glutSwapBuffers();
+	return 0;	
 	}
 	
 int addVertex(int x,int y){
 	vCount++;
 	points[vCount].x=x;
 	points[vCount].y=y;
-	glBegin(GL_POINTS);
-		glVertex2d(screenWidth-x,screenHeight-y);
-	glEnd();
 	cout<<"Adding vertx("<<x<<","<<y<<")"<<endl;
-	glFlush();
+	displayVertex();
 	return 0;
 	}
 
-
-int drawPolygon(){
-	return 0;
-	}
 int main(int argc,char **argv){
 	glutInit(&argc,argv);
-	initWindow("Input Demo",1000,500);
+	initWindow("Mouse and Keyboard Handler",1000,500);
 	init();
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
@@ -117,4 +119,3 @@ int main(int argc,char **argv){
 	glutMainLoop();
 	return 0;
 	}
-
