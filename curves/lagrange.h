@@ -3,16 +3,16 @@
 #include "control.h"
 #endif
 
-class Bezier{
+class Lagrange{
 	public:
 		Point *user_points;
 		Point *comp_points;
 		GLint num_points;
 		GLint num_comp_points;
 		
-		Bezier(int n,Point *user_points);
-		GLint compute(GLint num_bez_points);
+		Lagrange(int n,Point *user_points);
+		GLint compute(GLint num_lag_points);
 		GLint compute_coeff(GLfloat *coeff);
-		GLint compute_point(GLfloat t,const GLfloat *coeff,Point *p);
+		GLint compute_point(GLfloat x,const GLfloat *coeff,Point *p);
 		GLint display();
 	};
