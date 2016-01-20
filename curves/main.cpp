@@ -73,7 +73,7 @@ int initWindow(const char *title,int w,int h){
 	glutInitWindowSize(w,h);
 	screenWidth=w;
 	screenHeight=h;
-	glutInitWindowPosition(20,20);
+	glutInitWindowPosition(100,100);
 	glutCreateWindow(title);
 	return 0;
 	}
@@ -81,7 +81,7 @@ int initWindow(const char *title,int w,int h){
 /* Init canvas */	
 void init(void){
 	glClearColor(0.0,0.0,0.0,0.0);
-	glPointSize(5.0);
+	glPointSize(3.0);
 	glShadeModel(GL_FLAT);	
 	}
 
@@ -233,13 +233,14 @@ void display(){
 	log_D("Displaying content");
 	glClear(GL_COLOR_BUFFER_BIT);
 	draw_axis();
-	glColor3f(1.0,0.0,0.0);
 	if(IN_CURVE_MODE){
 		log_D("Displaying Curves");
-		bezier->display();
-		glColor3f(0.0,1.0,0.0);
+		glColor3f(0.0,1.0,1.0);
 		lagrange->display();
+		glColor3f(1.0,0.0,1.0);
+		bezier->display();
 		}
+	glColor3f(0.0,1.0,1.0);
 	displayVertex();
 	glutSwapBuffers();
 	}
@@ -253,10 +254,10 @@ int draw_axis(){
 	glBegin(GL_LINES);
 		glColor3f(1.0,0.0,0.0);
 		glVertex2f(0.0,0.0);
-		glVertex2f(0.0,500.0);
+		glVertex2f(500.0,0.0);
 		glColor3f(0.0,1.0,0.0);
 		glVertex2f(0.0,0.0);
-		glVertex2f(500.0,0.0);
+		glVertex2f(0.0,500.0);		
 	glEnd();
 	glPopMatrix();
 	return 0;
