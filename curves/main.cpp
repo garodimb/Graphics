@@ -4,7 +4,7 @@
 #include <GL/glut.h>
 #include "bezier.h"
 #include "lagrange.h"
-
+#include "log.h"
 
 #define MAX_VERTICES 100
 #define FALSE 0
@@ -27,6 +27,8 @@
 #define TRANS_MODE_V 2
 #define TRANS_MODE_D 3
 
+#define DELTA_POINT 5.0
+
 using namespace std;
 
 /* Window init */
@@ -46,7 +48,8 @@ int rotate(GLfloat angle);
 int translate(GLfloat dist);
 
 /* UI Related */
-int addVertex(int x,int y);
+int addVertex(GLint x,GLint y);
+int delete_vertex(GLint x,GLint y);
 int displayVertex();
 int draw_axis();
 int plot_curves();
@@ -54,7 +57,7 @@ int plot_curves();
 /* Global Variables */
 Point points[MAX_VERTICES];
 GLint vCount=-1;
-
+GLint num_points=100;
 int screenWidth,screenHeight;
 int IN_CURVE_MODE=FALSE;
 int TRANS_MODE=TRANS_MODE_D;
@@ -94,6 +97,9 @@ void mouseHandler(int button,int state,int x,int y){
 		}
 	else if(button==GLUT_RIGHT_BUTTON && state == GLUT_DOWN){
 		cout<<"Right button Pressed at ("<<x<<","<<y<<")"<<endl;
+		if(!IN_CURVE_MODE){
+			delete_vertex(x-TRANS_X,screenHeight-y-TRANS_Y);
+			}
 		}
 	else if(button==GLUT_RIGHT_BUTTON && state == GLUT_UP){
 		cout<<"Right button Released at ("<<x<<","<<y<<")"<<endl;
@@ -246,11 +252,30 @@ int displayVertex(){
 	}
 
 /* Add control point */	
-int addVertex(int x,int y){
+int addVertex(GLint x,GLint y){
 	vCount++;
 	points[vCount].x=x;
 	points[vCount].y=y;
 	cout<<"Adding vertx("<<x<<","<<y<<")"<<endl;
+	glutPostRedisplay();
+	return 0;
+	}
+	
+int delete_vertex(GLint x,GLint y){
+	int i =0,pos = -1; 
+	for(i=0;i<=vCount;i++){
+		if(abs((points[i].x - x) <= DELTA_POINT) && (abs(points[i].y - y) <= DELTA_POINT)){
+			pos = i;
+			vCount--;
+			break;
+			}
+		}
+	if(pos<0){
+		return 0;
+		}
+	for(i = pos; i<=vCount ;i++){
+		points[i]=points[i+1];
+		}
 	glutPostRedisplay();
 	return 0;
 	}
@@ -263,7 +288,7 @@ int plot_curves(){
 		cout<<"Unable to allocate memory for curve"<<endl;
 		exit(1);
 		}
-	bezier->compute(100);
+	bezier->compute(num_points);
 	
 	delete lagrange;
 	lagrange = NULL;
@@ -272,7 +297,7 @@ int plot_curves(){
 		cout<<"Unable to allocate memory for curve"<<endl;
 		exit(1);
 		}
-	lagrange->compute(100);
+	lagrange->compute(num_points);
 	return 0;
 	}
 	

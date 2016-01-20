@@ -13,4 +13,4 @@ curves: main.o bezier.o lagrange.o
 	g++ -o curves main.o bezier.o lagrange.o -lGL -lGLU -lglut -lm
 	
 clean:
-	rm *.o curve
+	rm *.o curves

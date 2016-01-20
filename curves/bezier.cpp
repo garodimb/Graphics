@@ -6,6 +6,7 @@
 #include <math.h>
 #include <GL/glut.h>
 #include "bezier.h"
+#include "log.h"
 
 Bezier::Bezier(GLint num_points,Point *user_points){
 	this->num_points = num_points;
