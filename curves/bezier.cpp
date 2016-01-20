@@ -6,39 +6,47 @@
 #include <math.h>
 #include <GL/glut.h>
 #include "bezier.h"
-#include "log.h"
 
+/* Constructor */
 Bezier::Bezier(GLint num_points,Point *user_points){
 	this->num_points = num_points;
 	this->user_points = user_points;
 	this->comp_points = NULL;
 	}
-	
+
+/* Computes Bezier curve points */	
 GLint Bezier::compute(GLint n){
 	/* Memory is allocated, free it before assigning new */
 	GLfloat coeff[this->num_points],t;
 	GLint i = 0;
+	
+	/* Compute Bezier coefficients */
 	this->compute_coeff(coeff);
+	
+	/* Clear any previous curve computation */
 	if(this->comp_points){
 		delete [] this->comp_points;
 		}
+		
+	/* Allocate memory for computation */
 	this->comp_points = new (std::nothrow) Point[n];
 	if(this->comp_points==NULL){
-		std::cout<<"Unable to allocate memory for computation"<<std::endl;
+		log_E("Unable to allocate memory for computation");
 		return 1;
 		}
 	this->num_comp_points = n;
 	for(i=0;i<=n-1;i++){
 		t = (GLfloat) i / (n-1);
 		compute_point(t,coeff,&(this->comp_points[i]));
-		std::cout <<"(" << this->comp_points[i].x <<"," << this->comp_points[i].y << ")" <<std::endl;
+		log_D("(" << this->comp_points[i].x <<"," << this->comp_points[i].y << ")");
 		}
 	return 0;
 	}
 
+/* Compute bezier coefficients */	
 GLint Bezier::compute_coeff(GLfloat *coeff){
 		GLint i = 0, j =0, n = this->num_points-1;
-		std::cout<<"Coefficients: ";
+		log_D("Coefficients: ");
 		std::cout << std::fixed;
 		for(i=0;i<=n/2;i++){
 			coeff[i]=coeff[n-i]=1;
@@ -46,11 +54,12 @@ GLint Bezier::compute_coeff(GLfloat *coeff){
 				coeff[i] = coeff[i] * (GLfloat)(n-j+1)/j; 
 				}
 			coeff[n-i]=coeff[i];
-			std::cout << std::setprecision(5) << coeff[i]<<"  ";
+			log_D(coeff[i]);
 			}
-		std::cout<<std::endl;		
+	return 0;		
 	}
 	
+/* Compute single point on bezier curve */
 GLint Bezier::compute_point(GLfloat t,const GLfloat *coeff,Point *p){
 	GLint i,n=this->num_points-1;
 	GLfloat temp=0;
@@ -64,6 +73,7 @@ GLint Bezier::compute_point(GLfloat t,const GLfloat *coeff,Point *p){
 	return 0;	
 	}
 	
+/* Render bezier curve */ 	
 GLint Bezier::display(){
 	GLint i=0;
 	glBegin(GL_LINE_STRIP);
