@@ -1,0 +1,116 @@
+
+CONTENTS OF THIS FILE
+=====================
+   
+ * Introduction
+ * How to Compile and Run
+ * How to Use
+ * Sourced Referred
+ * Key bindings
+
+
+INTRODUCTION
+============
+	
+	This is an OpenGL application written using C++, to demonstrate plotting of curves for below mentioned two algorithms
+	1. Lagrange Interpolation Polynomial
+	2. Bezier Curve
+	
+	* Features supported
+	  ------------------
+	  
+		- Adding control points
+		- Deleting control points
+		- Scaling
+		- Rotation
+		- Translation
+
+
+HOW TO COMPILE AND RUN
+======================
+	
+	- Compile in non-debug mode	  
+	  $make
+	- Compile in debug mode
+	  $make CFLAGS='-D DEBUG'
+	  
+	This will generate an executable 'curves' in same directory
+	Execute bellow command to run
+	$./curves  
+	
+	
+HOW TO USE
+==========
+	
+	This application supports following modes
+	1. VERTEX MODE
+	2. CURVE MODE
+	
+	Use ENTER key to switch between VERTEX MODE and CURVE MODE
+	
+	* VERTEX MODE
+	  -----------
+	  
+	  Application will always start in this mode only with blank screen, having 'X-AXIS' and 'Y-AXIS' as referenced axis.
+	  In this mode only control points will get render on screen. Below are things which can be done in this mode
+	  1. Add Vertex(Control Point) Mode
+	  -  This is by default mode and user can switch to this mode by pressing key 'i' on keyboard
+	  -  In this mode user can add vertex by left clicking the position where he/she wants to add vertex
+	  -  Whenever application switches from CURVE MODE to VERTEX MODE it will be always in this mode
+	  -  Newly added point will append to existing list of points
+	  -  The order in which user adds points will appear in same order on curve
+	  
+	  2. Delete Vertex Mode
+	  -  In this mode user can delete existing points
+	  -  For switching to this mode use key 'd'
+	  -  User can delete any point using left mouse button(Left Mouse Click)
+	  
+	  In this mode other transformation operations like scaling, rotation and translation will not work
+	  
+	 
+	* CURVE MODE
+	  ----------
+	  
+	  In this mode two curves(Lagrange and Bezier) will get rendered on screen. Below are supported operations on curves
+	  
+	  1. Translation: Use UP/DOWN key to translate curves. Use following keys to change direction of translation
+		- 'h': Along X-Axis(Horizontally)
+		- 'v': Along Y-Axis(Vertically)
+		- 'd': Uniform along both axis
+		
+	  2. Scaling: Use '+' and '-' keys to scale up and scale down curve respectively. Curve will get scaled around initial vertex
+	  
+	  3. Rotation: Use 'r' and 'l' keys to rotate in right and left direction respectively
+
+
+SOURCES REFERRED
+================
+
+	1. http://mathworld.wolfram.com/LagrangeInterpolatingPolynomial.html
+	2. https://en.wikipedia.org/wiki/Lagrange_polynomial
+	3. http://mathworld.wolfram.com/BezierCurve.html
+	4. https://en.wikipedia.org/wiki/B%C3%A9zier_curve
+	5. https://www.opengl.org/documentation/specs/glut/spec3/node1.html 
+
+
+KEY BINDINGS
+============
+
+	1. VERTEX MODE
+	   
+	   - 'i' 				: Switch to insert vertex mode
+	   - 'd' 				: Switch to delete vertex mode
+	   - Left Mouse Button	: Inserts or deletes point depend on which mode is set
+	   - ENTER KEY			: Switch from VERTEX MODE to CURVE MODE
+	   
+	 2. CURVE MODE
+	 
+		- 'r'		: Rotate in right direction
+		- 'l'		: Rotate in left direction
+		- '+'		: Zoomin(Scale up) curve
+		- '-'		: Zoomout(Scale down) curve
+		- 'h'		: Set translation direction along X-Axis(Horizontally)
+		- 'v'		: Set translation direction along Y-Axis(Vertically)
+		- 'd'		: Set translation direction diagonally
+		- UP KEY	: Translate in forward direction
+		- DOWN KEY	: Translate in backward direction

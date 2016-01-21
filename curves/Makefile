@@ -10,7 +10,7 @@ main.o: main.cpp
 	g++ $(CFLAGS) -c main.cpp -lglut -lGL -lGLU -lm
 
 curves: main.o bezier.o lagrange.o
-	g++ -o curves main.o bezier.o lagrange.o -lGL -lGLU -lglut -lm
+	g++ $(CFLAGS) -o curves main.o bezier.o lagrange.o -lGL -lGLU -lglut -lm
 	
 clean:
 	rm *.o curves
