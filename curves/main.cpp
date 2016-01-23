@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <math.h>
 #include <GL/glut.h>
 #include "bezier.h"
 #include "lagrange.h"
@@ -37,31 +38,33 @@ void reshape(int w,int h);
 void display(void);
 
 /* Callbacks */
-void mouseHandler(int button,int state,int x,int y);
-void keyboardHandelr(unsigned char key,int x,int y);
-void keyboardSpecHandelr(int key,int x,int y);
+void mouse_handler(int button,int state,int x,int y);
+void keyboard_handler(unsigned char key,int x,int y);
+void keyboard_spec_handler(int key,int x,int y);
 
 /* Transformations */
+int trans_by_user(GLint x,GLint y);
 int scale(GLfloat x_factor,GLfloat y_factor);
 int rotate(GLfloat angle);
 int translate(GLfloat dist);
 
 /* UI Related */
-int addVertex(GLint x,GLint y);
+int add_vertex(GLint x,GLint y);
 int delete_vertex(GLint x,GLint y);
-int displayVertex();
+int display_vertex();
 int draw_axis();
 int plot_curves();
 
 /* Global Variables */
 Point points[MAX_VERTICES];
-GLint vCount=-1;
-GLint num_points=100;
+Point trans_point;
+
+int v_count=-1; // Number of vertices added by user
+int t_point_count=-1; //Track of first point in user defined translation
+int num_points=100; //Number of points to be calculated on curve
 int screenWidth,screenHeight;
-int IN_CURVE_MODE=FALSE;
-int INS_MODE=TRUE;
+int IN_CURVE_MODE=FALSE; //Curve mode or vertex mode
 int TRANS_MODE=TRANS_MODE_D;
-GLfloat TRANS_DIST=10.0;
 
 /* Curves */
 Bezier *bezier;
@@ -86,36 +89,36 @@ void init(void){
 	}
 
 /* Mouse Handler */
-void mouseHandler(int button,int state,int x,int y){
+void mouse_handler(int button,int state,int x,int y){
 	if(button==GLUT_LEFT_BUTTON && state == GLUT_DOWN){
 		log_D("Left button Pressed at ("<< x <<","<< y <<")");
 		
-		if(!IN_CURVE_MODE && INS_MODE){
-			/* In Point Mode and insert vertex mode */
-			addVertex(x-TRANS_X,screenHeight-y-TRANS_Y);
-			}
-		else if(!IN_CURVE_MODE && !INS_MODE){
-				/* In Point mode and delete vertex mode */
-			delete_vertex(x-TRANS_X,screenHeight-y-TRANS_Y);
+		if(!IN_CURVE_MODE){
+			/* In Vertex mode */
+			add_vertex(x-TRANS_X,screenHeight-y-TRANS_Y);
 			}
 		}
 	else if(button==GLUT_RIGHT_BUTTON && state == GLUT_DOWN){
 		log_D("Right button Pressed at ("<< x <<","<< y <<")");
-		/* In Curve mode, Pick and translate */
 		if(IN_CURVE_MODE){
-			
+			/* In Curve mode, Pick and translate */
+			trans_by_user(x-TRANS_X,screenHeight-y-TRANS_Y);
+			}
+		else{
+			/* In vertex mode, delete points */
+			delete_vertex(x-TRANS_X,screenHeight-y-TRANS_Y);
 			}
 		}
 	}
 
 /* Keyboard Handler */	
-void keyboardHandelr(unsigned char key,int x,int y){
+void keyboard_handler(unsigned char key,int x,int y){
 	log_D("Key Pressed: " << (int)key);
 	if(key==KEY_ESC){
 		log_I("ESC key pressed. Exiting Program");
 		exit(0);
 		}
-	else if(key==KEY_ENTER && vCount>=1){
+	else if(key==KEY_ENTER && v_count>=1){
 		IN_CURVE_MODE=!IN_CURVE_MODE;
 		if(IN_CURVE_MODE){
 			log_I("Switching to CURVE mode...");
@@ -124,7 +127,6 @@ void keyboardHandelr(unsigned char key,int x,int y){
 		else{
 			log_I("Switching to POINT mode");
 			log_I("Setting INSERT mode for vertex");
-			INS_MODE = TRUE;
 			glMatrixMode (GL_MODELVIEW);
 			glLoadIdentity();
 			}
@@ -162,18 +164,10 @@ void keyboardHandelr(unsigned char key,int x,int y){
 		log_I("Setting Translation mode to DIAGONAL");
 		TRANS_MODE = TRANS_MODE_D;
 		}
-	else if(key == KEY_I && !IN_CURVE_MODE){
-		log_I("Setting INSERT mode for vertex");
-		INS_MODE = TRUE;
-		}
-	else if(key == KEY_D && !IN_CURVE_MODE){
-		log_I("Setting DELETE mode for vertex");
-		INS_MODE = FALSE;
-		}
 	}
 	
 /* Keyboard Special keys handler */	
-void keyboardSpecHandelr(int key,int x,int y){
+void keyboard_spec_handler(int key,int x,int y){
 	if(key==GLUT_KEY_UP){
 		log_I("Translating UP");
 		translate(10.0);
@@ -185,6 +179,33 @@ void keyboardSpecHandelr(int key,int x,int y){
 		glutPostRedisplay();
 		}
 	}
+
+/* Do Translation by user defined distance */
+int trans_by_user(GLint x,GLint y){
+	GLfloat x_dist,y_dist,dist;
+	if(t_point_count==-1){
+		/* Add first point for finding translation distance */
+		trans_point.x = x;
+		trans_point.y = y;
+		t_point_count = 0;
+		}
+	else if(t_point_count==0){
+		/* Calculate distance between two points */
+		dist = sqrt(pow(trans_point.x - x, 2)+ pow(trans_point.y - y, 2));
+		t_point_count = -1;
+		
+		/* Set X & Y direction */
+		x_dist = ( x >= trans_point.x)? dist : -dist;
+		y_dist = ( y >= trans_point.y)? dist : -dist;
+		
+		log_I("Translating");
+		log_D("x_dist: "<<x_dist<<", y_dist: "<<y_dist);
+		glTranslatef(x_dist,y_dist,0.0);
+		glutPostRedisplay();
+		}
+	return 0;
+	}
+	
 
 /* Scaling */
 int scale(GLfloat x_factor,GLfloat y_factor){
@@ -241,7 +262,7 @@ void display(){
 		bezier->display();
 		}
 	glColor3f(0.0,1.0,1.0);
-	displayVertex();
+	display_vertex();
 	glutSwapBuffers();
 	}
 
@@ -264,11 +285,11 @@ int draw_axis(){
 	}
 	
 /* Display control points */	
-int displayVertex(){
+int display_vertex(){
 	log_D("Displaying vertex");
 	int i=0;
 	glBegin(GL_POINTS);
-		for(i=0;i<=vCount;i++){
+		for(i=0;i<=v_count;i++){
 			glVertex2f((GLint)points[i].x,(GLint)points[i].y);
 			}
 	glEnd();
@@ -276,29 +297,30 @@ int displayVertex(){
 	}
 
 /* Add control point */	
-int addVertex(GLint x,GLint y){
+int add_vertex(GLint x,GLint y){
 	log_I("Adding vertex at ("<<x<<","<<y<<")");
-	vCount++;
-	points[vCount].x=x;
-	points[vCount].y=y;
+	v_count++;
+	points[v_count].x=x;
+	points[v_count].y=y;
 	glutPostRedisplay();
 	return 0;
 	}
-	
+
+/* Delete vertex */
 int delete_vertex(GLint x,GLint y){
 	int i =0,pos = -1; 
-	for(i=0;i<=vCount;i++){
+	for(i=0;i<=v_count;i++){
 		if(abs((points[i].x - x) <= DELTA_POINT) && (abs(points[i].y - y) <= DELTA_POINT)){
 			log_I("Deleting vertex at ("<<(GLint)points[i].x<<","<<(GLint)points[i].y<<")");
 			pos = i;
-			vCount--;
+			v_count--;
 			break;
 			}
 		}
 	if(pos<0){
 		return 0;
 		}
-	for(i = pos; i<=vCount ;i++){
+	for(i = pos; i<=v_count ;i++){
 		points[i]=points[i+1];
 		}
 	glutPostRedisplay();
@@ -309,7 +331,7 @@ int delete_vertex(GLint x,GLint y){
 int plot_curves(){
 	delete bezier;
 	bezier = NULL;
-	bezier = new Bezier(vCount+1,points);
+	bezier = new Bezier(v_count+1,points);
 	if(bezier==NULL){
 		log_E("Unable to allocate memory for Bezier curve");
 		exit(1);
@@ -318,7 +340,7 @@ int plot_curves(){
 	
 	delete lagrange;
 	lagrange = NULL;
-	lagrange = new Lagrange(vCount+1,points);
+	lagrange = new Lagrange(v_count+1,points);
 	if(lagrange==NULL){
 		log_E("Unable to allocate memory for Lagrange curve");
 		exit(1);
@@ -333,9 +355,9 @@ int main(int argc,char **argv){
 	init();
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
-	glutMouseFunc(mouseHandler);
-	glutKeyboardFunc(keyboardHandelr);
-	glutSpecialFunc(keyboardSpecHandelr);
+	glutMouseFunc(mouse_handler);
+	glutKeyboardFunc(keyboard_handler);
+	glutSpecialFunc(keyboard_spec_handler);
 	glutMainLoop();
 	return 0;
 	}

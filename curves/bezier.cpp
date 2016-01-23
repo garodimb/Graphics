@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 #include <iostream>
-#include <iomanip>      // std::setprecision
+#include <iomanip>
 #include <new>
 #include <math.h>
 #include <GL/glut.h>

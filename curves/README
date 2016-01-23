@@ -51,22 +51,14 @@ HOW TO USE
 	* VERTEX MODE
 	  -----------
 	  
-	  Application will always start in this mode only with blank screen, having 'X-AXIS' and 'Y-AXIS' as referenced axis.
-	  In this mode only control points will get render on screen. Below are things which can be done in this mode
-	  1. Add Vertex(Control Point) Mode
-	  -  This is by default mode and user can switch to this mode by pressing key 'i' on keyboard
-	  -  In this mode user can add vertex by left clicking the position where he/she wants to add vertex
-	  -  Whenever application switches from CURVE MODE to VERTEX MODE it will be always in this mode
-	  -  Newly added point will append to existing list of points
-	  -  The order in which user adds points will appear in same order on curve
+	  This is by default mode when application starts. In this mode only control points will get rendered on screen.
+	  - use LEFT MOUSE BUTTON to insert points
+	  - use RIGHT MOUSE BUTTON to delete points
 	  
-	  2. Delete Vertex Mode
-	  -  In this mode user can delete existing points
-	  -  For switching to this mode use key 'd'
-	  -  User can delete any point using left mouse button(Left Mouse Click)
+	  Order of points in which it is added matters. Always add points in increasing/decreasing value of X.
+	  For Lagrange curve there should not be any two points with same X values
 	  
-	  In this mode other transformation operations like scaling, rotation and translation will not work
-	  
+	  In this mode other transformation operations like scaling, rotation and translation will not work 
 	 
 	* CURVE MODE
 	  ----------
@@ -77,12 +69,21 @@ HOW TO USE
 		- 'h': Along X-Axis(Horizontally)
 		- 'v': Along Y-Axis(Vertically)
 		- 'd': Uniform along both axis
+		Also curve can be translated choosing two points uisng RIGHT MOUSE BUTTON. Curve will get translated by the distance
+		between two points in world coordinate system. The direction(Positive or Negative) of X and Y will be chosen based on
+		initial and final point
 		
 	  2. Scaling: Use '+' and '-' keys to scale up and scale down curve respectively. Curve will get scaled around initial vertex
 	  
 	  3. Rotation: Use 'r' and 'l' keys to rotate in right and left direction respectively
 
+INPUT
+=====
 
+	Order of points matters. Always add points in increasing or decreasing value of x to get both the curves correct.
+	Lagrange curve does not permit two points with same X value, so If above not followed in that case Lagrange curve will
+	not be correct/not render on screen.
+	
 SOURCES REFERRED
 ================
 
@@ -98,19 +99,19 @@ KEY BINDINGS
 
 	1. VERTEX MODE
 	   
-	   - 'i' 				: Switch to insert vertex mode
-	   - 'd' 				: Switch to delete vertex mode
-	   - Left Mouse Button	: Inserts or deletes point depend on which mode is set
-	   - ENTER KEY			: Switch from VERTEX MODE to CURVE MODE
+		- ENTER KEY			: Switch from VERTEX MODE to CURVE MODE
+		- LEFT MOUSE BUTTON	: Insert xertex
+		- RIGHT MOUSE BUTTON: Delete existing vertex
 	   
-	 2. CURVE MODE
+	2. CURVE MODE
 	 
-		- 'r'		: Rotate in right direction
-		- 'l'		: Rotate in left direction
-		- '+'		: Zoomin(Scale up) curve
-		- '-'		: Zoomout(Scale down) curve
-		- 'h'		: Set translation direction along X-Axis(Horizontally)
-		- 'v'		: Set translation direction along Y-Axis(Vertically)
-		- 'd'		: Set translation direction diagonally
-		- UP KEY	: Translate in forward direction
-		- DOWN KEY	: Translate in backward direction
+		- 'r'				: Rotate in right direction
+		- 'l'				: Rotate in left direction
+		- '+'				: Zoomin(Scale up) curve
+		- '-'				: Zoomout(Scale down) curve
+		- 'h'				: Set translation direction along X-Axis(Horizontally)
+		- 'v'				: Set translation direction along Y-Axis(Vertically)
+		- 'd'				: Set translation direction diagonally
+		- UP KEY			: Translate in forward direction
+		- DOWN KEY			: Translate in backward direction
+		- RIGHT MOUSE BUTTON: Choose distance for translation(Choose two points)
