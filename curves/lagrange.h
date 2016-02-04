@@ -15,4 +15,6 @@ class Lagrange{
 		GLint compute_coeff(GLfloat *coeff);
 		GLint compute_point(GLfloat x,const GLfloat *coeff,Point *p);
 		GLint display();
+		GLfloat get_min_x();
+		GLfloat get_max_x();
 	};

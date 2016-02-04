@@ -125,8 +125,7 @@ void keyboard_handler(unsigned char key,int x,int y){
 			plot_curves();
 			}
 		else{
-			log_I("Switching to POINT mode");
-			log_I("Setting INSERT mode for vertex");
+			log_I("Switching to VERTEX mode");
 			glMatrixMode (GL_MODELVIEW);
 			glLoadIdentity();
 			}
@@ -244,7 +243,6 @@ void reshape(int w,int h){
 	gluOrtho2D (0.0, (GLdouble) w, 0.0, (GLdouble) h);
 	glTranslatef(TRANS_X,TRANS_Y,0.0);
 	glMatrixMode (GL_MODELVIEW);
-    //glLoadIdentity();
 	screenHeight=h;
 	screenWidth=w;	
 	}

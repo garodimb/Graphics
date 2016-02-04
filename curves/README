@@ -7,6 +7,7 @@ CONTENTS OF THIS FILE
  * How to Use
  * Sourced Referred
  * Key bindings
+ * TODO
 
 
 INTRODUCTION
@@ -100,7 +101,7 @@ KEY BINDINGS
 	1. VERTEX MODE
 	   
 		- ENTER KEY			: Switch from VERTEX MODE to CURVE MODE
-		- LEFT MOUSE BUTTON	: Insert xertex
+		- LEFT MOUSE BUTTON	: Insert vertex
 		- RIGHT MOUSE BUTTON: Delete existing vertex
 	   
 	2. CURVE MODE
@@ -115,3 +116,8 @@ KEY BINDINGS
 		- UP KEY			: Translate in forward direction
 		- DOWN KEY			: Translate in backward direction
 		- RIGHT MOUSE BUTTON: Choose distance for translation(Choose two points)
+
+TO DO
+=====
+	1. Picking & deleting points itself on curve
+	2. Lagrange curve - Adding point anywhere in between(Use Min, Max based on x value)

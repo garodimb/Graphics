@@ -17,9 +17,12 @@ Lagrange::Lagrange(GLint num_points,Point *user_points){
 /* Computes Lagrange curve points */
 GLint Lagrange::compute(GLint n){
 	GLint i=0;
-	GLfloat coeff[this->num_points],x,delta;
-	delta = (GLfloat)(this->user_points[this->num_points-1].x - this->user_points[0].x)/ (GLfloat) (n-1); 
-	
+	GLfloat coeff[this->num_points],x,delta,max_x,min_x;
+	max_x = this->get_max_x();
+	min_x = this->get_min_x();
+	//delta = (GLfloat)(this->user_points[this->num_points-1].x - this->user_points[0].x)/ (GLfloat) (n-1); 
+	//delta = this->compute_delta(n);
+	delta = (GLfloat)(max_x - min_x)/ (GLfloat) (n-1);
 	/* Compute Lagrange coefficients */
 	this->compute_coeff(coeff);
 	
@@ -35,7 +38,8 @@ GLint Lagrange::compute(GLint n){
 		return 1;
 		}
 	this->num_comp_points = n;
-	x = this->user_points[0].x;
+	x = min_x;
+	//x = this->user_points[0].x;
 	log_D("Computing lagrange points");
 	for(i=0;i<n;i++){
 		compute_point(x,coeff,&(this->comp_points[i]));
@@ -91,4 +95,28 @@ GLint Lagrange::display(){
 		}
 	glEnd();
 	return 0;
+	}
+
+GLfloat Lagrange::get_min_x(){
+	GLfloat min;
+	GLint i=0;
+	min=this->user_points[0].x;
+	for(i=1;i<this->num_points;i++){
+		if(this->user_points[i].x < min){
+			min = this->user_points[i].x;
+			}
+		}
+	return min;
+	}
+	
+GLfloat Lagrange::get_max_x(){
+	GLfloat max;
+	GLint i=0;
+	max=this->user_points[0].x;
+	for(i=1;i<this->num_points;i++){
+		if(this->user_points[i].x > max){
+			max = this->user_points[i].x;
+			}
+		}
+	return max;
 	}
