@@ -4,6 +4,7 @@
 #include <math.h>
 #include <GL/glut.h>
 #include "cube.h"
+#include "quaternion.h"
 
 #define MAX_VERTICES 100
 #define FALSE 0
@@ -43,6 +44,7 @@ void keyboard_spec_handler(int key,int x,int y);
 int trans_by_user(GLint x,GLint y);
 int scale(GLfloat x_factor,GLfloat y_factor);
 int translate(GLfloat dist);
+int rotate(GLfloat x, GLfloat y, GLfloat z, GLfloat angle);
 
 /* UI Related */
 int draw_axis();
@@ -60,7 +62,7 @@ int TRANS_MODE=TRANS_MODE_D;
 /*	3D Modelling */
 GLfloat rotate_x=0.0;
 GLfloat rotate_y=0.0;
-GLfloat z_distance = 2.0f;
+GLfloat z_distance = 3.0f;
 
 /* Initialize windowing system */
 int initWindow(const char *title,int w,int h){
@@ -217,7 +219,16 @@ int translate(GLfloat dist){
 		glTranslatef(dist,dist,0.0);
 	return 0;
 	}	
-	
+
+/* Rotation using Quaternion*/
+int rotate(GLfloat x, GLfloat y, GLfloat z, GLfloat angle){
+	GLfloat pmatrix[16];
+	Quaternion quaternion;
+	quaternion.CreateFromAxisAngle(x,y,z,angle);
+	quaternion.CreateMatrix(pmatrix);
+	glMultMatrixf(pmatrix);
+	return 0;
+	}
 /* Reshape Handler */
 void reshape(int w,int h){
 	log_D("Handling reshape");
@@ -241,8 +252,8 @@ void display(){
 	/* Move camera using z so to get fill of zooming */
 	/* Eye, Center and Up vector */	
 	gluLookAt(0.0, 0.0,z_distance, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0);
-	glRotatef( rotate_x, 1.0, 0.0, 0.0 );
-	glRotatef( rotate_y, 0.0, 1.0, 0.0 );
+	rotate(1.0,0.0,0.0,rotate_x);
+	rotate(0.0,1.0,0.0,rotate_y);
 	cube.display();
 	glutSwapBuffers();
 	}
