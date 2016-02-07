@@ -25,3 +25,6 @@ void project(int x_cursor, int y_cursor){
 		glVertex3d(x,y,z);
 	glEnd();
 }
+
+/* ArcBall Program for rotation */
+/* https://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Arcball */
