@@ -75,10 +75,24 @@ int initWindow(const char *title,int w,int h){
 	
 /* Init canvas */	
 void init(void){
-	glEnable(GL_DEPTH_TEST);
+	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 0.0 };
+	GLfloat mat_shininess[] = { 100.0 };
+	GLfloat light_position[] = { 0.0, 0.0, 1.0, 1.0 };
+	GLfloat light_diffuse[] = { 1.0, 0.0, 0.0, 0.0 };
 	glClearColor(0.0,0.0,0.0,0.0);
-	glPointSize(3.0);
-	glShadeModel(GL_SMOOTH);
+	glClearColor (0.0, 0.0, 0.0, 0.0);
+	glShadeModel (GL_SMOOTH);
+	
+	/* Disable LIGHTING to view only colored cube with different colors*/
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	
+
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_DEPTH_TEST);
 	
 	}
 
