@@ -60,6 +60,7 @@ int TRANS_MODE=TRANS_MODE_D;
 /*	3D Modelling */
 GLfloat rotate_x=0.0;
 GLfloat rotate_y=0.0;
+GLfloat z_distance = 2.0f;
 
 /* Initialize windowing system */
 int initWindow(const char *title,int w,int h){
@@ -77,7 +78,8 @@ void init(void){
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.0,0.0,0.0,0.0);
 	glPointSize(3.0);
-	glShadeModel(GL_SMOOTH);	
+	glShadeModel(GL_SMOOTH);
+	
 	}
 
 /* Mouse Handler */
@@ -107,12 +109,14 @@ void keyboard_handler(unsigned char key,int x,int y){
 		}
 	else if(key==ZOOMIN){
 		log_I("Zooming IN");
-		scale(ZOOMIN_FACTOR_X,ZOOMIN_FACTOR_Y);
+		z_distance-=0.1;
+		//scale(ZOOMIN_FACTOR_X,ZOOMIN_FACTOR_Y);
 		glutPostRedisplay();
 		}
 	else if(key==ZOOMOUT){
 		log_I("Zooming OUT");
-		scale(ZOOMOUT_FACTOR_X,ZOOMOUT_FACTOR_Y);
+		//scale(ZOOMOUT_FACTOR_X,ZOOMOUT_FACTOR_Y);
+		z_distance+=0.1;
 		glutPostRedisplay();
 		}
 	else if(key==KEY_H){
@@ -206,8 +210,10 @@ void reshape(int w,int h){
 	glViewport (0, 0, (GLsizei) w, (GLsizei) h);
 	glMatrixMode (GL_PROJECTION);
 	glLoadIdentity ();
+	gluPerspective( /* field of view in degree */ 45.0,
+    /* aspect ratio */ 1.0,
+    /* Z near */ 0.1f, /* Z far */ 15.0f); 
 	log_D("Window Width: "<<w<<", Height: "<<h);
-	glMatrixMode (GL_MODELVIEW);
 	screenHeight=h;
 	screenWidth=w;	
 	}
@@ -216,9 +222,11 @@ void reshape(int w,int h){
 void display(){
 	log_D("Displaying content");
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	//glColor3f(0.0,1.0,1.0);
-	//draw_axis();
+	/* Move camera using z so to get fill of zooming */
+	/* Eye, Center and Up vector */	
+	gluLookAt(0.0, 0.0,z_distance, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0);
 	glRotatef( rotate_x, 1.0, 0.0, 0.0 );
 	glRotatef( rotate_y, 0.0, 1.0, 0.0 );
 	cube.display();
