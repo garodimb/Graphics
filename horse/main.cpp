@@ -5,6 +5,7 @@
 #include <GL/glut.h>
 #include "quaternion.h"
 #include "model.h"
+#include "cube.h"
 
 #define MAX_VERTICES 100
 #define FALSE 0
@@ -57,6 +58,7 @@ int TRANS_MODE=TRANS_MODE_D;
 
 
 /*	3D Modelling */
+Cube cube;
 GLfloat rotate_x=0.0;
 GLfloat rotate_y=0.0;
 GLfloat z_distance = 3.0f;
@@ -249,6 +251,9 @@ void display(){
 	rotate(1.0,0.0,0.0,rotate_x);
 	rotate(0.0,1.0,0.0,rotate_y);
 	//glScalef(10.0,10.0,10.0);
+	cube.display();
+	glScalef(5.0,5.0,5.0);
+	glTranslatef(0.0,-0.1,0.0);
 	Model::display();
 	glutSwapBuffers();
 	}
