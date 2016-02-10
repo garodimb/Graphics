@@ -18,6 +18,7 @@ typedef struct ivec3{
 	
 typedef vec3 vertex;
 typedef vec3 color;
+typedef vec3 normal;
 typedef ivec3 triangle;
 
 class Model{
@@ -27,11 +28,12 @@ class Model{
 		static long count_v, count_t;
 		static vertex *vertices;
 		static triangle *triangles;
+		static normal *nml;
 		char filename[100];
-		
-		static int display();
 		static int init(char *filename);
+		static int display();
 	private:
+		static int compute_normal(int pos);
 		static int face_cb(p_ply_argument argument);
 		static int vertex_cb(p_ply_argument argument);
 };

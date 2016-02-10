@@ -10,7 +10,7 @@ long Model::count_t		= 0;
 
 vertex *Model::vertices = NULL;
 triangle *Model::triangles = NULL;
-
+normal *Model::nml = NULL;
 
 int Model::vertex_cb(p_ply_argument argument) {
 	static int pos = 0;
@@ -48,6 +48,7 @@ int Model::face_cb(p_ply_argument argument) {
 				break;
         case 2:
 				triangles[count_t].z = (int)ply_get_argument_value(argument);
+				compute_normal(count_t); // Compute normal after all vertices of traingle are known
 				count_t++;
 				break;
         default:
@@ -72,17 +73,44 @@ int Model::init(char filename[]){
     if(triangles != NULL){
 		delete [] triangles;
 		}
+	if(nml != NULL){
+		delete [] nml;
+		}
 	vertices = new vertex[nvertices];
 	triangles = new triangle[ntriangles];
+	nml = new normal[ntriangles];
     if (!ply_read(ply)) return 1;
     ply_close(ply);
     return 0;
 	}
+
+int Model::compute_normal(int pos){
+	vec3 v1,v2;
+	// v1 = p2 - p1; v2 = p3 -p2
+	v1.x = vertices[triangles[pos].y].x - vertices[triangles[pos].x].x; // a1
+	v1.y = vertices[triangles[pos].y].y - vertices[triangles[pos].x].y; // a2
+	v1.z = vertices[triangles[pos].y].z - vertices[triangles[pos].x].z; // a3
+	
+	v2.x = vertices[triangles[pos].z].x - vertices[triangles[pos].y].x; //b1
+	v2.y = vertices[triangles[pos].z].y - vertices[triangles[pos].y].y; //b2
+	v2.z = vertices[triangles[pos].z].z - vertices[triangles[pos].y].z; //b3
+
+	//Matrix Multiplication
+	
+	//Cross Product: (a2b3-a3b2)i - (a1b3 - a3b1)j + (a1b2 - a2b1)k
+	//Here changing to original size giving normals inward
+	nml[pos].x = -(v1.y*v2.z - v1.z*v2.y);
+	nml[pos].y = (v1.x*v2.z - v1.z*v2.x);
+	nml[pos].z = -(v1.x*v2.y - v1.y*v2.x);
+	return 0;
+	}
 	
 int Model::display(){
 	long i = 0;
+	glColor3f(1.0,1.0,1.0);
 	for(i=0;i<ntriangles;i++){
 		glBegin(GL_TRIANGLES);
+			glNormal3f(nml[i].x,nml[i].y,nml[i].z);
 			glVertex3f(vertices[triangles[i].x].x,vertices[triangles[i].x].y,vertices[triangles[i].x].z);
 			glVertex3f(vertices[triangles[i].y].x,vertices[triangles[i].y].y,vertices[triangles[i].y].z);
 			glVertex3f(vertices[triangles[i].z].x,vertices[triangles[i].z].y,vertices[triangles[i].z].z);

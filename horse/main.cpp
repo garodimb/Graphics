@@ -58,10 +58,10 @@ int TRANS_MODE=TRANS_MODE_D;
 
 
 /*	3D Modelling */
-Cube cube;
+Cube cube(2.0f);
 GLfloat rotate_x=0.0;
 GLfloat rotate_y=0.0;
-GLfloat z_distance = 3.0f;
+GLfloat z_distance = 5.0f;
 
 /* Initialize windowing system */
 int initWindow(const char *title,int w,int h){
@@ -78,9 +78,10 @@ int initWindow(const char *title,int w,int h){
 void init(void){
 	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 0.0 };
 	GLfloat mat_shininess[] = { 100.0 };
-	GLfloat light_position[] = { 0.0, 0.0, 1.0, 1.0 };
-	GLfloat light_diffuse[] = { 1.0, 0.0, 0.0, 0.0 };
+	GLfloat light_position[] = { 0.0, 0.0, 1.0, 0.0 };
+	GLfloat light_diffuse[] = { 0.0, 1.0, 1.0, 0.0 };
 	glClearColor(0.0,0.0,0.0,0.0);
+	glEnable(GL_NORMALIZE); //Dont care about performance now
 	glShadeModel (GL_SMOOTH);
 	
 	/* Disable LIGHTING to view only colored cube with different colors*/
@@ -90,8 +91,8 @@ void init(void){
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 	
 
-	//glEnable(GL_LIGHTING);
-	//glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST);
 	
 	}
@@ -250,9 +251,8 @@ void display(){
 	gluLookAt(0.0, 0.0,z_distance, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0);
 	rotate(1.0,0.0,0.0,rotate_x);
 	rotate(0.0,1.0,0.0,rotate_y);
-	//glScalef(10.0,10.0,10.0);
 	cube.display();
-	glScalef(5.0,5.0,5.0);
+	glScalef(10.0,10.0,10.0);	
 	glTranslatef(0.0,-0.1,0.0);
 	Model::display();
 	glutSwapBuffers();
@@ -265,7 +265,7 @@ int draw_axis(){
 	glPushMatrix();
 	glLoadIdentity();
 	glBegin(GL_LINES);
-		glColor3f(1.0,0.0,0.0);
+		glColor3f(0.0,1.0,0.0);
 		glVertex3f(0.0,0.0,0.0);
 		glVertex3f(1.0,0.0,0.0);
 		glColor3f(0.0,1.0,0.0);
