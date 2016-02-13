@@ -18,7 +18,14 @@ struct Point {
 #define KEY_H 104
 #define KEY_V 118
 #define KEY_D 100
-
+#define KEY_x 120
+#define KEY_X 88
+#define KEY_y 121
+#define KEY_Y 89
+#define KEY_z 122
+#define KEY_Z 90
+#define KEY_S 83
+#define KEY_s 115
 
 #define log_I(LOG_MESSAGE) std::cout<<"[INFO] "<< LOG_MESSAGE <<std::endl
 

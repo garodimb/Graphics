@@ -108,6 +108,9 @@ int Model::compute_normal(int pos){
 int Model::display(){
 	long i = 0;
 	glColor3f(1.0,1.0,1.0);
+	glPushMatrix();
+	glScalef(10.0,10.0,10.0);
+	glTranslatef(0.0,-0.1,0.0);
 	for(i=0;i<ntriangles;i++){
 		glBegin(GL_TRIANGLES);
 			glNormal3f(nml[i].x,nml[i].y,nml[i].z);
@@ -116,5 +119,6 @@ int Model::display(){
 			glVertex3f(vertices[triangles[i].z].x,vertices[triangles[i].z].y,vertices[triangles[i].z].z);
 		glEnd();
 		}
+	glPopMatrix();
 	return 0;
 	}
