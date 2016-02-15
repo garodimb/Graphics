@@ -110,13 +110,12 @@ void init(void){
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST);
-	
 	}
 
 /* Mouse Handler */
 void mouse_handler(int button,int state,int x,int y){
 	if(button==GLUT_LEFT_BUTTON){
-	//	trackball_handler(FL_PUSH,x,y);
+	//trackball_handler(FL_PUSH,x,y);
 	}
 	else if(button==GLUT_RIGHT_BUTTON && state == GLUT_DOWN){
 		log_D("Right button Pressed at ("<< x <<","<< y <<")");
@@ -295,7 +294,7 @@ void reshape(int w,int h){
 	glViewport (0, 0, (GLsizei) w, (GLsizei) h);
 	glMatrixMode (GL_PROJECTION);
 	glLoadIdentity ();
-	gluPerspective( 45.0, w/h, 0.1f,15.0f);
+	gluPerspective( 45.0, (float)w/h, 0.1f,15.0f);
 	log_D("Window Width: "<<w<<", Height: "<<h);
 	screen_height=h;
 	screen_width=w;

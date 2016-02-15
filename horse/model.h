@@ -29,13 +29,14 @@ class Model{
 		static vertex *vertices;
 		static triangle *triangles;
 		static normal *nml;
-		char filename[100];
+		static char filename[100];
 		static int init(char *filename);
 		static int display();
 	private:
 		static int compute_normal(int pos);
 		static int face_cb(p_ply_argument argument);
 		static int vertex_cb(p_ply_argument argument);
+		static float x_min,x_max,y_min,y_max,z_min,z_max;
 };
 
 #endif

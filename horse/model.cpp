@@ -1,5 +1,7 @@
 #include "model.h"
 #include <stdio.h>
+#include <math.h>
+#include <iostream>
 #include <string.h>
 #include <GL/glut.h>
 
@@ -7,6 +9,12 @@ long Model::nvertices 	= 0;
 long Model::ntriangles	= 0;
 long Model::count_v 	= 0;
 long Model::count_t		= 0;
+float Model::x_min		= 10.0f;
+float Model::x_max		= -10.0f;
+float Model::y_min		= 10.0f;
+float Model::y_max		= -10.0f;
+float Model::z_min		= 10.0f;
+float Model::z_max		= -10.0f;
 
 vertex *Model::vertices = NULL;
 triangle *Model::triangles = NULL;
@@ -19,12 +27,30 @@ int Model::vertex_cb(p_ply_argument argument) {
     switch (pos) {
 		case 0:
 				vertices[count_v].x = ply_get_argument_value(argument);
+				if( vertices[count_v].x < x_min ){
+					x_min = vertices[count_v].x;
+					}
+				if( vertices[count_v].x > x_max){
+					x_max = vertices[count_v].x;
+					}
 				break;
 		case 1:
 				vertices[count_v].y = ply_get_argument_value(argument);
+				if( vertices[count_v].y < y_min ){
+					y_min = vertices[count_v].y;
+					}
+				if( vertices[count_v].y > y_max){
+					y_max = vertices[count_v].y;
+					}
 				break;
 		case 2:
 				vertices[count_v].z = ply_get_argument_value(argument);
+				if( vertices[count_v].z < z_min ){
+					z_min = vertices[count_v].z;
+					}
+				if( vertices[count_v].z > z_max){
+					z_max = vertices[count_v].z;
+					}
 				count_v++;
 				break;
 		default:
@@ -107,10 +133,29 @@ int Model::compute_normal(int pos){
 	
 int Model::display(){
 	long i = 0;
+	float scale_factor = 0.0f;
+
+	/* Dynamic Scaling Factor */
+	if((float )fabs(x_max - x_min)/2.0f > scale_factor){
+		scale_factor = (float )fabs(x_max - x_min)/2.0f;
+		i=1;
+		}
+	if((float )fabs(y_max - y_min)/2.0f > scale_factor){
+		scale_factor = (float )fabs(y_max - y_min)/2.0f;
+		i=2;
+		}
+	if((float )fabs(x_max - x_min)/2.0f > scale_factor){
+		scale_factor = (float )fabs(z_max - z_min)/2.0f;
+		i=3;
+		}
+
+
 	glColor3f(1.0,1.0,1.0);
 	glPushMatrix();
-	glScalef(10.0,10.0,10.0);
-	glTranslatef(0.0,-0.1,0.0);
+	if(scale_factor==0)
+		scale_factor = 1.0f;
+	glScalef(1.0f/scale_factor,1.0f/scale_factor,1.0f/scale_factor);
+	glTranslatef((float)-(x_min + x_max)/2.0f,(float)-(y_min + y_max)/2.0f,(float)-(z_min + z_max)/2.0f);
 	for(i=0;i<ntriangles;i++){
 		glBegin(GL_TRIANGLES);
 			glNormal3f(nml[i].x,nml[i].y,nml[i].z);
