@@ -1,11 +1,6 @@
-#include <stdio.h>
 #include <iostream>
 #include <math.h>
 #include <GL/glut.h>
-#include "quaternion.h"
-#include "model.h"
-#include "cube.h"
-#include "trackball.h"
 #include "view.h"
 
 View *view;
@@ -47,10 +42,11 @@ int View::init_window(const char *title,int w,int h){
 	
 /* Init canvas */	
 int View::init(void){
-	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 0.0 };
+	GLfloat mat_specular[] = {1.0, 1.0, 1.0, 0.0 };
+	GLfloat mat_diffuse[] = {0.8,0.8,0.8};
 	GLfloat mat_shininess[] = { 100.0 };
 	GLfloat light_position[] = { 0.0, 0.0, 1.0, 0.0 };
-	GLfloat light_diffuse[] = { 0.0, 1.0, 1.0, 0.0 };
+	GLfloat light_diffuse[] = { 0.7, 0.7, 0.2, 0.0 };
 	glClearColor(0.0,0.0,0.0,0.0);
 	glEnable(GL_NORMALIZE); //Dont care about performance now
 	glShadeModel (GL_SMOOTH);
@@ -58,9 +54,9 @@ int View::init(void){
 	/* Disable LIGHTING to view only colored cube with different colors*/
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-	
 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
@@ -98,16 +94,18 @@ void View::display(){
 	glLoadIdentity();
 	/* Move camera using z so to get fill of zooming */
 	/* Eye, Center and Up vector */	
-	gluLookAt(0.0, 0.0,z_distance, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0);
+	gluLookAt(0.0, 0.0,z_distance, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 	glTranslatef(trans_x,trans_y,trans_z);
 	glScalef(scale_all,scale_all,scale_all);
-	log_I("Rotate X: "<<rotate_x<<", Rotate Y:"<<rotate_y);
+	log_D("Rotate X: "<<rotate_x<<", Rotate Y:"<<rotate_y);
 	rotate(1.0,0.0,0.0,rotate_x);
 	rotate(0.0,1.0,0.0,rotate_y);
 	if(track_matrix)
 		glMultMatrixf(track_matrix);
+	glDisable(GL_LIGHTING);
 	cube->display();
 	draw_axis();
+	glEnable(GL_LIGHTING);
 	Model::display();
 	glutSwapBuffers();
 	}
@@ -116,18 +114,22 @@ void View::display(){
 int View::draw_axis(){
 	log_D("Drawing axis");
 	glBegin(GL_LINES);
-		glColor3f(1.0,1.0,1.0);
+		glColor3f(1.0,0.0,0.0);
 		glVertex3f(-1.0,0.0,0.0);
 		glVertex3f(1.0,0.0,0.0);
+
+		glColor3f(0.0,1.0,0.0);
 		glVertex3f(0.0,-1.0,0.0);
 		glVertex3f(0.0,1.0,0.0);
+
+		glColor3f(0.0,0.0,1.0);
 		glVertex3f(0.0,0.0,-1.0);
 		glVertex3f(0.0,0.0,1.0);
 	glEnd();
-	glPopMatrix();
 	return 0;
 	}
-	
+
+/* Rotate using Quternion */
 int View::rotate(GLfloat x, GLfloat y, GLfloat z, GLfloat angle){
 	GLfloat pmatrix[16];
 	Quaternion quaternion;
@@ -137,6 +139,7 @@ int View::rotate(GLfloat x, GLfloat y, GLfloat z, GLfloat angle){
 	return 0;
 	}
 
+/* Refresh view */
 int View::refresh(GLfloat rotate_x,GLfloat rotate_y,GLfloat z_distance,GLfloat scale_all,GLfloat trans_x,GLfloat trans_y,GLfloat trans_z,GLfloat *track_matrix){
 			this->rotate_x 	= rotate_x; // X Rotation
 			this->rotate_y 	= rotate_y; // Y Rotation

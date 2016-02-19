@@ -1,3 +1,5 @@
+#ifndef _CUBE_H
+#define _CUBE_H
 #define NUM_FACES 6
 
 class Cube{
@@ -10,3 +12,5 @@ class Cube{
 		Cube ();
 		GLint display ();
 	};
+
+#endif

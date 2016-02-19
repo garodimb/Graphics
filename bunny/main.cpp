@@ -3,7 +3,12 @@
 #include "view.h"
 
 int main(int argc,char **argv){
-	Model::init((char *)"bunny.ply");
+	if(argc==2){
+		Model::init(argv[1]);
+		}
+	else{
+		Model::init((char *)"input.ply");
+		}
 	View *view = new View(argc,argv);
 	Controller *controller = new Controller(view);
 	glutMainLoop();

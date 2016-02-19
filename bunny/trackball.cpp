@@ -234,7 +234,6 @@ trackball ( float q[4], float p1x, float p1y, float p2x, float p2y )
     // deformed sphere
     vset(p1,p1x,p1y,tb_project_to_sphere(TRACKBALLSIZE,p1x,p1y));
     vset(p2,p2x,p2y,tb_project_to_sphere(TRACKBALLSIZE,p2x,p2y));
-    printf("Before cross: %f %f %f\n",p1[0],p1[1],p1[2]);
     // Now, we want the cross product of P1 and P2
     vcross(p2,p1,a);
 

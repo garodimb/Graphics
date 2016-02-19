@@ -1,6 +1,10 @@
 #ifndef _VIEW_H
 #define _VIEW_H
 
+#include "quaternion.h"
+#include "model.h"
+#include "cube.h"
+
 class View{
 	
 	private:
