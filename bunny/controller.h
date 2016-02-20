@@ -49,7 +49,7 @@ class Controller{
 		void keyboard_handler(unsigned char key,int x,int y);
 		void keyboard_spec_handler(int key,int x,int y);
 		void trackball_handler(int event,int xx,int yy);
-
+		
 		/* Transformations */
 		int trans_by_user(GLint x,GLint y);
 		int reset();
@@ -70,6 +70,7 @@ class Controller{
 			GLfloat trans_x; // X translation
 			GLfloat trans_y; // Y translation
 			GLfloat trans_z; // Z translation
+			GLint enable_roat;
 	};
 	
 #endif

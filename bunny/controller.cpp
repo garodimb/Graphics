@@ -46,13 +46,20 @@ Controller::~Controller(){
 /* Mouse Handler */
 void Controller::mouse_handler(int button,int state,int x,int y){
 	if(button==GLUT_LEFT_BUTTON){
+		enable_roat=1;
 		trackball_handler(FL_PUSH,x,y);
+		}
+	else if(button==GLUT_RIGHT_BUTTON && state==GLUT_DOWN){
+		//Do Unprojection here
+		enable_roat=0;
+		trans_by_user(x,y);
 		}
 	}
 
 /* Mouse motion Handler */
 void Controller::motion_handler(int x, int y){
-	trackball_handler(FL_DRAG,x,y);
+	if(enable_roat==1)
+		trackball_handler(FL_DRAG,x,y);
 	}
 
 /* Keyboard Handler */	
@@ -164,13 +171,14 @@ void Controller::trackball_handler(int event,int xx,int yy){
 
 /* Do Translation by user defined distance */
 int Controller::trans_by_user(GLint x,GLint y){
-	#ifdef MAHI
 	GLfloat x_dist,y_dist,dist;
 	static GLint t_point_count = -1;
+	static vertex trans_point;
 	if(t_point_count==-1){
 		/* Add first point for finding translation distance */
 		trans_point.x = x;
 		trans_point.y = y;
+		trans_point.z = 0;
 		t_point_count = 0;
 		}
 	else if(t_point_count==0){
@@ -181,13 +189,12 @@ int Controller::trans_by_user(GLint x,GLint y){
 		/* Set X & Y direction */
 		x_dist = ( x >= trans_point.x)? dist : -dist;
 		y_dist = ( y >= trans_point.y)? dist : -dist;
-		
 		log_I("Translating");
 		log_D("x_dist: "<<x_dist<<", y_dist: "<<y_dist);
-		glTranslatef(x_dist,y_dist,0.0);
+		trans_x += (float )x_dist/view->get_width();
+		trans_y += (float )-y_dist/view->get_height();
 		refresh_view();
 		}
-	#endif
 	return 0;
 	}
 
