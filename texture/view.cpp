@@ -12,7 +12,7 @@ static void on_display(){
 static void on_reshape(int w,int h){
 	view->reshape(w,h);
 	}
-	
+
 View::View(int argc,char **argv){
 	track_matrix= NULL; // Trackball Matrix
 	rotate_x 	= 0.0f; // X Rotation
@@ -37,7 +37,7 @@ View::View(int argc,char **argv){
 		model->read_ply((char *)"plyfiles/Armadillo.ply");
 		}
 	}
-	
+
 /* Initialize windowing system */
 int View::init_window(const char *title,int w,int h){
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
@@ -46,41 +46,69 @@ int View::init_window(const char *title,int w,int h){
 	glutCreateWindow(title);
 	return 0;
 	}
-	
-/* Init canvas */	
-int View::init(void){
+
+/* Init canvas */
+
+int View::init_lighting(){
+
+	#ifndef DEF_LIGHT
 	GLfloat mat_specular[] = {1.0, 1.0, 1.0, 0.0 };
 	GLfloat mat_diffuse[] = {0.8,0.8,0.8};
 	GLfloat mat_shininess[] = { 100.0 };
 	GLfloat light_position[] = { 0.0, 0.0, 1.0, 0.0 };
-	GLfloat light_diffuse[] = { 0.7, 0.7, 0.2, 0.0 };
-	glClearColor(0.0,0.0,0.0,0.0);
-	glEnable(GL_NORMALIZE); //Dont care about performance now
-	glShadeModel (GL_SMOOTH);
-	
+	GLfloat light_diffuse[] = { 1.0, 0.0, 1.0, 0.0 };
+
 	/* Disable LIGHTING to view only colored cube with different colors*/
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	#else
+	GLfloat qaAmbientLight[] = {0.1, 0.1, 0.1, 1.0};
+	GLfloat qaDiffuseLight[] = {1, 0, 1, 1.0};
+	GLfloat qaSpecularLight[]  = {1.0, 1.0, 1.0, 1.0};
+	GLfloat emitLight[] = {0.9, 0.9, 0.9, 0.01};
+	GLfloat Noemit[] = {0.0, 0.0, 0.0, 1.0};
+    // Light source position
+	GLfloat qaLightPosition[] = {0, 0.0, 1.0, 1};
+	GLfloat qaLightDirection[] = {1, 1, 1, 0};
+	GLfloat dirVector0[] = { 0.0, 0.0, -1.0, 0.0};
 
+	//glLightfv(GL_LIGHT0, GL_AMBIENT, qaAmbientLight);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, qaDiffuseLight);
+    glLightfv(GL_LIGHT0, GL_POSITION, qaLightPosition);
+    //glLightfv(GL_LIGHT0, GL_SPECULAR, qaSpecularLight);
+
+    glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 2.0);// set cutoff angle
+    glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, dirVector0);
+    glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 1); // set focusing strength
+	#endif
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
+	return 0;
+	}
+
+int View::init(void){
+
+	glClearColor(0.0,0.0,0.0,0.0);
+	glEnable(GL_NORMALIZE); //Dont care about performance now
+	glShadeModel (GL_SMOOTH);
+	init_lighting();
 	glEnable(GL_DEPTH_TEST);
 	return 0;
 	}
-	
+
 int View::get_width(){
-	
+
 	return screen_width;
 	}
-	
+
 int View::get_height(){
-	
+
 	return screen_height;
 	}
-	
+
 /* Reshape Handler */
 void View::reshape(int w,int h){
 	log_D("Handling reshape");
@@ -92,7 +120,7 @@ void View::reshape(int w,int h){
 	screen_height=h;
 	screen_width=w;
 	}
-	
+
 /* Display Handler */
 void View::display(){
 	log_D("Displaying content");
@@ -100,8 +128,8 @@ void View::display(){
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	/* Move camera using z so to get fill of zooming */
-	/* Eye, Center and Up vector */	
-	gluLookAt(0.0, 0.0,z_distance, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+	/* Eye, Center and Up vector */
+	gluLookAt(0.0, 0.0,-z_distance, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 	glTranslatef(trans_x,trans_y,trans_z);
 	glScalef(scale_all,scale_all,scale_all);
 	log_D("Rotate X: "<<rotate_x<<", Rotate Y:"<<rotate_y);
@@ -117,7 +145,7 @@ void View::display(){
 	glutSwapBuffers();
 	}
 
-/* Draw Reference axis */	
+/* Draw Reference axis */
 int View::draw_axis(){
 	log_D("Drawing axis");
 	glBegin(GL_LINES);
@@ -157,10 +185,10 @@ int View::refresh(GLfloat rotate_x,GLfloat rotate_y,GLfloat z_distance,GLfloat s
 			this->trans_z  	= trans_z; // Z translation
 			this->track_matrix = track_matrix; //Rotation by Trackball
 			glutPostRedisplay();
-			return 0;			
+			return 0;
 			}
 
-/* Mouse Handler registration */	
+/* Mouse Handler registration */
 int View::reg_mouse_handler(void (*mouse_handler)(int button,int state,int x,int y)){
 	if(mouse_handler==NULL){
 		return 1;
@@ -169,7 +197,7 @@ int View::reg_mouse_handler(void (*mouse_handler)(int button,int state,int x,int
 	return 0;
 	}
 
-/* Motion Handler registration */	
+/* Motion Handler registration */
 int View::reg_motion_handler(void (*motion_handler)(int x,int y)){
 	if(motion_handler==NULL){
 		return 1;
@@ -178,7 +206,7 @@ int View::reg_motion_handler(void (*motion_handler)(int x,int y)){
 	return 0;
 	}
 
-/* Keyboard Handler registration */	
+/* Keyboard Handler registration */
 int View::reg_keyboard_handler(void (*keyboard_handler)(unsigned char key,int x,int y)){
 	if(keyboard_handler==NULL){
 		return 1;
@@ -187,7 +215,7 @@ int View::reg_keyboard_handler(void (*keyboard_handler)(unsigned char key,int x,
 	return 0;
 	}
 
-/* Keyboard Special Handler registration */	
+/* Keyboard Special Handler registration */
 int View::reg_keyboard_spec_handler(void (*keyboard_spec_handler)(int key,int x,int y)){
 	if(keyboard_spec_handler==NULL){
 		return 1;
@@ -195,5 +223,5 @@ int View::reg_keyboard_spec_handler(void (*keyboard_spec_handler)(int key,int x,
 	glutSpecialFunc(keyboard_spec_handler);
 	return 0;
 	}
-	
+
 

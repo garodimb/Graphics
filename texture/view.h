@@ -39,6 +39,7 @@ class View{
 		int refresh(GLfloat rotate_x=0.0f, GLfloat rotate_y=0.0f, GLfloat z_distance = 5.0f,GLfloat scale_all=1.0f,GLfloat trans_x=0.0f,GLfloat trans_y=0.0f,GLfloat trans_z=0.0f,GLfloat *track_matrix=NULL);
 		int get_width();
 		int get_height();
+		int init_lighting();
 	
 };
 

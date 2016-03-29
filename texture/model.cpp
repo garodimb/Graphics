@@ -127,13 +127,21 @@ int Model::read_ply(char *fn)
 int Model::compute_normal(){
 	Vector v1, v2;
 	int i;
+	float x,y,z;
 	// v1 = p2 - p1; v2 = p3 -p2
-	normal = (Vector **)malloc(sizeof(Vector *) * ntriangles);
+	normal = new Vector*[nvertices];
+	for(i=0;i<nvertices;i++){
+		normal[i] = new Vector;
+		normal[i]->x = 0;
+		normal[i]->y = 0;
+		normal[i]->z = 0;
+		}
+
 	for(i=0;i<ntriangles;i++){		
 		v1.x = vlist[flist[i]->verts[1]]->x - vlist[flist[i]->verts[0]]->x; // a1
 		v1.y = vlist[flist[i]->verts[1]]->y - vlist[flist[i]->verts[0]]->y; // a2
 		v1.z = vlist[flist[i]->verts[1]]->z - vlist[flist[i]->verts[0]]->z; // a3
-		
+
 		v2.x = vlist[flist[i]->verts[2]]->x - vlist[flist[i]->verts[1]]->x; // a1
 		v2.y = vlist[flist[i]->verts[2]]->y - vlist[flist[i]->verts[1]]->y; // a2
 		v2.z = vlist[flist[i]->verts[2]]->z - vlist[flist[i]->verts[1]]->z; // a3
@@ -142,16 +150,26 @@ int Model::compute_normal(){
 		
 		//Cross Product: (a2b3-a3b2)i - (a1b3 - a3b1)j + (a1b2 - a2b1)k
 		//Here changing to original size giving normals inward
-		normal[i] = (Vector *)malloc(sizeof(Vector));
-		normal[i]->x = (v1.y*v2.z - v1.z*v2.y);
-		normal[i]->y = -(v1.x*v2.z - v1.z*v2.x);
-		normal[i]->z = (v1.x*v2.y - v1.y*v2.x);
+		x =  (v1.y*v2.z - v1.z*v2.y);
+		y = -(v1.x*v2.z - v1.z*v2.x);
+		z =  (v1.x*v2.y - v1.y*v2.x);
+		normal[flist[i]->verts[0]]->x += x;
+		normal[flist[i]->verts[0]]->y += y;
+		normal[flist[i]->verts[0]]->z += z;
+
+		normal[flist[i]->verts[1]]->x += x;
+		normal[flist[i]->verts[1]]->y += y;
+		normal[flist[i]->verts[1]]->z += z;
+
+		normal[flist[i]->verts[2]]->x += x;
+		normal[flist[i]->verts[2]]->y += y;
+		normal[flist[i]->verts[2]]->z += z;
 		}
 	return 0;
 	}
 	
 int Model::display(){
-	int i,j;
+	int i;
 	float scale_factor = 0.0f;
 	
 	/* Dynamic Scaling Factor */
@@ -172,10 +190,14 @@ int Model::display(){
 	glTranslatef((float)-(x_min + x_max)/2.0f,(float)-(y_min + y_max)/2.0f,(float)-(z_min + z_max)/2.0f);
 	for(i=0;i<ntriangles;i++){
 		glBegin(GL_POLYGON);
-			for (j = 0; j < flist[i]->nverts; j++){
-				glNormal3f(normal[i]->x,normal[i]->y,normal[i]->z);
-				glVertex3f(vlist[flist[i]->verts[j]]->x,vlist[flist[i]->verts[j]]->y,vlist[flist[i]->verts[j]]->z);
-				}
+				glNormal3f(normal[flist[i]->verts[0]]->x,normal[flist[i]->verts[0]]->y,normal[flist[i]->verts[0]]->z);
+				glVertex3f(vlist[flist[i]->verts[0]]->x,vlist[flist[i]->verts[0]]->y,vlist[flist[i]->verts[0]]->z);
+
+				glNormal3f(normal[flist[i]->verts[1]]->x,normal[flist[i]->verts[1]]->y,normal[flist[i]->verts[1]]->z);
+				glVertex3f(vlist[flist[i]->verts[1]]->x,vlist[flist[i]->verts[1]]->y,vlist[flist[i]->verts[1]]->z);
+
+				glNormal3f(normal[flist[i]->verts[2]]->x,normal[flist[i]->verts[2]]->y,normal[flist[i]->verts[2]]->z);
+				glVertex3f(vlist[flist[i]->verts[2]]->x,vlist[flist[i]->verts[2]]->y,vlist[flist[i]->verts[2]]->z);
 		glEnd();
 		}
 	glPopMatrix();
