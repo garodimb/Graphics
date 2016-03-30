@@ -1,8 +1,9 @@
 #ifndef _MODEL_H
 #define _MODEL_H
 #include <GL/glut.h>
-#include "rply/ply.h"
-#include "control.h"
+#include <cmath>
+#include <ply.h>
+#include <control.h>
 
 using namespace std;
 
@@ -17,9 +18,12 @@ typedef struct Face {
 } Face;
 
 typedef struct Vector {
-	float x,y,z;	
+	float x,y,z;
 } Vector;
 
+typedef struct TexCord{
+	float u,v;
+	}TexCord;
 class Model{
 
 	public:
@@ -29,11 +33,15 @@ class Model{
 		int display();
 	private:
 		int compute_normal();
+		int compute_tex_cord();
+		int init_tex();
 		float x_min,x_max,y_min,y_max,z_min,z_max;
 		int nvertices,ntriangles;
 		Vertex **vlist;
 		Face **flist;
 		Vector **normal;
+		TexCord **tex_cord;
+		GLuint tex_name;
 };
 
 #endif

@@ -1,4 +1,4 @@
-#include "controller.h"
+#include <controller.h>
 
 Controller *controller;
 
@@ -6,15 +6,15 @@ Controller *controller;
 static void reg_mouse_handler(int button,int state,int x,int y){
 	controller->mouse_handler(button,state,x,y);
 	}
-	
+
 static void reg_motion_handler(int x,int y){
 	controller->motion_handler(x,y);
 	}
-	
+
 static void reg_keyboard_handler(unsigned char key,int x,int y){
 	controller->keyboard_handler(key,x,y);
 	}
-	
+
 static void reg_keyboard_spec_handler(int key,int x,int y){
 	controller->keyboard_spec_handler(key,x,y);
 	}
@@ -38,7 +38,7 @@ Controller::Controller(View *view){
 		view->reg_motion_handler(reg_motion_handler);
 		view->reg_keyboard_handler(reg_keyboard_handler);
 		view->reg_keyboard_spec_handler(reg_keyboard_spec_handler);
-			
+
 	}
 Controller::~Controller(){
 	delete trackball;
@@ -62,7 +62,7 @@ void Controller::motion_handler(int x, int y){
 		trackball_handler(FL_DRAG,x,y);
 	}
 
-/* Keyboard Handler */	
+/* Keyboard Handler */
 void Controller::keyboard_handler(unsigned char key,int x,int y){
 	log_D("Key Pressed: " << (int)key);
 	if(key==KEY_ESC){
@@ -125,8 +125,8 @@ void Controller::keyboard_handler(unsigned char key,int x,int y){
 		refresh_view();
 		}
 	}
-	
-/* Keyboard Special keys handler */	
+
+/* Keyboard Special keys handler */
 void Controller::keyboard_spec_handler(int key,int x,int y){
 	//  Right arrow - increase rotation by 5 degree
 	if (key == GLUT_KEY_RIGHT){
@@ -185,7 +185,7 @@ int Controller::trans_by_user(GLint x,GLint y){
 		/* Calculate distance between two points */
 		dist = sqrt(pow(trans_point.x - x, 2)+ pow(trans_point.y - y, 2));
 		t_point_count = -1;
-		
+
 		/* Set X & Y direction */
 		x_dist = ( x >= trans_point.x)? dist : -dist;
 		y_dist = ( y >= trans_point.y)? dist : -dist;
@@ -200,9 +200,9 @@ int Controller::trans_by_user(GLint x,GLint y){
 
 /* Reset all transformations */
 int Controller::reset(){
-	x_ang 		= 0; // Trackball Angles 
+	x_ang 		= 0; // Trackball Angles
 	y_ang 		= 0; //Trackbal Angles
-	
+
 	rotate_x 	= 0.0f; // X Rotation
 	rotate_y 	= 0.0f; // Y Rotation
 	z_distance 	= 5.0f; // Camera distance

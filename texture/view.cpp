@@ -1,7 +1,7 @@
 #include <iostream>
 #include <math.h>
 #include <GL/glut.h>
-#include "view.h"
+#include <view.h>
 
 View *view;
 

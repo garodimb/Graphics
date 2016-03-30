@@ -1,12 +1,12 @@
 #ifndef _VIEW_H
 #define _VIEW_H
 
-#include "quaternion.h"
-#include "model.h"
-#include "cube.h"
+#include <quaternion.h>
+#include <model.h>
+#include <cube.h>
 
 class View{
-	
+
 	private:
 		char title[100];
 		int screen_width;
@@ -22,8 +22,8 @@ class View{
 		GLfloat trans_z; // Z translation
 		Cube *cube;
 		Model *model;
-		
-	public:	
+
+	public:
 		View(int argc,char **argv);
 		~View();
 		int init_window(const char *title,int w,int h);
@@ -40,7 +40,7 @@ class View{
 		int get_width();
 		int get_height();
 		int init_lighting();
-	
+
 };
 
 #endif

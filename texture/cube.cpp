@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <iostream>
-#include <iomanip>   
+#include <iomanip>
 #include <new>
 #include <math.h>
 #include <GL/glut.h>
 #include <string.h>
-#include "cube.h"
+#include <cube.h>
 
 /* Constructor */
 Cube::Cube(float dim){
@@ -18,8 +18,8 @@ Cube::Cube(float dim){
 	v[0][1] = v[3][1] = v[4][1] = v[7][1] =  (float) -dim/2.0;
 	v[4][2] = v[5][2] = v[6][2] = v[7][2] =   (float) dim/2.0;
 	v[0][2] = v[1][2] = v[2][2] = v[3][2] =  (float) -dim/2.0;
-	
-	
+
+
 	memcpy(this->faces,def_faces,sizeof(def_faces));
 	memcpy(this->c,color,sizeof(color));
 	memcpy(this->n,normal,sizeof(normal));

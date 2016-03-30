@@ -7,11 +7,11 @@
 #include <math.h>
 #include <string.h>
 #include <GL/glut.h>
-#include "quaternion.h"
-#include "model.h"
-#include "cube.h"
-#include "trackball.h"
-#include "view.h"
+#include <quaternion.h>
+#include <model.h>
+#include <cube.h>
+#include <trackball.h>
+#include <view.h>
 
 #define KEY_ENTER 13 //Switch Mode Key
 #define KEY_ESC 27 //Exit Application Key
@@ -38,26 +38,26 @@
 
 
 class Controller{
-	
+
 	public:
 		Controller(View *view);
 		~Controller();
-		
+
 		/* Callbacks */
 		void mouse_handler(int button,int state,int x,int y);
 		void motion_handler(int x,int y);
 		void keyboard_handler(unsigned char key,int x,int y);
 		void keyboard_spec_handler(int key,int x,int y);
 		void trackball_handler(int event,int xx,int yy);
-		
+
 		/* Transformations */
 		int trans_by_user(GLint x,GLint y);
 		int reset();
 		int refresh_view();
-		
+
 		Trackball *trackball;
 		View *view;
-	
+
 	private:
 		/* Transformations */
 			GLint x_ang;
@@ -72,5 +72,5 @@ class Controller{
 			GLfloat trans_z; // Z translation
 			GLint enable_roat;
 	};
-	
+
 #endif
