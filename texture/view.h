@@ -8,10 +8,10 @@
 class View{
 
 	private:
-		char title[100];
 		int screen_width;
 		int screen_height;
 		int pos[2];
+		int num_models;
 		GLfloat *track_matrix;
 		GLfloat rotate_x; // X Rotation
 		GLfloat rotate_y; // Y Rotation
@@ -21,7 +21,7 @@ class View{
 		GLfloat trans_y; // Y translation
 		GLfloat trans_z; // Z translation
 		Cube *cube;
-		Model *model;
+		Model **model;
 
 	public:
 		View(int argc,char **argv);

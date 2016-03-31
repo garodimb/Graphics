@@ -13,6 +13,7 @@ static void on_reshape(int w,int h){
 	view->reshape(w,h);
 	}
 
+/* Constructor */
 View::View(int argc,char **argv){
 	track_matrix= NULL; // Trackball Matrix
 	rotate_x 	= 0.0f; // X Rotation
@@ -28,16 +29,23 @@ View::View(int argc,char **argv){
 	glutDisplayFunc(on_display);
 	glutReshapeFunc(on_reshape);
 	view = this;
+	num_models = 2;
 	cube = new Cube(2.0f);
+	model = new Model*[num_models];
 	string fn;
-	if(argc==2){
-		fn = argv[1];
-		}
-	else{
-		fn = "plyfiles/canstick.ply";
-		}
-	model = new Model(fn,Cylinder);
+	fn = "plyfiles/canstick.ply";
+	model[0] = new Model(fn,Cylinder);
+	fn = "plyfiles/mug.ply";
+	model[1] = new Model(fn,Sphere);
 	}
+
+/* Desctructor */
+View::~View()
+{
+	for(int i = 0;i<num_models;i++)
+		delete model[i];
+	delete [] model;
+}
 
 /* Initialize windowing system */
 int View::init_window(const char *title,int w,int h){
@@ -142,7 +150,14 @@ void View::display(){
 	//cube->display();
 	//draw_axis();
 	glEnable(GL_LIGHTING);
-	model->display();
+	glPushMatrix();
+	glTranslatef(1.0f,0,0);
+	model[0]->display();
+	glPopMatrix();
+	glPushMatrix();
+	glTranslatef(-1.0,0,0);
+	model[1]->display();
+	glPopMatrix();
 	glutSwapBuffers();
 	}
 
