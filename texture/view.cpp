@@ -23,19 +23,20 @@ View::View(int argc,char **argv){
 	trans_y  	= 0.0f; // Y translation
 	trans_z  	= 0.0f; // Z translation
 	glutInit(&argc,argv);
-	init_window("3D Modelling",1000,500);
+	init_window("Texture Mapping",1000,500);
 	init();
 	glutDisplayFunc(on_display);
 	glutReshapeFunc(on_reshape);
 	view = this;
 	cube = new Cube(2.0f);
-	model = new Model();
+	string fn;
 	if(argc==2){
-		model->read_ply(argv[1]);
+		fn = argv[1];
 		}
 	else{
-		model->read_ply((char *)"plyfiles/Armadillo.ply");
+		fn = "plyfiles/canstick.ply";
 		}
+	model = new Model(fn,Cylinder);
 	}
 
 /* Initialize windowing system */
@@ -138,8 +139,8 @@ void View::display(){
 	if(track_matrix)
 		glMultMatrixf(track_matrix);
 	glDisable(GL_LIGHTING);
-	cube->display();
-	draw_axis();
+	//cube->display();
+	//draw_axis();
 	glEnable(GL_LIGHTING);
 	model->display();
 	glutSwapBuffers();
