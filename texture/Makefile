@@ -22,11 +22,14 @@ trackball.o: trackball.cpp trackball.h
 plyfile.o:	lib/plyfile.c lib/ply.h
 	gcc $(CFLAGS) -c lib/plyfile.c -I$(lib)
 
+texture.o:	texture.cpp texture.h
+	g++ $(CFLAGS) -c texture.cpp -I. -I$(lib)
+
 main.o: main.cpp
 	g++ $(CFLAGS) -c main.cpp -I. -I$(lib)
 
-main: main.o quaternion.o plyfile.o model.o view.o controller.o cube.o trackball.o
-	g++ $(CFLAGS) -o main main.o model.o view.o controller.o cube.o quaternion.o plyfile.o trackball.o -lGL -lGLU -lglut -lm
+main: main.o quaternion.o plyfile.o model.o view.o controller.o cube.o trackball.o texture.o
+	g++ $(CFLAGS) -o main main.o model.o view.o controller.o cube.o quaternion.o plyfile.o trackball.o texture.o -lGL -lGLU -lglut -lm
 
 clean:
 	rm *.o main

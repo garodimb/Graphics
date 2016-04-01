@@ -1,25 +1,23 @@
 #ifndef _H_TEXTURE_
 #define _H_TEXTURE_
 #include <iostream>
+#include <stdio.h>
 #include <GL/glut.h>
-#include <Magick++.h>
 
 using namespace std;
-using namespace Magick;
 class Texture{
 
 	private:
 		int height,width;
 		string fn;
-		GLfloat *pixels;
-		Image image;
+		unsigned char *data;
 		int read_image();
 	public:
-		Texture(string& filename);
+		Texture(string filename);
 		~Texture();
 		int get_height();
 		int get_width();
-		GLfloat* get_pixels();
+		unsigned char* get_data();
 };
 
 #endif

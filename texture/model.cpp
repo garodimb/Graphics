@@ -7,27 +7,6 @@
 #include <cstring>
 #include <GL/glut.h>
 
-/**************************************************************************
- * Temporary section
- **************************************************************************/
-#define checkImageWidth 64
-#define checkImageHeight 64
-static GLubyte checkImage[checkImageHeight][checkImageWidth][4];
-
-void makeCheckImage(void)
-{
-   int i, j, c;
-
-   for (i = 0; i < checkImageHeight; i++) {
-      for (j = 0; j < checkImageWidth; j++) {
-         c = ((((i&0x8)==0)^((j&0x8))==0))*255;
-         checkImage[i][j][0] = (GLubyte) c;
-         checkImage[i][j][1] = (GLubyte) c;
-         checkImage[i][j][2] = (GLubyte) c;
-         checkImage[i][j][3] = (GLubyte) 255;
-      }
-   }
-}
 
 /**************************************************************************
  * Model Section
@@ -56,8 +35,17 @@ Model::Model(string &fn,Map map)
 	flist = NULL;
 	normal = NULL;
 	scale_factor = 0.0f;
-	centroid.x = centroid.y =centroid.z = 0.0f;
+	centroid.x = centroid.y = centroid.z = 0.0f;
 	read_ply();
+	compute_scale_factor();
+	compute_normal();
+	init_tex();
+	if(map == Sphere){
+		compute_sphere_cord();
+	}
+	else{
+		compute_cyl_cord();
+	}
 }
 
 Model::~Model()
@@ -163,15 +151,6 @@ int Model::read_ply()
     }
   }
   ply_close (ply);
-  compute_scale_factor();
-  compute_normal();
-  init_tex();
-  if(map == Sphere){
-	compute_sphere_cord();
-	}
-  else{
-	compute_cyl_cord();
-	}
   return 0;
 }
 
@@ -241,14 +220,15 @@ int Model::init_tex()
 {
 	glGenTextures(1, &tex_name);
 	glBindTexture(GL_TEXTURE_2D, tex_name);
-	makeCheckImage();
+	string fn = "texfiles/worldmap.bmp";
+	texture = new Texture(fn);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, checkImageWidth,
-                checkImageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                checkImage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLsizei)texture->get_width(),
+                (GLsizei)texture->get_height(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+                (GLubyte *)texture->get_data());
 
 
 /***********************************************************************
@@ -277,7 +257,8 @@ int Model::compute_sphere_cord()
 		v.z = (vlist[i]->z - centroid.z);
 		mag = sqrtf(v.x*v.x + v.y*v.y + v.z*v.z);
 		tex_cord[i] = new TexCord;
-		tex_cord[i]->u = (float)atan2f(v.z/mag,v.x/mag) / 2* M_PI + 0.5;
+		/* This is not efficient mapping of texture*/
+		tex_cord[i]->u = 0.5 + (float)atan2f(v.z/mag,v.x/mag) / 2 * M_PI;
 		tex_cord[i]->v = 0.5 - (float)asinf(v.y/mag) / M_PI;
 		}
 	return 0;
@@ -289,6 +270,7 @@ int Model::compute_cyl_cord()
 	float mag;
 	for(int i=0;i<nvertices;i++){
 		tex_cord[i] = new TexCord;
+		/* This is not efficient mapping of texture */
 		mag = sqrtf(vlist[i]->x * vlist[i]->x+ vlist[i]->y * vlist[i]->y + vlist[i]->z * vlist[i]->z);
 		tex_cord[i]->u = (float)atan2f(vlist[i]->x/mag,vlist[i]->z/mag)/ 2 * M_PI + 0.5;
 		tex_cord[i]->v = (float)vlist[i]->y/y_max;

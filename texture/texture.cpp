@@ -1,6 +1,6 @@
 #include <texture.h>
 
-Texture::Texture(string& filename)
+Texture::Texture(string filename)
 {
 	fn = filename;
 	read_image();
@@ -8,18 +8,35 @@ Texture::Texture(string& filename)
 
 Texture::~Texture()
 {
-
+	delete [] data;
 }
 
 int Texture::read_image()
 {
-	image.read(fn.c_str());
-	image.type(TrueColorType);
-	width = image.size().width();
-	height = image.size().height();
-	pixels = image.getPixels(0,0,width,height);
+	int i;
+	FILE* f = fopen(fn.c_str(), "rb");
+	unsigned char info[54];
+	fread(info, sizeof(unsigned char), 54, f); // read the 54-byte header
+
+	// extract image height and width from header
+	width = *(int*)&info[18];
+	height = *(int*)&info[22];
+
+	int size = 3 * width * height;
+	data = new unsigned char[size]; // allocate 3 bytes per pixel
+	fread(data, sizeof(unsigned char), size, f); // read the rest of the data at once
+	fclose(f);
+
+	for(i = 0; i < size; i += 3)
+	{
+		unsigned char tmp = data[i];
+		data[i] = data[i+2];
+		data[i+2] = tmp;
+	}
+
 	return 0;
 }
+
 int Texture::get_height()
 {
 	return height;
@@ -30,7 +47,7 @@ int Texture::get_width()
 	return width;
 }
 
-GLfloat* Texture::get_pixels()
+unsigned char* Texture::get_data()
 {
-	return pixels;
+	return data;
 }

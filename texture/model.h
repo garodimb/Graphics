@@ -6,6 +6,7 @@
 #include <control.h>
 #include <datatypes.h>
 #include <iostream>
+#include <texture.h>
 
 using namespace std;
 
@@ -23,6 +24,7 @@ class Model{
 		Vertex **vlist;
 		Face **flist;
 		Vector **normal;
+		Texture *texture;
 		TexCord **tex_cord;
 		GLuint tex_name;
 		Vertex centroid;
