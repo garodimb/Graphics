@@ -2,9 +2,10 @@
 #define _QUATERNION_H
 
 #define PI 3.14159265358979323846
-
+#include <iostream>
+using namespace std;
 class Quaternion{
-	public:	
+	public:
 		Quaternion();
 		~Quaternion();
 		void CreateMatrix(float *pMatrix);
@@ -13,7 +14,10 @@ class Quaternion{
 								 const float &in_z,
 								 const float &in_degrees);
 		Quaternion operator *(const Quaternion &q);
-	private:
+		void operator ~();
+		friend ostream& operator<<( ostream &output,const Quaternion &q );
+		friend istream& operator>>( istream  &input, Quaternion &q );
+	//private:
 		float x, y, z, w;
 };
 

@@ -69,6 +69,8 @@ class Trackball
       void reset () ;
          // Returns a rotation matrix in m
       void rotationMatrix ( float m[4][4] ) ;
+
+      void get_quaternion(float m[4]);
 } ; // class Trackball
 
 #endif   // _Trackball_H_

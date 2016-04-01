@@ -62,7 +62,7 @@ class Controller{
 		/* Transformations */
 			GLint x_ang;
 			GLint y_ang;
-			GLfloat track_matrix[4][4];
+			GLfloat track_matrix[4];
 			GLfloat rotate_x; // X Rotation
 			GLfloat rotate_y; // Y Rotation
 			GLfloat z_distance; // Camera distance

@@ -249,6 +249,19 @@ int Model::init_tex()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, checkImageWidth,
                 checkImageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                 checkImage);
+
+
+/***********************************************************************
+ * Automatic Texture generation
+ **********************************************************************/
+	//glTexGeni(GL_S,GL_TEXTURE_GEN_MODE,GL_SPHERE_MAP);
+	//glTexGeni(GL_T,GL_TEXTURE_GEN_MODE,GL_SPHERE_MAP);
+	//glEnable(GL_TEXTURE_GEN_S);
+	//glEnable(GL_TEXTURE_GEN_T);
+/***********************************************************************
+ *
+ **********************************************************************/
+
 	return 0;
 }
 
@@ -264,8 +277,8 @@ int Model::compute_sphere_cord()
 		v.z = (vlist[i]->z - centroid.z);
 		mag = sqrtf(v.x*v.x + v.y*v.y + v.z*v.z);
 		tex_cord[i] = new TexCord;
-		tex_cord[i]->u = (float)asinf(v.x/mag) / M_PI + 0.5;
-		tex_cord[i]->v = (float)asinf(v.y/mag) / M_PI + 0.5;
+		tex_cord[i]->u = (float)atan2f(v.z/mag,v.x/mag) / 2* M_PI + 0.5;
+		tex_cord[i]->v = 0.5 - (float)asinf(v.y/mag) / M_PI;
 		}
 	return 0;
 }
@@ -273,17 +286,11 @@ int Model::compute_sphere_cord()
 int Model::compute_cyl_cord()
 {
 	tex_cord = new TexCord*[nvertices];
+	float mag;
 	for(int i=0;i<nvertices;i++){
 		tex_cord[i] = new TexCord;
-		if(vlist[i]->z==0 && vlist[i]->x < 0){
-			tex_cord[i]->u = 0;
-			}
-		else if(vlist[i]->z==0 && vlist[i]->x >= 0){
-			tex_cord[i]->u = 1;
-			}
-		else{
-			tex_cord[i]->u = atanf(vlist[i]->x/vlist[i]->z)/M_PI + 0.5;
-			}
+		mag = sqrtf(vlist[i]->x * vlist[i]->x+ vlist[i]->y * vlist[i]->y + vlist[i]->z * vlist[i]->z);
+		tex_cord[i]->u = (float)atan2f(vlist[i]->x/mag,vlist[i]->z/mag)/ 2 * M_PI + 0.5;
 		tex_cord[i]->v = (float)vlist[i]->y/y_max;
 		}
 	return 0;
@@ -299,18 +306,7 @@ int Model::display(){
 	glScalef(1.0f/scale_factor,1.0f/scale_factor,1.0f/scale_factor);
 
 	glEnable(GL_TEXTURE_2D);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
     glBindTexture(GL_TEXTURE_2D, tex_name);
-/***********************************************************************
- * Automatic Texture generation
- **********************************************************************/
-	//glTexGeni(GL_S,GL_TEXTURE_GEN_MODE,GL_SPHERE_MAP);
-	//glTexGeni(GL_T,GL_TEXTURE_GEN_MODE,GL_SPHERE_MAP);
-	//glEnable(GL_TEXTURE_GEN_S);
-	//glEnable(GL_TEXTURE_GEN_T);
-/***********************************************************************
- *
- **********************************************************************/
 	glTranslatef(-centroid.x,-centroid.y,-centroid.z);
 	for(i=0;i<ntriangles;i++){
 		glBegin(GL_POLYGON);

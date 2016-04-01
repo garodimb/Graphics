@@ -60,3 +60,23 @@ Quaternion Quaternion::operator *(const Quaternion &q){
 
 	return r;
 	}
+
+void Quaternion::operator ~()
+{
+	x = -x;
+	y = -y;
+	z = -z;
+}
+
+
+ostream& operator<<( ostream &output,const Quaternion &q )
+{
+	output << "[ "<< q.x << ", " << q.y <<", "<< q.z <<", "<< q.w <<"]"<<endl;
+	return output;
+}
+
+istream& operator>>( istream  &input, Quaternion &q )
+{
+	input >> q.x >> q.y >> q.z >> q.w;
+	return input;
+}

@@ -23,6 +23,10 @@ View::View(int argc,char **argv){
 	trans_x  	= 0.0f; // X translation
 	trans_y  	= 0.0f; // Y translation
 	trans_z  	= 0.0f; // Z translation
+
+	curr_pos.x = curr_pos.y = fix_pos.x = fix_pos.y = 0.0f;
+	curr_pos.z = fix_pos.z = -z_distance;
+	curr_pos.w = fix_pos.w = 0.0f;
 	glutInit(&argc,argv);
 	init_window("Texture Mapping",1000,500);
 	init();
@@ -32,10 +36,11 @@ View::View(int argc,char **argv){
 	num_models = 2;
 	cube = new Cube(2.0f);
 	model = new Model*[num_models];
+
 	string fn;
 	fn = "plyfiles/canstick.ply";
 	model[0] = new Model(fn,Cylinder);
-	fn = "plyfiles/mug.ply";
+	fn = "plyfiles/apple.ply";
 	model[1] = new Model(fn,Sphere);
 	}
 
@@ -136,16 +141,11 @@ void View::display(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	/* Move camera using z so to get fill of zooming */
-	/* Eye, Center and Up vector */
-	gluLookAt(0.0, 0.0,-z_distance, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 	glTranslatef(trans_x,trans_y,trans_z);
 	glScalef(scale_all,scale_all,scale_all);
-	log_D("Rotate X: "<<rotate_x<<", Rotate Y:"<<rotate_y);
-	rotate(1.0,0.0,0.0,rotate_x);
-	rotate(0.0,1.0,0.0,rotate_y);
-	if(track_matrix)
-		glMultMatrixf(track_matrix);
+	/* Move camera using z so to get fill of zooming */
+	/* Eye, Center and Up vector */
+	set_camera();
 	glDisable(GL_LIGHTING);
 	//cube->display();
 	//draw_axis();
@@ -180,13 +180,11 @@ int View::draw_axis(){
 	return 0;
 	}
 
-/* Rotate using Quternion */
+/* Rotate using Quternion, Arraow Rotation */
 int View::rotate(GLfloat x, GLfloat y, GLfloat z, GLfloat angle){
-	GLfloat pmatrix[16];
 	Quaternion quaternion;
 	quaternion.CreateFromAxisAngle(x,y,z,angle);
-	quaternion.CreateMatrix(pmatrix);
-	glMultMatrixf(pmatrix);
+	curr_pos = fix_pos * quaternion;
 	return 0;
 	}
 
@@ -239,5 +237,20 @@ int View::reg_keyboard_spec_handler(void (*keyboard_spec_handler)(int key,int x,
 	glutSpecialFunc(keyboard_spec_handler);
 	return 0;
 	}
+
+int View::set_camera()
+{
+	Quaternion q;
+	if(track_matrix){
+		q.x = track_matrix[0];
+		q.y = track_matrix[1];
+		q.z = track_matrix[2];
+		q.w = track_matrix[3];
+		}
+	~q;
+	curr_pos = fix_pos * q;
+	gluLookAt(curr_pos.x, curr_pos.y,curr_pos.z, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+	return 0;
+}
 
 

@@ -30,7 +30,8 @@ Controller::Controller(View *view){
 		trans_y  	= 0.0f; // Y translation
 		trans_z  	= 0.0f; // Z translation
 		memset(track_matrix,0x00,sizeof(track_matrix));
-		track_matrix[0][0] = track_matrix[1][1] = track_matrix[2][2] = track_matrix[3][3] = 1.0f;
+		track_matrix[0] = track_matrix[1] = track_matrix[2] = 0.0f;
+		track_matrix[3] = 1.0f;
 		trackball = new Trackball();
 		this->view = view;
 		controller = this;
@@ -163,7 +164,7 @@ void Controller::trackball_handler(int event,int xx,int yy){
              (screen_height - 2.0 * yy) / screen_height);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    trackball->rotationMatrix(track_matrix);
+    trackball->get_quaternion(track_matrix);
     x_ang = xx ; y_ang = yy ;
     refresh_view() ;
     }
@@ -211,7 +212,8 @@ int Controller::reset(){
 	trans_y		= 0.0f; // Y translation
 	trans_z		= 0.0f; // Z translation
 	memset(track_matrix,0x00,sizeof(track_matrix));
-	track_matrix[0][0] = track_matrix[1][1] = track_matrix[2][2] = track_matrix[3][3] = 1.0f;
+	track_matrix[0] = track_matrix[1] = track_matrix[2] = 0.0f;
+	track_matrix[3] = 1.0f;
 	delete trackball;
 	trackball = new Trackball();
 	}
