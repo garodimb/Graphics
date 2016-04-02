@@ -158,14 +158,14 @@ int Model::compute_scale_factor()
 {
 	/* Dynamic Scaling Factor */
 	scale_factor = 0.0f;
-	if((float )fabs(x_max - x_min)/2.0f > scale_factor){
-		scale_factor = (float )fabs(x_max - x_min)/2.0f;
+	if((float )fabs(x_max - x_min)/1.0f > scale_factor){
+		scale_factor = (float )fabs(x_max - x_min)/1.0f;
 		}
-	if((float )fabs(y_max - y_min)/2.0f > scale_factor){
-		scale_factor = (float )fabs(y_max - y_min)/2.0f;
+	if((float )fabs(y_max - y_min)/1.0f > scale_factor){
+		scale_factor = (float )fabs(y_max - y_min)/1.0f;
 		}
-	if((float )fabs(z_max - z_min)/2.0f > scale_factor){
-		scale_factor = (float )fabs(z_max - z_min)/2.0f;
+	if((float )fabs(z_max - z_min)/1.0f > scale_factor){
+		scale_factor = (float )fabs(z_max - z_min)/1.0f;
 		}
 	centroid.x = (float)(x_max + x_min)/2.0f;
 	centroid.y = (float)(y_max + y_min)/2.0f;
@@ -290,6 +290,7 @@ int Model::display(){
 	glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, tex_name);
 	glTranslatef(-centroid.x,-centroid.y,-centroid.z);
+
 	for(i=0;i<ntriangles;i++){
 		glBegin(GL_POLYGON);
 				glNormal3f(normal[flist[i]->verts[0]]->x,normal[flist[i]->verts[0]]->y,normal[flist[i]->verts[0]]->z);

@@ -18,13 +18,14 @@ View::View(int argc,char **argv){
 	track_matrix= NULL; // Trackball Matrix
 	rotate_x 	= 0.0f; // X Rotation
 	rotate_y 	= 0.0f; // Y Rotation
-	z_distance 	= 5.0f; // Camera distance
+	z_distance 	= 2.5f; // Camera distance
 	scale_all	= 1.0f; // Uniform scaling in all direction
 	trans_x  	= 0.0f; // X translation
 	trans_y  	= 0.0f; // Y translation
 	trans_z  	= 0.0f; // Z translation
 
-	curr_pos.x = curr_pos.y = fix_pos.x = fix_pos.y = 0.0f;
+	curr_pos.x = fix_pos.x = 0.0f;
+	curr_pos.y = fix_pos.y = 0.0f;
 	curr_pos.z = fix_pos.z = -z_distance;
 	curr_pos.w = fix_pos.w = 0.0f;
 	glutInit(&argc,argv);
@@ -34,7 +35,7 @@ View::View(int argc,char **argv){
 	glutReshapeFunc(on_reshape);
 	view = this;
 	num_models = 2;
-	cube = new Cube(2.0f);
+	cube = new Cube(4.0f);
 	model = new Model*[num_models];
 
 	string fn;
@@ -147,15 +148,15 @@ void View::display(){
 	/* Eye, Center and Up vector */
 	set_camera();
 	glDisable(GL_LIGHTING);
-	//cube->display();
+	cube->display();
 	//draw_axis();
-	glEnable(GL_LIGHTING);
+	//glEnable(GL_LIGHTING);
 	glPushMatrix();
-	glTranslatef(1.0f,0,0);
+	glTranslatef(0.5f,0,0);
 	model[0]->display();
 	glPopMatrix();
 	glPushMatrix();
-	glTranslatef(-1.0,0,0);
+	glTranslatef(-0.5f,0,0);
 	model[1]->display();
 	glPopMatrix();
 	glutSwapBuffers();
