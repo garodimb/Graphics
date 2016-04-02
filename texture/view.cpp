@@ -18,14 +18,14 @@ View::View(int argc,char **argv){
 	track_matrix= NULL; // Trackball Matrix
 	rotate_x 	= 0.0f; // X Rotation
 	rotate_y 	= 0.0f; // Y Rotation
-	z_distance 	= 2.5f; // Camera distance
+	z_distance 	= 4.0f; // Camera distance
 	scale_all	= 1.0f; // Uniform scaling in all direction
 	trans_x  	= 0.0f; // X translation
 	trans_y  	= 0.0f; // Y translation
 	trans_z  	= 0.0f; // Z translation
 
 	curr_pos.x = fix_pos.x = 0.0f;
-	curr_pos.y = fix_pos.y = 0.0f;
+	curr_pos.y = fix_pos.y = -1.0f;
 	curr_pos.z = fix_pos.z = -z_distance;
 	curr_pos.w = fix_pos.w = 0.0f;
 	glutInit(&argc,argv);
@@ -38,11 +38,13 @@ View::View(int argc,char **argv){
 	cube = new Cube(4.0f);
 	model = new Model*[num_models];
 
-	string fn;
+	string fn,tex_path;
 	fn = "plyfiles/canstick.ply";
-	model[0] = new Model(fn,Cylinder);
+	tex_path = "texfiles/canstick.bmp";
+	model[0] = new Model(fn,Cylinder,tex_path);
 	fn = "plyfiles/apple.ply";
-	model[1] = new Model(fn,Sphere);
+	tex_path = "texfiles/apple.bmp";
+	model[1] = new Model(fn,Sphere,tex_path);
 	}
 
 /* Desctructor */
@@ -70,15 +72,15 @@ int View::init_lighting(){
 	GLfloat mat_specular[] = {1.0, 1.0, 1.0, 0.0 };
 	GLfloat mat_diffuse[] = {0.8,0.8,0.8};
 	GLfloat mat_shininess[] = { 100.0 };
-	GLfloat light_position[] = { 0.0, 0.0, 1.0, 0.0 };
-	GLfloat light_diffuse[] = { 1.0, 0.0, 1.0, 0.0 };
+	//GLfloat light_position[] = { 0.0, 1.0, 0.0, 0.0 };
+	GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 0.0 };
 
 	/* Disable LIGHTING to view only colored cube with different colors*/
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	//glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 	#else
 	GLfloat qaAmbientLight[] = {0.1, 0.1, 0.1, 1.0};
 	GLfloat qaDiffuseLight[] = {1, 0, 1, 1.0};
@@ -86,7 +88,7 @@ int View::init_lighting(){
 	GLfloat emitLight[] = {0.9, 0.9, 0.9, 0.01};
 	GLfloat Noemit[] = {0.0, 0.0, 0.0, 1.0};
     // Light source position
-	GLfloat qaLightPosition[] = {0, 0.0, 1.0, 1};
+	GLfloat qaLightPosition[] = {5.0, 5.0, 5.0, 1};
 	GLfloat qaLightDirection[] = {1, 1, 1, 0};
 	GLfloat dirVector0[] = { 0.0, 0.0, -1.0, 0.0};
 
@@ -99,8 +101,6 @@ int View::init_lighting(){
     glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, dirVector0);
     glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 1); // set focusing strength
 	#endif
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
 	return 0;
 	}
 
@@ -142,20 +142,21 @@ void View::display(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+	set_camera();
+	set_fixed_light();
 	glTranslatef(trans_x,trans_y,trans_z);
 	glScalef(scale_all,scale_all,scale_all);
 	/* Move camera using z so to get fill of zooming */
 	/* Eye, Center and Up vector */
-	set_camera();
-	glDisable(GL_LIGHTING);
 	cube->display();
 	//draw_axis();
-	//glEnable(GL_LIGHTING);
+	glTranslatef(0,-1.5f,0);
 	glPushMatrix();
 	glTranslatef(0.5f,0,0);
 	model[0]->display();
 	glPopMatrix();
 	glPushMatrix();
+	glTranslatef(0.0,-0.11,0.0);
 	glTranslatef(-0.5f,0,0);
 	model[1]->display();
 	glPopMatrix();
@@ -250,8 +251,15 @@ int View::set_camera()
 		}
 	~q;
 	curr_pos = fix_pos * q;
-	gluLookAt(curr_pos.x, curr_pos.y,curr_pos.z, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+	gluLookAt(curr_pos.x, curr_pos.y,curr_pos.z, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0);
 	return 0;
 }
 
-
+int View::set_fixed_light()
+{
+	GLfloat light_position[] = { 0.0, 0.0, 0.0, 1.0 };
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	return 0;
+}

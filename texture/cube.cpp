@@ -14,7 +14,7 @@ static float	plane_yz[3] = {0, 0, 1};
 Cube::Cube(float dim){
 	GLint def_faces[6][4] = { { 0 ,1, 2, 3 }, { 4 ,5, 6, 7 }, { 3 ,2, 6, 7 }, { 0 ,1, 5, 4 }, { 1 ,2, 6, 5 }, { 0 ,3, 7, 4 } };
 	GLfloat color[8][3]   = { {0.0, 0.0, 0.0}, {0.0, 0.0, 1.0}, {0.0, 1.0, 0.0}, {0.0,1.0,1.0}, {1.0,0.0,0.0}, {1.0,0.0,1.0},{1.0,1.0,0.0}, {1.0,1.0,1.0}};
-	GLfloat normal[6][3]  = { { 0.0, 0.0, -1.0 }, { 0.0, 0.0, 1.0 }, { -1.0, 0.0, 0.0 }, { 1.0, 0.0, 0.0 }, { 0.0, 1.0, 0.0 },{ 0.0, -1.0, 0.0 }};
+	GLfloat normal[6][3]  = { { 0.0, 0.0, 1.0 }, { 0.0, 0.0, -1.0 }, { 1.0, 0.0, 0.0 }, { -1.0, 0.0, 0.0 }, { 0.0, -1.0, 0.0 },{ 0.0, 1.0, 0.0 }};
 	v[0][0] = v[1][0] = v[4][0] = v[5][0] =   (float) dim/2.0;
 	v[2][0] = v[3][0] = v[6][0] = v[7][0] =  (float) -dim/2.0;
 	v[1][1] = v[2][1] = v[5][1] = v[6][1] =   (float) dim/2.0;
@@ -42,7 +42,7 @@ int Cube::init_tex()
 {
 	glGenTextures(1, &tex_name[0]);
 	glBindTexture(GL_TEXTURE_2D, tex_name[0]);
-	string fn = "texfiles/plank01.bmp";
+	string fn = "texfiles/floor.bmp";
 	walls = new Texture(fn);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);

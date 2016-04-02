@@ -24,10 +24,11 @@ PlyProperty face_props[] = { /* list of property information for a vertex */
    1, PLY_UCHAR, PLY_UCHAR, offsetof(Face,nverts)},
 };
 
-Model::Model(string &fn,Map map)
+Model::Model(string &fn,Map map,string &tex_path)
 {
 	this->fn = fn;
 	this->map = map;
+	this->tex_path = tex_path;
 	x_min = y_min = z_min = INT_MAX;
 	x_max = y_max = z_max = INT_MIN;
 	nvertices = ntriangles = 0;
@@ -220,8 +221,7 @@ int Model::init_tex()
 {
 	glGenTextures(1, &tex_name);
 	glBindTexture(GL_TEXTURE_2D, tex_name);
-	string fn = "texfiles/worldmap.bmp";
-	texture = new Texture(fn);
+	texture = new Texture(tex_path);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

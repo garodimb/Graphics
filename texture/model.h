@@ -13,7 +13,7 @@ using namespace std;
 class Model{
 
 	public:
-		Model(string& fn,Map map);
+		Model(string& fn,Map map,string &tex_path);
 		~Model();
 		int read_ply();
 		int display();
@@ -30,6 +30,7 @@ class Model{
 		Vertex centroid;
 		Map map;
 		string fn;
+		string tex_path;
 
 		int compute_normal();
 		int compute_scale_factor();
