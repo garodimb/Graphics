@@ -310,3 +310,18 @@ int Model::display(){
 	glDisable(GL_TEXTURE_2D);
 	return 0;
 	}
+
+int Model::update_tex(string& tex_path)
+{
+	delete texture;
+	this->tex_path = tex_path;
+	log_D("Changing texture to: "<<tex_path);
+	init_tex();
+	if(map == Sphere){
+		compute_sphere_cord();
+	}
+	else{
+		compute_cyl_cord();
+	}
+	return 0;
+}

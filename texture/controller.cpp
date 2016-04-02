@@ -20,19 +20,7 @@ static void reg_keyboard_spec_handler(int key,int x,int y){
 	}
 
 Controller::Controller(View *view){
-		x_ang = 0;
-		y_ang = 0;
-		rotate_x 	= 0.0; // X Rotation
-		rotate_y 	= 0.0; // Y Rotation
-		z_distance 	= 0.0f; // Camera distance relative to current position
-		scale_all	= 1.0f; // Uniform scaling in all direction
-		trans_x  	= 0.0f; // X translation
-		trans_y  	= 0.0f; // Y translation
-		trans_z  	= 0.0f; // Z translation
-		light_status[0] = light_status[1] = light_status[2] = light_status[3] = true;
-		memset(track_matrix,0x00,sizeof(track_matrix));
-		track_matrix[0] = track_matrix[1] = track_matrix[2] = 0.0f;
-		track_matrix[3] = 1.0f;
+		init();
 		trackball = new Trackball();
 		this->view = view;
 		controller = this;
@@ -42,9 +30,31 @@ Controller::Controller(View *view){
 		view->reg_keyboard_spec_handler(reg_keyboard_spec_handler);
 
 	}
+
 Controller::~Controller(){
 	delete trackball;
 	}
+
+int Controller::init()
+{
+
+	x_ang = 0;
+	y_ang = 0;
+	rotate_x 	= 0.0; // X Rotation
+	rotate_y 	= 0.0; // Y Rotation
+	z_distance 	= 0.0f; // Camera distance relative to current position
+	scale_all	= 1.0f; // Uniform scaling in all direction
+	trans_x  	= 0.0f; // X translation
+	trans_y  	= 0.0f; // Y translation
+	trans_z  	= 0.0f; // Z translation
+	curr_obj	= 0;
+	light_status[0] = light_status[1] = light_status[2] = light_status[3] = true;
+	memset(track_matrix,0x00,sizeof(track_matrix));
+	track_matrix[0] = track_matrix[1] = track_matrix[2] = 0.0f;
+	track_matrix[3] = 1.0f;
+	return 0;
+}
+
 /* Mouse Handler */
 void Controller::mouse_handler(int button,int state,int x,int y){
 	if(button==GLUT_LEFT_BUTTON){
@@ -52,9 +62,9 @@ void Controller::mouse_handler(int button,int state,int x,int y){
 		trackball_handler(FL_PUSH,x,y);
 		}
 	else if(button==GLUT_RIGHT_BUTTON && state==GLUT_DOWN){
-		//Do Unprojection here
 		enable_roat=0;
-		trans_by_user(x,y);
+		set_curr_obj(x,y);
+		//trans_by_user(x,y);
 		}
 	}
 
@@ -126,9 +136,15 @@ void Controller::keyboard_handler(unsigned char key,int x,int y){
 		scale_all -= 0.1f;
 		refresh_view();
 		}
-	else if(key == KEY_1 || KEY_2 || KEY_3){
+	else if(key == KEY_1 || key == KEY_2 || key == KEY_3){
 		light_status[key-KEY_1]= !light_status[key-KEY_1];
 		refresh_view();
+		}
+	else if(key == KEY_T || key == KEY_t){
+		static int pos = 0;
+		pos++;
+		string fn[] = {"texfiles/apple.bmp","texfiles/apple2.bmp","texfiles/canstick.bmp","texfiles/canstick2.bmp"};
+		view->update_tex(fn[pos%(sizeof(fn)/sizeof(fn[0]))],curr_obj);
 		}
 	}
 
@@ -206,21 +222,7 @@ int Controller::trans_by_user(GLint x,GLint y){
 
 /* Reset all transformations */
 int Controller::reset(){
-	x_ang 		= 0; // Trackball Angles
-	y_ang 		= 0; //Trackbal Angles
-
-	rotate_x 	= 0.0f; // X Rotation
-	rotate_y 	= 0.0f; // Y Rotation
-	z_distance 	= 0.0f; // Camera distance relative to current position
-	scale_all	= 1.0f; // Uniform scaling in all direction
-	trans_x		= 0.0f; // X translation
-	trans_y		= 0.0f; // Y translation
-	trans_z		= 0.0f; // Z translation
-	memset(track_matrix,0x00,sizeof(track_matrix));
-	track_matrix[0] = track_matrix[1] = track_matrix[2] = 0.0f;
-	track_matrix[3] = 1.0f;
-	light_status[0] = light_status[1] = light_status[2] = light_status[3] = true;
-	delete trackball;
+	init();
 	trackball = new Trackball();
 	}
 
@@ -228,3 +230,18 @@ int Controller::refresh_view(){
 	view->refresh(rotate_x,rotate_y,z_distance,scale_all,trans_x,trans_y,trans_z,(GLfloat *)track_matrix,light_status);
 	return 0;
 	}
+
+int Controller::get_curr_obj()
+{
+	return curr_obj;
+}
+
+int Controller::set_curr_obj(int x,int y)
+{
+	GLint index;
+	GLfloat screen_height = (float) view->get_height();
+	glReadPixels(x, screen_height - y - 1, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
+	log_D("Selected object: "<<index);
+	curr_obj = index;
+	return 0;
+}

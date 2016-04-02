@@ -21,6 +21,7 @@ Cube::Cube(float dim){
 	v[0][1] = v[3][1] = v[4][1] = v[7][1] =  (float) -dim/2.0;
 	v[4][2] = v[5][2] = v[6][2] = v[7][2] =   (float) dim/2.0;
 	v[0][2] = v[1][2] = v[2][2] = v[3][2] =  (float) -dim/2.0;
+	tex_path_floor = "texfiles/floor.bmp";
 	init_tex();
 	memcpy(this->faces,def_faces,sizeof(def_faces));
 	memcpy(this->c,color,sizeof(color));
@@ -42,15 +43,14 @@ int Cube::init_tex()
 {
 	glGenTextures(1, &tex_name[0]);
 	glBindTexture(GL_TEXTURE_2D, tex_name[0]);
-	string fn = "texfiles/floor.bmp";
-	walls = new Texture(fn);
+	floor = new Texture(tex_path_floor);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLsizei)walls->get_width(),
-                (GLsizei)walls->get_height(), 0, GL_RGB, GL_UNSIGNED_BYTE,
-                (GLubyte *)walls->get_data());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLsizei)floor->get_width(),
+                (GLsizei)floor->get_height(), 0, GL_RGB, GL_UNSIGNED_BYTE,
+                (GLubyte *)floor->get_data());
 	return 0;
 }
 
@@ -83,3 +83,11 @@ GLint Cube::display(){
 	glDisable(GL_TEXTURE_2D);
 	return 0;
 	}
+
+int Cube::update_tex(string& tex_path)
+{
+	delete floor;
+	tex_path_floor = tex_path;
+	init_tex();
+	return 0;
+}

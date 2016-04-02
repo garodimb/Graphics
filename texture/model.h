@@ -17,6 +17,7 @@ class Model{
 		~Model();
 		int read_ply();
 		int display();
+		int update_tex(string &tex_path);
 	private:
 		float x_min,x_max,y_min,y_max,z_min,z_max;
 		float scale_factor;

@@ -24,6 +24,7 @@ class View{
 		GLfloat trans_y; // Y translation
 		GLfloat trans_z; // Z translation
 		bool light_status[4];
+		int curr_obj;
 
 
 	public:
@@ -45,6 +46,7 @@ class View{
 		int get_width();
 		int get_height();
 		int init_lighting();
+		int update_tex(string &tex_path,int obj);
 
 };
 

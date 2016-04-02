@@ -30,6 +30,8 @@
 #define KEY_Z 90
 #define KEY_S 83
 #define KEY_s 115
+#define KEY_T 84
+#define KEY_t 116
 
 #define KEY_1 49
 #define KEY_2 50
@@ -42,25 +44,6 @@
 
 
 class Controller{
-
-	public:
-		Controller(View *view);
-		~Controller();
-
-		/* Callbacks */
-		void mouse_handler(int button,int state,int x,int y);
-		void motion_handler(int x,int y);
-		void keyboard_handler(unsigned char key,int x,int y);
-		void keyboard_spec_handler(int key,int x,int y);
-		void trackball_handler(int event,int xx,int yy);
-
-		/* Transformations */
-		int trans_by_user(GLint x,GLint y);
-		int reset();
-		int refresh_view();
-
-		Trackball *trackball;
-		View *view;
 
 	private:
 		/* Transformations */
@@ -75,7 +58,28 @@ class Controller{
 			GLfloat trans_y; // Y translation
 			GLfloat trans_z; // Z translation
 			GLint enable_roat;
+			int curr_obj;
 			bool light_status[4];
+	public:
+		Controller(View *view);
+		~Controller();
+		int init();
+
+		/* Callbacks */
+		void mouse_handler(int button,int state,int x,int y);
+		void motion_handler(int x,int y);
+		void keyboard_handler(unsigned char key,int x,int y);
+		void keyboard_spec_handler(int key,int x,int y);
+		void trackball_handler(int event,int xx,int yy);
+
+		/* Transformations */
+		int trans_by_user(GLint x,GLint y);
+		int reset();
+		int refresh_view();
+		int set_curr_obj(int x,int y);
+		int get_curr_obj();
+		Trackball *trackball;
+		View *view;
 	};
 
 #endif

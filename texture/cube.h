@@ -20,6 +20,7 @@ class Cube{
 		Texture *walls;
 		Texture *floor;
 		Texture *ceiling;
+		string tex_path_floor;
 		GLuint tex_name[3];
 		int init_tex();
 	public:
@@ -27,6 +28,7 @@ class Cube{
 		Cube ();
 		~Cube();
 		GLint display ();
+		int update_tex(string &tex_path);
 	};
 
 #endif

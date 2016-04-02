@@ -113,10 +113,13 @@ int View::init_lighting(){
 int View::init(void){
 
 	glClearColor(0.0,0.0,0.0,0.0);
+	glClearStencil(0);
 	glEnable(GL_NORMALIZE); //Dont care about performance now
 	glShadeModel (GL_SMOOTH);
 	init_lighting();
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_STENCIL_TEST);
 	return 0;
 	}
 
@@ -145,7 +148,7 @@ void View::reshape(int w,int h){
 /* Display Handler */
 void View::display(){
 	log_D("Displaying content");
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	set_camera();
@@ -154,16 +157,19 @@ void View::display(){
 	glScalef(scale_all,scale_all,scale_all);
 	/* Move camera using z so to get fill of zooming */
 	/* Eye, Center and Up vector */
+	glStencilFunc(GL_ALWAYS,1,-1);
 	cube->display();
 	//draw_axis();
 	glTranslatef(0,-1.5f,0);
 	glPushMatrix();
 	glTranslatef(0.5f,0,0);
+	glStencilFunc(GL_ALWAYS,2,-1);
 	model[0]->display();
 	glPopMatrix();
 	glPushMatrix();
 	glTranslatef(0.0,-0.11,0.0);
 	glTranslatef(-0.5f,0,0);
+	glStencilFunc(GL_ALWAYS,3,-1);
 	model[1]->display();
 	glPopMatrix();
 	glutSwapBuffers();
@@ -287,5 +293,25 @@ int View::set_fixed_light()
 		glEnable(GL_LIGHT2);
 	else
 		glDisable(GL_LIGHT2);
+	return 0;
+}
+
+int View::update_tex(string &tex_path,int obj)
+{
+	switch(obj){
+		case 1:
+				cube->update_tex(tex_path);
+				break;
+		case 2:
+				model[0]->update_tex(tex_path);
+				break;
+		case 3:
+				model[1]->update_tex(tex_path);
+				break;
+
+		default:
+				break;
+		}
+	glutPostRedisplay();
 	return 0;
 }
