@@ -23,6 +23,7 @@ class View{
 		GLfloat trans_x; // X translation
 		GLfloat trans_y; // Y translation
 		GLfloat trans_z; // Z translation
+		bool light_status[4];
 
 
 	public:
@@ -40,7 +41,7 @@ class View{
 		int rotate(GLfloat x, GLfloat y, GLfloat z, GLfloat angle);
 		int set_camera();
 		int set_fixed_light();
-		int refresh(GLfloat rotate_x=0.0f, GLfloat rotate_y=0.0f, GLfloat z_distance = 5.0f,GLfloat scale_all=1.0f,GLfloat trans_x=0.0f,GLfloat trans_y=0.0f,GLfloat trans_z=0.0f,GLfloat *track_matrix=NULL);
+		int refresh(GLfloat rotate_x=0.0f, GLfloat rotate_y=0.0f, GLfloat z_distance = 5.0f,GLfloat scale_all=1.0f,GLfloat trans_x=0.0f,GLfloat trans_y=0.0f,GLfloat trans_z=0.0f,GLfloat *track_matrix=NULL,bool *light_status=NULL);
 		int get_width();
 		int get_height();
 		int init_lighting();

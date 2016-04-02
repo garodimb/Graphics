@@ -1,74 +1,76 @@
 
 CONTENTS OF THIS FILE
 =====================
-   
+
  * Introduction
  * How to build and Run
- * Key bindings 
+ * Key bindings
  * Sourced Referred
 
 INTRODUCTION
 ============
-	
-	This is an OpenGL application written using C++ and glut to demonstrate 
-	differnt operations on 3D models.
-	
+
+	This is an OpenGL application written using C++ and glut to demonstrate
+	texture mapping and lighting
+
 	* Features supported
 	  ------------------
-	  
-		- Loading of any 3D model from ply file(Simple Ply format with 
-		  triangle support)
-		- Rotation of 3D Model using keyboard
-		- Rotation of 3D Model using virtual trackball
-		- Scaling
-		- Translation
-		- Zooming(Using Camera movement)
+
+		- Runtime loading of any 3D modeles from ply files
+		- Runytime loading of any texture
+		- Change texture by clicking on images
+		- Lighting
+		- Object selection
 		- Lighting
 
 
 HOW TO COMPILE AND RUN
 ======================
-	
-	- Compile in non-debug mode	  
+
+	- Compile in non-debug mode
 	  $make
 	- Compile in debug mode
 	  $make CFLAGS='-D DEBUG'
-	  
+
 	This will generate an executable 'main' in same directory
 	Execute bellow command to run
-	$./main [Plyfilename]
+	$./main [Plyfilename1] [Plyfilename2]
 
 INPUT
 =====
+
 	This application takes 3D model described in simple plyfile as input.
-	Defalut filename is "input.ply", which should be present in same 
-	directory as of main
-	
+	Default mode are apple and canstick
+
+
 SOURCES REFERRED
 ================
 
-	1. https://www.opengl.org/documentation/specs/glut/spec3/node1.html
-	2. http://www.glprogramming.com/red/chapter05.html 
-	3. http://w3.impa.br/~diego/software/rply/
-
+	1. https://en.wikipedia.org/wiki/UV_mapping
+	2. https://www.mvps.org/directx/articles/spheremap.htm
+	3. http://www.glprogramming.com/red/chapter09.html
+	4. http://www.glprogramming.com/red/chapter05.html
 
 KEY BINDINGS
 ============
-	
+
 		- '+'				: Move camera close to model
 		- '-'				: Move camera away from model
-		- 'S'				: Scaleup model in all directions
-		- 's'				: Scaledown model in all directions
-		- 'X'				: Translate in +ve X direction
-		- 'x'				: Translate in -ve X direction
-		- 'Y'				: Translate in +ve Y direction
-		- 'y'				: Translate in -ve Y direction
-		- 'Z'				: Translate in +ve Z direction
-		- 'z'				: Translate in -ve Z direction
-		- UP KEY			: Rotation(clockwise) around Y axis
-		- DOWN KEY			: Rotation(anticlockwise) around Y axis
-		- LEFT KEY			: Rotation(clockwise) around X axis
-		- RIGHT KEY			: Rotation(anticlockwise) around Y axis
-		- LEFT MOUSE BUTTON : Rotation by moving mouse while pressing left
+		- 'X'				: Translate seletcted object in +ve X direction
+		- 'x'				: Translate seletcted object in -ve X direction
+		- 'Z'				: Translate seletcted object in +ve Z direction
+		- 'z'				: Translate seletcted object in -ve Z direction
+		- UP KEY			: Rotation of camera(clockwise) around Y axis
+		- DOWN KEY			: Rotation of camera(anticlockwise) around Y axis
+		- LEFT KEY			: Rotation of camera(clockwise) around X axis
+		- RIGHT KEY			: Rotation of camera(anticlockwise) around Y axis
+		- LEFT MOUSE BUTTON : Rotation of camera by moving mouse while pressing left
 							  mouse button
-		- RIGHT MOUSE BUTTON: Translation by choosing two points
+		- RIGHT MOUSE BUTTON: Change texture of selected image
+		- NUM KEY 1			: Toggle light 1
+		- NUM KEY 2			: Toggle light 2
+		- NUM KEY 3			: Toggle light 3
+		- NUM KEY 4			: Toggle headlight
+		- NUM KEY 0			: Toggle light
+		- 'A'				: OpenGL algorithm for texture coordinate computation
+		- 'M'				: Manual texture computation

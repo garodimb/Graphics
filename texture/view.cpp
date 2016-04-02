@@ -18,7 +18,7 @@ View::View(int argc,char **argv){
 	track_matrix= NULL; // Trackball Matrix
 	rotate_x 	= 0.0f; // X Rotation
 	rotate_y 	= 0.0f; // Y Rotation
-	z_distance 	= 4.0f; // Camera distance
+	z_distance 	= 0.0f; // Camera distance relative to current position
 	scale_all	= 1.0f; // Uniform scaling in all direction
 	trans_x  	= 0.0f; // X translation
 	trans_y  	= 0.0f; // Y translation
@@ -26,8 +26,10 @@ View::View(int argc,char **argv){
 
 	curr_pos.x = fix_pos.x = 0.0f;
 	curr_pos.y = fix_pos.y = -1.0f;
-	curr_pos.z = fix_pos.z = -z_distance;
+	curr_pos.z = fix_pos.z = -4.0f;
 	curr_pos.w = fix_pos.w = 0.0f;
+
+	light_status[0] = light_status[1] = light_status[2] = light_status[3] = true;
 	glutInit(&argc,argv);
 	init_window("Texture Mapping",1000,500);
 	init();
@@ -73,13 +75,17 @@ int View::init_lighting(){
 	GLfloat mat_diffuse[] = {0.8,0.8,0.8};
 	GLfloat mat_shininess[] = { 100.0 };
 	//GLfloat light_position[] = { 0.0, 1.0, 0.0, 0.0 };
-	GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 0.0 };
+	GLfloat light_diffuse0[] = { 1.0, 1.0, 1.0, 0.0 };
+	GLfloat light_diffuse1[] = { 1.0, 0.0, 1.0, 0.0 };
+	GLfloat light_diffuse2[] = { 0.0, 1.0, 1.0, 0.0 };
 
 	/* Disable LIGHTING to view only colored cube with different colors*/
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse0);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse1);
+	glLightfv(GL_LIGHT2, GL_DIFFUSE, light_diffuse2);
 	//glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 	#else
 	GLfloat qaAmbientLight[] = {0.1, 0.1, 0.1, 1.0};
@@ -191,7 +197,7 @@ int View::rotate(GLfloat x, GLfloat y, GLfloat z, GLfloat angle){
 	}
 
 /* Refresh view */
-int View::refresh(GLfloat rotate_x,GLfloat rotate_y,GLfloat z_distance,GLfloat scale_all,GLfloat trans_x,GLfloat trans_y,GLfloat trans_z,GLfloat *track_matrix){
+int View::refresh(GLfloat rotate_x,GLfloat rotate_y,GLfloat z_distance,GLfloat scale_all,GLfloat trans_x,GLfloat trans_y,GLfloat trans_z,GLfloat *track_matrix,bool *light_status){
 			this->rotate_x 	= rotate_x; // X Rotation
 			this->rotate_y 	= rotate_y; // Y Rotation
 			this->z_distance= z_distance; // Camera distance
@@ -200,6 +206,8 @@ int View::refresh(GLfloat rotate_x,GLfloat rotate_y,GLfloat z_distance,GLfloat s
 			this->trans_y  	= trans_y; // Y translation
 			this->trans_z  	= trans_z; // Z translation
 			this->track_matrix = track_matrix; //Rotation by Trackball
+			for(int i =0 ;i<4;i++)
+				this->light_status[i] = light_status[i];
 			glutPostRedisplay();
 			return 0;
 			}
@@ -251,15 +259,33 @@ int View::set_camera()
 		}
 	~q;
 	curr_pos = fix_pos * q;
-	gluLookAt(curr_pos.x, curr_pos.y,curr_pos.z, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0);
+	gluLookAt(curr_pos.x, curr_pos.y,curr_pos.z-z_distance, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0);
 	return 0;
 }
 
 int View::set_fixed_light()
 {
-	GLfloat light_position[] = { 0.0, 0.0, 0.0, 1.0 };
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	GLfloat light_position0[] = { 0.0, 0.0, 0.0, 1.0 };
+	GLfloat light_position1[] = { 0.0, 0.0, -3.0, 1.0 };
+	GLfloat light_position2[] = { -3.0, 0.0, 0.0, 1.0 };
+
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
+	glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+	glLightfv(GL_LIGHT2, GL_POSITION, light_position2);
 	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
+
+	if(light_status[0])
+		glEnable(GL_LIGHT0);
+	else
+		glDisable(GL_LIGHT0);
+
+	if(light_status[1])
+		glEnable(GL_LIGHT1);
+	else
+		glDisable(GL_LIGHT1);
+	if(light_status[2])
+		glEnable(GL_LIGHT2);
+	else
+		glDisable(GL_LIGHT2);
 	return 0;
 }

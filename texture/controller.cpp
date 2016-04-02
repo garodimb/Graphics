@@ -24,11 +24,12 @@ Controller::Controller(View *view){
 		y_ang = 0;
 		rotate_x 	= 0.0; // X Rotation
 		rotate_y 	= 0.0; // Y Rotation
-		z_distance 	= 5.0f; // Camera distance
+		z_distance 	= 0.0f; // Camera distance relative to current position
 		scale_all	= 1.0f; // Uniform scaling in all direction
 		trans_x  	= 0.0f; // X translation
 		trans_y  	= 0.0f; // Y translation
 		trans_z  	= 0.0f; // Z translation
+		light_status[0] = light_status[1] = light_status[2] = light_status[3] = true;
 		memset(track_matrix,0x00,sizeof(track_matrix));
 		track_matrix[0] = track_matrix[1] = track_matrix[2] = 0.0f;
 		track_matrix[3] = 1.0f;
@@ -125,6 +126,10 @@ void Controller::keyboard_handler(unsigned char key,int x,int y){
 		scale_all -= 0.1f;
 		refresh_view();
 		}
+	else if(key == KEY_1 || KEY_2 || KEY_3){
+		light_status[key-KEY_1]= !light_status[key-KEY_1];
+		refresh_view();
+		}
 	}
 
 /* Keyboard Special keys handler */
@@ -206,7 +211,7 @@ int Controller::reset(){
 
 	rotate_x 	= 0.0f; // X Rotation
 	rotate_y 	= 0.0f; // Y Rotation
-	z_distance 	= 5.0f; // Camera distance
+	z_distance 	= 0.0f; // Camera distance relative to current position
 	scale_all	= 1.0f; // Uniform scaling in all direction
 	trans_x		= 0.0f; // X translation
 	trans_y		= 0.0f; // Y translation
@@ -214,11 +219,12 @@ int Controller::reset(){
 	memset(track_matrix,0x00,sizeof(track_matrix));
 	track_matrix[0] = track_matrix[1] = track_matrix[2] = 0.0f;
 	track_matrix[3] = 1.0f;
+	light_status[0] = light_status[1] = light_status[2] = light_status[3] = true;
 	delete trackball;
 	trackball = new Trackball();
 	}
 
 int Controller::refresh_view(){
-	view->refresh(rotate_x,rotate_y,z_distance,scale_all,trans_x,trans_y,trans_z,(GLfloat *)track_matrix);
+	view->refresh(rotate_x,rotate_y,z_distance,scale_all,trans_x,trans_y,trans_z,(GLfloat *)track_matrix,light_status);
 	return 0;
 	}

@@ -31,6 +31,10 @@
 #define KEY_S 83
 #define KEY_s 115
 
+#define KEY_1 49
+#define KEY_2 50
+#define KEY_3 51
+
 /* Rotation Angle */
 #define ROTATE_ANGLE 5.0
 #define FL_DRAG 1
@@ -71,6 +75,7 @@ class Controller{
 			GLfloat trans_y; // Y translation
 			GLfloat trans_z; // Z translation
 			GLint enable_roat;
+			bool light_status[4];
 	};
 
 #endif
