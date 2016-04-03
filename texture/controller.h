@@ -37,6 +37,7 @@
 #define KEY_2 50
 #define KEY_3 51
 #define KEY_4 52
+#define KEY_5 53
 
 /* Rotation Angle */
 #define ROTATE_ANGLE 5.0
@@ -60,7 +61,7 @@ class Controller{
 			GLfloat trans_z; // Z translation
 			GLint enable_roat;
 			int curr_obj;
-			bool light_status[4];
+			bool light_status[5];
 	public:
 		Controller(View *view);
 		~Controller();

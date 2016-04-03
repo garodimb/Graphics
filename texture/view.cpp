@@ -30,6 +30,7 @@ View::View(int argc,char **argv){
 	curr_pos.w = fix_pos.w = 0.0f;
 
 	light_status[0] = light_status[1] = light_status[2] = light_status[3] = true;
+	light_status[4] = true;
 	glutInit(&argc,argv);
 	init_window("Texture Mapping",1000,500);
 	init();
@@ -107,8 +108,6 @@ int View::init_lighting(){
 	//glLightfv(GL_LIGT0, GL_AMBIENT, qaAmbientLight);
     glLightfv(GL_LIGHT3, GL_DIFFUSE, qaDiffuseLight);
     //glLightfv(GL_LIGHT0, GL_SPECULAR, qaSpecularLight);
-
-	glEnable(GL_LIGHTING);
 	return 0;
 	}
 
@@ -213,7 +212,7 @@ int View::refresh(GLfloat rotate_x,GLfloat rotate_y,GLfloat z_distance,GLfloat s
 			this->trans_y  	= trans_y; // Y translation
 			this->trans_z  	= trans_z; // Z translation
 			this->track_matrix = track_matrix; //Rotation by Trackball
-			for(int i =0 ;i<4;i++)
+			for(int i =0 ;i<5;i++)
 				this->light_status[i] = light_status[i];
 			glutPostRedisplay();
 			return 0;
@@ -297,10 +296,11 @@ int View::set_fixed_light()
 		glEnable(GL_LIGHT2);
 	else
 		glDisable(GL_LIGHT2);
-	if(light_status[3])
-		glEnable(GL_LIGHT3);
+	if(light_status[4])
+		glEnable(GL_LIGHTING);
 	else
-		glDisable(GL_LIGHT3);
+		glDisable(GL_LIGHTING);
+
 	return 0;
 }
 
@@ -313,7 +313,10 @@ int View::set_headlight()
 	glLightf(GL_LIGHT3, GL_SPOT_CUTOFF, 5.0);// set cutoff angle
     glLightfv(GL_LIGHT3, GL_SPOT_DIRECTION, dirVector0);
     glLightf(GL_LIGHT3, GL_SPOT_EXPONENT, 1); // set focusing strength
-	glEnable(GL_LIGHT3);
+    if(light_status[3])
+		glEnable(GL_LIGHT3);
+	else
+		glDisable(GL_LIGHT3);
 	return 0;
 }
 int View::update_tex(string &tex_path,int obj)

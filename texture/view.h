@@ -23,7 +23,7 @@ class View{
 		GLfloat trans_x; // X translation
 		GLfloat trans_y; // Y translation
 		GLfloat trans_z; // Z translation
-		bool light_status[4];
+		bool light_status[5];
 		int curr_obj;
 
 

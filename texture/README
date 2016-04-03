@@ -34,13 +34,14 @@ HOW TO COMPILE AND RUN
 
 	This will generate an executable 'main' in same directory
 	Execute bellow command to run
-	$./main [Plyfilename1] [Plyfilename2]
+	$./main [Plyfile1 [Plyfile2 [texfile1 [texfile2]]]
 
 INPUT
 =====
 
 	This application takes 3D model described in simple plyfile as input.
-	Default mode are apple and canstick
+	It also takes any bmp file format for texture.
+	Default models are apple and canstick
 
 
 SOURCES REFERRED
@@ -56,21 +57,17 @@ KEY BINDINGS
 
 		- '+'				: Move camera close to model
 		- '-'				: Move camera away from model
-		- 'X'				: Translate seletcted object in +ve X direction
-		- 'x'				: Translate seletcted object in -ve X direction
-		- 'Z'				: Translate seletcted object in +ve Z direction
-		- 'z'				: Translate seletcted object in -ve Z direction
-		- UP KEY			: Rotation of camera(clockwise) around Y axis
-		- DOWN KEY			: Rotation of camera(anticlockwise) around Y axis
-		- LEFT KEY			: Rotation of camera(clockwise) around X axis
-		- RIGHT KEY			: Rotation of camera(anticlockwise) around Y axis
+		- 'X'				: Translate selected object in +ve X direction
+		- 'x'				: Translate selected object in -ve X direction
+		- 'Z'				: Translate selected object in +ve Z direction
+		- 'z'				: Translate selected object in -ve Z direction
 		- LEFT MOUSE BUTTON : Rotation of camera by moving mouse while pressing left
 							  mouse button
-		- RIGHT MOUSE BUTTON: Change texture of selected image
+		- RIGHT MOUSE BUTTON: Select object
 		- NUM KEY 1			: Toggle light 1
 		- NUM KEY 2			: Toggle light 2
 		- NUM KEY 3			: Toggle light 3
 		- NUM KEY 4			: Toggle headlight
-		- NUM KEY 0			: Toggle light
+		- NUM KEY 5			: Toggle lighting
 		- 'A'				: OpenGL algorithm for texture coordinate computation
 		- 'M'				: Manual texture computation
