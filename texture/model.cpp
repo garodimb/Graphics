@@ -286,11 +286,11 @@ int Model::display(){
 	if(scale_factor==0)
 		scale_factor = 1.0f;
 	glScalef(1.0f/scale_factor,1.0f/scale_factor,1.0f/scale_factor);
-
-	glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, tex_name);
 	glTranslatef(-centroid.x,-centroid.y,-centroid.z);
-
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, tex_name);
+	float new_trans =(centroid.y - y_min)/scale_factor - 2.0;
+	glTranslatef(0.0f,new_trans*scale_factor,0.0f);
 	for(i=0;i<ntriangles;i++){
 		glBegin(GL_POLYGON);
 				glNormal3f(normal[flist[i]->verts[0]]->x,normal[flist[i]->verts[0]]->y,normal[flist[i]->verts[0]]->z);

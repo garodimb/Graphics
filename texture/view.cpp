@@ -39,14 +39,25 @@ View::View(int argc,char **argv){
 	num_models = 2;
 	cube = new Cube(4.0f);
 	model = new Model*[num_models];
-
-	string fn,tex_path;
-	fn = "plyfiles/canstick.ply";
-	tex_path = "texfiles/canstick.bmp";
-	model[0] = new Model(fn,Cylinder,tex_path);
-	fn = "plyfiles/apple.ply";
-	tex_path = "texfiles/apple.bmp";
-	model[1] = new Model(fn,Sphere,tex_path);
+	string fn1_obj,fn2_obj,tex1_path,tex2_path;
+	fn1_obj = "plyfiles/canstick.ply";
+	fn2_obj = "plyfiles/apple.ply";
+	tex1_path = "texfiles/canstick.bmp";
+	tex2_path = "texfiles/apple.bmp";
+	if(argc>=2){
+		fn1_obj = argv[1];
+		}
+	if(argc>=3){
+		fn2_obj = argv[2];
+		}
+	if(argc>=4){
+		tex1_path = argv[3];
+		}
+	if(argc>=5){
+		tex1_path = argv[4];
+		}
+	model[0] = new Model(fn1_obj,Cylinder,tex1_path);
+	model[1] = new Model(fn2_obj,Sphere,tex2_path);
 	}
 
 /* Desctructor */
@@ -70,10 +81,9 @@ int View::init_window(const char *title,int w,int h){
 
 int View::init_lighting(){
 
-	#ifndef DEF_LIGHT
 	GLfloat mat_specular[] = {1.0, 1.0, 1.0, 0.0 };
-	GLfloat mat_diffuse[] = {0.8,0.8,0.8};
-	GLfloat mat_shininess[] = { 100.0 };
+	GLfloat mat_diffuse[] = {0.8,0.8,0.8,1.0};
+	GLfloat mat_shininess[] = { 128.0 };
 	//GLfloat light_position[] = { 0.0, 1.0, 0.0, 0.0 };
 	GLfloat light_diffuse0[] = { 1.0, 1.0, 1.0, 0.0 };
 	GLfloat light_diffuse1[] = { 1.0, 0.0, 1.0, 0.0 };
@@ -87,26 +97,18 @@ int View::init_lighting(){
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse1);
 	glLightfv(GL_LIGHT2, GL_DIFFUSE, light_diffuse2);
 	//glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-	#else
+
 	GLfloat qaAmbientLight[] = {0.1, 0.1, 0.1, 1.0};
 	GLfloat qaDiffuseLight[] = {1, 0, 1, 1.0};
 	GLfloat qaSpecularLight[]  = {1.0, 1.0, 1.0, 1.0};
 	GLfloat emitLight[] = {0.9, 0.9, 0.9, 0.01};
 	GLfloat Noemit[] = {0.0, 0.0, 0.0, 1.0};
-    // Light source position
-	GLfloat qaLightPosition[] = {5.0, 5.0, 5.0, 1};
-	GLfloat qaLightDirection[] = {1, 1, 1, 0};
-	GLfloat dirVector0[] = { 0.0, 0.0, -1.0, 0.0};
 
-	//glLightfv(GL_LIGHT0, GL_AMBIENT, qaAmbientLight);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, qaDiffuseLight);
-    glLightfv(GL_LIGHT0, GL_POSITION, qaLightPosition);
+	//glLightfv(GL_LIGT0, GL_AMBIENT, qaAmbientLight);
+    glLightfv(GL_LIGHT3, GL_DIFFUSE, qaDiffuseLight);
     //glLightfv(GL_LIGHT0, GL_SPECULAR, qaSpecularLight);
 
-    glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 2.0);// set cutoff angle
-    glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, dirVector0);
-    glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 1); // set focusing strength
-	#endif
+	glEnable(GL_LIGHTING);
 	return 0;
 	}
 
@@ -151,6 +153,7 @@ void View::display(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+	set_headlight();
 	set_camera();
 	set_fixed_light();
 	glTranslatef(trans_x,trans_y,trans_z);
@@ -160,15 +163,13 @@ void View::display(){
 	glStencilFunc(GL_ALWAYS,1,-1);
 	cube->display();
 	//draw_axis();
-	glTranslatef(0,-1.5f,0);
 	glPushMatrix();
-	glTranslatef(0.5f,0,0);
+	glTranslatef(0.6f,0,0);
 	glStencilFunc(GL_ALWAYS,2,-1);
 	model[0]->display();
 	glPopMatrix();
 	glPushMatrix();
-	glTranslatef(0.0,-0.11,0.0);
-	glTranslatef(-0.5f,0,0);
+	glTranslatef(-0.6f,0,0);
 	glStencilFunc(GL_ALWAYS,3,-1);
 	model[1]->display();
 	glPopMatrix();
@@ -271,14 +272,17 @@ int View::set_camera()
 
 int View::set_fixed_light()
 {
-	GLfloat light_position0[] = { 0.0, 0.0, 0.0, 1.0 };
+	GLfloat light_position0[] = { 0.0, 1.0, 0.0, 1.0 };
 	GLfloat light_position1[] = { 0.0, 0.0, -3.0, 1.0 };
 	GLfloat light_position2[] = { -3.0, 0.0, 0.0, 1.0 };
 
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
 	glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
 	glLightfv(GL_LIGHT2, GL_POSITION, light_position2);
-	glEnable(GL_LIGHTING);
+
+	GLfloat direction[] = {0,2.0,0.0};
+	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, direction);
+	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
 	if(light_status[0])
 		glEnable(GL_LIGHT0);
@@ -293,9 +297,25 @@ int View::set_fixed_light()
 		glEnable(GL_LIGHT2);
 	else
 		glDisable(GL_LIGHT2);
+	if(light_status[3])
+		glEnable(GL_LIGHT3);
+	else
+		glDisable(GL_LIGHT3);
 	return 0;
 }
 
+int View::set_headlight()
+{
+	GLfloat qaLightPosition[] = {0.0, 0.0, 3.0, 1};
+	GLfloat dirVector0[] = { 0.3, -0.50, -4.0, 0.0};
+
+	glLightfv(GL_LIGHT3, GL_POSITION, qaLightPosition);
+	glLightf(GL_LIGHT3, GL_SPOT_CUTOFF, 5.0);// set cutoff angle
+    glLightfv(GL_LIGHT3, GL_SPOT_DIRECTION, dirVector0);
+    glLightf(GL_LIGHT3, GL_SPOT_EXPONENT, 1); // set focusing strength
+	glEnable(GL_LIGHT3);
+	return 0;
+}
 int View::update_tex(string &tex_path,int obj)
 {
 	switch(obj){

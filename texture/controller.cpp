@@ -136,7 +136,7 @@ void Controller::keyboard_handler(unsigned char key,int x,int y){
 		scale_all -= 0.1f;
 		refresh_view();
 		}
-	else if(key == KEY_1 || key == KEY_2 || key == KEY_3){
+	else if(KEY_1 <= key && key <= KEY_4){
 		light_status[key-KEY_1]= !light_status[key-KEY_1];
 		refresh_view();
 		}
