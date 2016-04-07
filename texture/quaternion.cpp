@@ -71,7 +71,7 @@ void Quaternion::operator ~()
 
 ostream& operator<<( ostream &output,const Quaternion &q )
 {
-	output << "[ "<< q.x << ", " << q.y <<", "<< q.z <<", "<< q.w <<"]"<<endl;
+	output << "["<< q.x << ", " << q.y <<", "<< q.z <<", "<< q.w <<"]";
 	return output;
 }
 

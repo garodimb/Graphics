@@ -4,7 +4,7 @@
 #include <quaternion.h>
 #include <model.h>
 #include <cube.h>
-
+#include <camera.h>
 class View{
 
 	private:
@@ -12,9 +12,9 @@ class View{
 		int screen_height;
 		int pos[2];
 		int num_models;
-		Quaternion fix_pos,curr_pos;
 		Cube *cube;
 		Model **model;
+		Camera *camera;
 		GLfloat *track_matrix;
 		GLfloat rotate_x; // X Rotation
 		GLfloat rotate_y; // Y Rotation
@@ -48,6 +48,7 @@ class View{
 		int get_height();
 		int init_lighting();
 		int update_tex(string &tex_path,int obj);
+		int init_camera(void);
 
 };
 

@@ -23,17 +23,12 @@ View::View(int argc,char **argv){
 	trans_x  	= 0.0f; // X translation
 	trans_y  	= 0.0f; // Y translation
 	trans_z  	= 0.0f; // Z translation
-
-	curr_pos.x = fix_pos.x = 0.0f;
-	curr_pos.y = fix_pos.y = -1.0f;
-	curr_pos.z = fix_pos.z = -4.0f;
-	curr_pos.w = fix_pos.w = 0.0f;
-
 	light_status[0] = light_status[1] = light_status[2] = light_status[3] = true;
 	light_status[4] = true;
 	glutInit(&argc,argv);
 	init_window("Texture Mapping",1000,500);
 	init();
+	init_camera();
 	glutDisplayFunc(on_display);
 	glutReshapeFunc(on_reshape);
 	view = this;
@@ -67,6 +62,7 @@ View::~View()
 	for(int i = 0;i<num_models;i++)
 		delete model[i];
 	delete [] model;
+	delete camera;
 }
 
 /* Initialize windowing system */
@@ -111,6 +107,22 @@ int View::init_lighting(){
 	return 0;
 	}
 
+int View::init_camera(void)
+{
+	Vector cam_pos,cam_up,cam_lookat;
+	cam_pos.x = 0.0f;
+	cam_pos.y = -1.0f;
+	cam_pos.z = -4.0f;
+
+	cam_up.x = cam_up.z = 0.0f;
+	cam_up.y = 1.0;
+
+	cam_lookat.x = cam_lookat.z = 0.0f;
+	cam_lookat.y = -1.0f;
+	delete camera;
+	camera = new Camera(cam_pos,cam_lookat,cam_up);
+	return 0;
+}
 int View::init(void){
 
 	glClearColor(0.0,0.0,0.0,0.0);
@@ -155,7 +167,7 @@ void View::display(){
 	set_headlight();
 	set_camera();
 	set_fixed_light();
-	glTranslatef(trans_x,trans_y,trans_z);
+	//glTranslatef(trans_x,trans_y,trans_z);
 	glScalef(scale_all,scale_all,scale_all);
 	/* Move camera using z so to get fill of zooming */
 	/* Eye, Center and Up vector */
@@ -198,7 +210,7 @@ int View::draw_axis(){
 int View::rotate(GLfloat x, GLfloat y, GLfloat z, GLfloat angle){
 	Quaternion quaternion;
 	quaternion.CreateFromAxisAngle(x,y,z,angle);
-	curr_pos = fix_pos * quaternion;
+	camera->rotate_camera(quaternion);
 	return 0;
 	}
 
@@ -206,7 +218,7 @@ int View::rotate(GLfloat x, GLfloat y, GLfloat z, GLfloat angle){
 int View::refresh(GLfloat rotate_x,GLfloat rotate_y,GLfloat z_distance,GLfloat scale_all,GLfloat trans_x,GLfloat trans_y,GLfloat trans_z,GLfloat *track_matrix,bool *light_status){
 			this->rotate_x 	= rotate_x; // X Rotation
 			this->rotate_y 	= rotate_y; // Y Rotation
-			this->z_distance= z_distance; // Camera distance
+			this->z_distance = z_distance; // Camera distance
 			this->scale_all	= scale_all; // Uniform scaling in all direction
 			this->trans_x  	= trans_x; // X translation
 			this->trans_y  	= trans_y; // Y translation
@@ -257,6 +269,7 @@ int View::reg_keyboard_spec_handler(void (*keyboard_spec_handler)(int key,int x,
 int View::set_camera()
 {
 	Quaternion q;
+	Vector curr_pos;
 	if(track_matrix){
 		q.x = track_matrix[0];
 		q.y = track_matrix[1];
@@ -264,8 +277,9 @@ int View::set_camera()
 		q.w = track_matrix[3];
 		}
 	~q;
-	curr_pos = fix_pos * q;
-	gluLookAt(curr_pos.x, curr_pos.y,curr_pos.z-z_distance, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0);
+	camera->rotate_camera(q);
+	curr_pos = camera->get_position();
+	gluLookAt(curr_pos.x, curr_pos.y,curr_pos.z, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0);
 	return 0;
 }
 
