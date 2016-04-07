@@ -144,8 +144,16 @@ void Controller::keyboard_handler(unsigned char key,int x,int y){
 	else if(key == KEY_T || key == KEY_t){
 		static int pos = 0;
 		pos++;
-		string fn[] = {"texfiles/apple.bmp","texfiles/apple2.bmp","texfiles/canstick.bmp","texfiles/canstick2.bmp"};
+		string fn[] = {"texfiles/floor.bmp","texfiles/apple.bmp","texfiles/apple2.bmp","texfiles/canstick.bmp","texfiles/canstick2.bmp"};
 		view->update_tex(fn[pos%(sizeof(fn)/sizeof(fn[0]))],curr_obj);
+		}
+	else if(key == KEY_A || key == KEY_a){
+		log_D("Texture mapping OpenGL mode");
+		view->update_tex_mode(0,curr_obj);
+		}
+	else if(key == KEY_M || key == KEY_m){
+		log_D("Texture mapping manual mode");
+		view->update_tex_mode(1,curr_obj);
 		}
 	}
 
@@ -166,7 +174,7 @@ void Controller::keyboard_spec_handler(int key,int x,int y){
 		rotate_x -= ROTATE_ANGLE;
 	}
 	//  Request display update
-	refresh_view();
+	//refresh_view();
 	}
 
 /* Trackball Handler */

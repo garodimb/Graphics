@@ -18,9 +18,12 @@ class Model{
 		int read_ply();
 		int display();
 		int update_tex(string &tex_path);
+		int update_tex_mode(int mode);
+
 	private:
 		float x_min,x_max,y_min,y_max,z_min,z_max;
 		float scale_factor;
+		int tex_mode;
 		int nvertices,ntriangles;
 		Vertex **vlist;
 		Face **flist;
@@ -38,6 +41,8 @@ class Model{
 		int compute_sphere_cord();
 		int compute_cyl_cord();
 		int init_tex();
+		int enable_tex();
+		int disable_tex();
 };
 
 #endif

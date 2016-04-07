@@ -32,6 +32,10 @@
 #define KEY_s 115
 #define KEY_T 84
 #define KEY_t 116
+#define KEY_A 65
+#define KEY_a 97
+#define KEY_M 77
+#define KEY_m 109
 
 #define KEY_1 49
 #define KEY_2 50

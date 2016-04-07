@@ -333,6 +333,7 @@ int View::set_headlight()
 		glDisable(GL_LIGHT3);
 	return 0;
 }
+
 int View::update_tex(string &tex_path,int obj)
 {
 	switch(obj){
@@ -344,6 +345,23 @@ int View::update_tex(string &tex_path,int obj)
 				break;
 		case 3:
 				model[1]->update_tex(tex_path);
+				break;
+
+		default:
+				break;
+		}
+	glutPostRedisplay();
+	return 0;
+}
+
+int View::update_tex_mode(int mode,int obj)
+{
+	switch(obj){
+		case 2:
+				model[0]->update_tex_mode(mode);
+				break;
+		case 3:
+				model[1]->update_tex_mode(mode);
 				break;
 
 		default:

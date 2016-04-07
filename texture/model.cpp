@@ -7,6 +7,8 @@
 #include <cstring>
 #include <GL/glut.h>
 
+static float	plane_xy[3] = {1, 0, 0};
+static float	plane_yz[3] = {0, 0, 1};
 
 /**************************************************************************
  * Model Section
@@ -31,6 +33,7 @@ Model::Model(string &fn,Map map,string &tex_path)
 	this->tex_path = tex_path;
 	x_min = y_min = z_min = INT_MAX;
 	x_max = y_max = z_max = INT_MIN;
+	tex_mode = 1;
 	nvertices = ntriangles = 0;
 	vlist = NULL;
 	flist = NULL;
@@ -281,14 +284,15 @@ int Model::compute_cyl_cord()
 int Model::display(){
 	int i;
 
+	enable_tex();
+	glMatrixMode(GL_MODELVIEW);
 	glColor3f(1.0,1.0,1.0);
 	glPushMatrix();
 	if(scale_factor==0)
 		scale_factor = 1.0f;
 	glScalef(1.0f/scale_factor,1.0f/scale_factor,1.0f/scale_factor);
 	glTranslatef(-centroid.x,-centroid.y,-centroid.z);
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, tex_name);
+
 	float new_trans =(centroid.y - y_min)/scale_factor - 2.0;
 	glTranslatef(0.0f,new_trans*scale_factor,0.0f);
 	for(i=0;i<ntriangles;i++){
@@ -307,7 +311,7 @@ int Model::display(){
 		glEnd();
 		}
 	glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
+	disable_tex();
 	return 0;
 	}
 
@@ -323,5 +327,40 @@ int Model::update_tex(string& tex_path)
 	else{
 		compute_cyl_cord();
 	}
+	return 0;
+}
+
+int Model::enable_tex()
+{
+	glMatrixMode (GL_TEXTURE);
+	glLoadIdentity ();
+	glScalef (1, -1, 1);
+	glBindTexture(GL_TEXTURE_2D, tex_name);
+	//Automatic Mode
+	if(tex_mode==0){
+		if(map = Sphere){
+			glTexGeni(GL_S,GL_TEXTURE_GEN_MODE,GL_SPHERE_MAP);
+			glTexGeni(GL_T,GL_TEXTURE_GEN_MODE,GL_SPHERE_MAP);
+			}
+		glTexGenfv (GL_S, GL_EYE_PLANE, plane_xy);
+		glTexGenfv (GL_T, GL_EYE_PLANE, plane_yz);
+		glEnable(GL_TEXTURE_GEN_S);
+		glEnable(GL_TEXTURE_GEN_T);
+	}
+	glEnable(GL_TEXTURE_2D);
+	return 0;
+}
+
+int Model::disable_tex()
+{
+	glDisable(GL_TEXTURE_GEN_T);
+	glDisable(GL_TEXTURE_GEN_S);
+	glDisable(GL_TEXTURE_2D);
+	return 0;
+}
+
+int Model::update_tex_mode(int mode)
+{
+	tex_mode = mode;
 	return 0;
 }

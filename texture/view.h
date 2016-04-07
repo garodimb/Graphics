@@ -48,6 +48,7 @@ class View{
 		int get_height();
 		int init_lighting();
 		int update_tex(string &tex_path,int obj);
+		int update_tex_mode(int mode,int obj);
 		int init_camera(void);
 
 };
