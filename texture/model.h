@@ -19,9 +19,12 @@ class Model{
 		int display();
 		int update_tex(string &tex_path);
 		int update_tex_mode(int mode);
+		int trans_obj_by(float x_trans,float z_trans);
+		int trans_obj_to(float x_trans,float z_trans);
 
 	private:
 		float x_min,x_max,y_min,y_max,z_min,z_max;
+		float trans_x,trans_z; //y_trans not applicable
 		float scale_factor;
 		int tex_mode;
 		int nvertices,ntriangles;
@@ -43,6 +46,7 @@ class Model{
 		int init_tex();
 		int enable_tex();
 		int disable_tex();
+
 };
 
 #endif

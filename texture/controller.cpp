@@ -83,57 +83,63 @@ void Controller::keyboard_handler(unsigned char key,int x,int y){
 		exit(0);
 		}
 	else if(key==KEY_ENTER){
-		log_I("Resetting MODELVIEW");
+		log_D("Resetting MODELVIEW");
 		reset();
 		refresh_view();
 		}
 	else if(key==ZOOMIN){
-		log_I("Moving Camera Near");
+		log_D("Moving Camera Near");
 		z_distance-=0.1;
 		refresh_view();
 		}
 	else if(key==ZOOMOUT){
-		log_I("Moving Camera far");
+		log_D("Moving Camera far");
 		z_distance+=0.1;
 		refresh_view();
 		}
 	else if(key == KEY_X){
-		log_I("Translating +X");
-		trans_x += 0.1f;
-		refresh_view();
+		log_D("Translating +X");
+		trans_x = 0.05f;
+		view->update_trans_obj(trans_x,0.0,curr_obj);
+		trans_x = 0.0f;
 		}
 	else if(key == KEY_x){
-		log_I("Translating -X");
-		trans_x -= 0.1f;
-		refresh_view();
+		log_D("Translating -X");
+		trans_x = -0.05f;
+		view->update_trans_obj(trans_x,0.0,curr_obj);
+		trans_x = 0.0f;
 		}
 	else if(key == KEY_Y){
-		log_I("Translating +Y");
-		trans_y += 0.1f;
+		log_D("Translating +Y");
+		trans_y = 0.1f;
 		refresh_view();
+		trans_y = 0.0f;
 		}
 	else if(key == KEY_y){
-		log_I("Translating -Y");
-		trans_y -= 0.1f;
+		log_D("Translating -Y");
+		trans_y = -0.1f;
 		refresh_view();
+		trans_y = 0.0f;
 		}
 	else if(key == KEY_Z){
-		log_I("Translating +Z");
-		trans_z += 0.1f;
-		refresh_view();
+		log_D("Translating +Z");
+		trans_z = 0.05f;
+		view->update_trans_obj(0.0,trans_z,curr_obj);
+		trans_z = 0.0f;
 		}
 	else if(key == KEY_z){
-		log_I("Translating -Z");
-		trans_z -= 0.1f;
-		refresh_view();
+		log_D("Translating -Z");
+		trans_z = -0.05f;
+		view->update_trans_obj(0.0,trans_z,curr_obj);
+		trans_z = 0.0f;
 		}
 	else if(key == KEY_S){
-		log_I("Scaling +X, +Y, +Z");
+		log_D("Scaling +X, +Y, +Z");
 		scale_all += 0.1f;
 		refresh_view();
 		}
 	else if(key == KEY_s){
-		log_I("Scaling -X, -Y, -Z");
+		log_D("Scaling -X, -Y, -Z");
 		scale_all -= 0.1f;
 		refresh_view();
 		}
@@ -220,7 +226,7 @@ int Controller::trans_by_user(GLint x,GLint y){
 		/* Set X & Y direction */
 		x_dist = ( x >= trans_point.x)? dist : -dist;
 		y_dist = ( y >= trans_point.y)? dist : -dist;
-		log_I("Translating");
+		log_D("Translating");
 		log_D("x_dist: "<<x_dist<<", y_dist: "<<y_dist);
 		trans_x += (float )x_dist/view->get_width();
 		trans_y += (float )-y_dist/view->get_height();

@@ -220,9 +220,6 @@ int View::refresh(GLfloat rotate_x,GLfloat rotate_y,GLfloat z_distance,GLfloat s
 			this->rotate_y 	= rotate_y; // Y Rotation
 			this->z_distance = z_distance; // Camera distance
 			this->scale_all	= scale_all; // Uniform scaling in all direction
-			this->trans_x  	= trans_x; // X translation
-			this->trans_y  	= trans_y; // Y translation
-			this->trans_z  	= trans_z; // Z translation
 			this->track_matrix = track_matrix; //Rotation by Trackball
 			for(int i =0 ;i<5;i++)
 				this->light_status[i] = light_status[i];
@@ -362,6 +359,23 @@ int View::update_tex_mode(int mode,int obj)
 				break;
 		case 3:
 				model[1]->update_tex_mode(mode);
+				break;
+
+		default:
+				break;
+		}
+	glutPostRedisplay();
+	return 0;
+}
+
+int View::update_trans_obj(float trans_x,float trans_z,int curr_obj)
+{
+	switch(curr_obj){
+		case 2:
+				model[0]->trans_obj_by(trans_x,trans_z);
+				break;
+		case 3:
+				model[1]->trans_obj_by(trans_x,trans_z);
 				break;
 
 		default:

@@ -33,6 +33,7 @@ Model::Model(string &fn,Map map,string &tex_path)
 	this->tex_path = tex_path;
 	x_min = y_min = z_min = INT_MAX;
 	x_max = y_max = z_max = INT_MIN;
+	trans_x = trans_z = 0;
 	tex_mode = 1;
 	nvertices = ntriangles = 0;
 	vlist = NULL;
@@ -233,18 +234,6 @@ int Model::init_tex()
                 (GLsizei)texture->get_height(), 0, GL_RGB, GL_UNSIGNED_BYTE,
                 (GLubyte *)texture->get_data());
 
-
-/***********************************************************************
- * Automatic Texture generation
- **********************************************************************/
-	//glTexGeni(GL_S,GL_TEXTURE_GEN_MODE,GL_SPHERE_MAP);
-	//glTexGeni(GL_T,GL_TEXTURE_GEN_MODE,GL_SPHERE_MAP);
-	//glEnable(GL_TEXTURE_GEN_S);
-	//glEnable(GL_TEXTURE_GEN_T);
-/***********************************************************************
- *
- **********************************************************************/
-
 	return 0;
 }
 
@@ -292,9 +281,8 @@ int Model::display(){
 		scale_factor = 1.0f;
 	glScalef(1.0f/scale_factor,1.0f/scale_factor,1.0f/scale_factor);
 	glTranslatef(-centroid.x,-centroid.y,-centroid.z);
-
 	float new_trans =(centroid.y - y_min)/scale_factor - 2.0;
-	glTranslatef(0.0f,new_trans*scale_factor,0.0f);
+	glTranslatef(trans_x*scale_factor,new_trans*scale_factor,trans_z*scale_factor);
 	for(i=0;i<ntriangles;i++){
 		glBegin(GL_POLYGON);
 				glNormal3f(normal[flist[i]->verts[0]]->x,normal[flist[i]->verts[0]]->y,normal[flist[i]->verts[0]]->z);
@@ -362,5 +350,19 @@ int Model::disable_tex()
 int Model::update_tex_mode(int mode)
 {
 	tex_mode = mode;
+	return 0;
+}
+
+int Model::trans_obj_by(float trans_x,float trans_z)
+{
+	this->trans_x += trans_x;
+	this->trans_z += trans_z;
+	return 0;
+}
+
+int Model::trans_obj_to(float trans_x,float trans_z)
+{
+	this->trans_x = trans_x;
+	this->trans_z = trans_z;
 	return 0;
 }

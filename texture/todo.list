@@ -1,25 +1,11 @@
-Pending Work:
-1. Automatic Vs Manual Texture mapping for objects
-	Write function to control automatic and manual texture mapping.
-	Automatic texture mapping function should support different types
-	of maps.
 
-2. Translation of selected object along x and z direction
-	Make sure objects are not crossing boundaries of floor
+1. Apply limit of translation
 
-3. Remove unnecessary code like rotation, scaling
+2. Remove unnecessary code like rotation, scaling
 
-4. Update camera zoom in by multiplying with quaternion
+3. Update camera zoom in by multiplying with quaternion
 
-5. Camera class with following operations
-	Data:
-		init_pos, init_up_v, init_lookat
-		curr_pos, curr_up_v, curr_lookat
-	Functions:
-		get and set for both
-		function for placing camera(gluLookat)
-
-6. Compute bounding box inside model class only
+4. Compute bounding box inside model class only
 	Compute bounding box inside model using cube of
 	x_min,y_min,z_min,x_max,y_max,z_max.
 	Render with and without bounding box.
@@ -27,5 +13,5 @@ Pending Work:
 	bounding box(Not necessarily a cube of same size)
 	Keep scale factor as it is for now
 
-7. Organize code in good way
+5. Organize code in good way
 	Create structured way for src,include,lib,bin
