@@ -1,0 +1,17 @@
+
+1. Apply limit of translation
+
+2. Remove unnecessary code like rotation, scaling
+
+3. Update camera zoom in by multiplying with quaternion
+
+4. Compute bounding box inside model class only
+	Compute bounding box inside model using cube of
+	x_min,y_min,z_min,x_max,y_max,z_max.
+	Render with and without bounding box.
+	Scaling and translating object automatically scales and translates
+	bounding box(Not necessarily a cube of same size)
+	Keep scale factor as it is for now
+
+5. Organize code in good way
+	Create structured way for src,include,lib,bin

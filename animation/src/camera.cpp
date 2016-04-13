@@ -1,0 +1,46 @@
+
+#include <camera.h>
+
+Camera::Camera(Vector& position, Vector& lookat, Vector &up)
+{
+	fix_pos = curr_pos = position;
+	fix_lookat = curr_lookat = lookat;
+	fix_up = curr_up = up;
+}
+
+Camera::~Camera()
+{}
+
+Vector Camera::get_position()
+{
+	return curr_pos;
+}
+
+
+Vector Camera::get_lookat()
+{
+	return curr_lookat;
+}
+
+Vector Camera::get_up()
+{
+	return curr_up;
+}
+
+int Camera::rotate_camera(Quaternion q)
+{
+	Quaternion pos;
+	pos.x = fix_pos.x;
+	pos.y = fix_pos.y;
+	pos.z = fix_pos.z;
+	pos.w = 0.0f;
+
+	pos = pos * q;
+	log_D("Current camera position: "<<pos);
+	curr_pos.x = pos.x;
+	curr_pos.y = pos.y;
+	curr_pos.z = pos.z;
+
+
+	return 0;
+}
