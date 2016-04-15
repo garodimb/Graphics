@@ -6,11 +6,15 @@
 #include <algorithm>
 #include <datatypes.h>
 
+typedef char Model;
 using namespace std;
 class SceneNode	{
 	public:
 		SceneNode();
 		~SceneNode();
+		Model * get_model();
+		int set_model(Model *model);
+		int scale(const Vector& modelscale);
 		int add_child(SceneNode *node);
 		/*
 		 * mat is pointer to array having 16 consecutive floats
@@ -31,7 +35,7 @@ class SceneNode	{
 	protected:
 		float *local_trans_mat;
 		float *world_trans_mat;
-		//Model *model;
+		Model *model;
 		SceneNode *parent;
 		Vector *modelscale;
 		std :: vector < SceneNode *> child;
