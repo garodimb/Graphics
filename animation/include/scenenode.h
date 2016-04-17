@@ -30,9 +30,16 @@ class SceneNode	{
 		 */
 		int detach();
 		int detach_child(SceneNode *child);
+		 /*
+		  * Get pointer to scenenode with having scene_id as id
+		  * in a substree rooted at this node
+		  */
+		SceneNode * get_scenenode(int id);
 		int display();
 
 	protected:
+		static int obj_count; //Current count for number of objects used to give id to each scenenode
+		int scene_id;
 		float *local_trans_mat;
 		float *world_trans_mat;
 		Model *model;

@@ -6,8 +6,13 @@
 /*
  * Constructor
  */
+
+int SceneNode::obj_count = 0;
+
 SceneNode::SceneNode()
 {
+	obj_count++;
+	scene_id = obj_count+1;
 	local_trans_mat = new float[16]();
 	float identity [] ={
 						1.0, 0.0, 0.0, 0.0,
@@ -117,6 +122,22 @@ int SceneNode::detach_child(SceneNode *node)
 	return 0;
 }
 
+
+SceneNode * SceneNode::get_scenenode(int id)
+{
+	SceneNode *returned = NULL;
+	if(id==scene_id){
+		return this;
+		}
+	for( std::vector<SceneNode *>::iterator iter = child.begin(); iter != child.end(); ++iter ){
+		returned = (*iter)->get_scenenode(id);
+		if(returned!=NULL){
+			return returned;
+			}
+	}
+	return NULL;
+}
+
 /*
  * Display scene in perorder manner
  * pushMatrix();
@@ -133,6 +154,7 @@ int SceneNode::display()
 		glColor3f(1.0, 0.1, 0.1);		// redish
 		glPushMatrix();
 		glMultMatrixf(local_trans_mat);
+		glStencilFunc(GL_ALWAYS,scene_id,-1);
 	//This can be special node without model
 	if(model!=NULL){
 		//Scaling only current model and not child

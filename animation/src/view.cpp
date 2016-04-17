@@ -184,18 +184,6 @@ void View::display(){
 	/* Eye, Center and Up vector */
 	glStencilFunc(GL_ALWAYS,1,-1);
 	cube->display();
-	//draw_axis();
-	/*glPushMatrix();
-	glTranslatef(0.6f,0,0);
-	glStencilFunc(GL_ALWAYS,2,-1);
-	model[0]->display();
-	glPopMatrix();
-	glPushMatrix();
-	glTranslatef(-0.6f,0,0);
-	glStencilFunc(GL_ALWAYS,3,-1);
-	model[1]->display();
-	glPopMatrix();
-	*/
 	scene->display();
 	glutSwapBuffers();
 	}
@@ -357,18 +345,25 @@ int View::set_headlight()
  */
 int View::update_tex(string &tex_path,int obj)
 {
+	/*
+	 * Choose object and update texture
+	 */
+	SceneNode * node = NULL;
+	Model * mdl = NULL;
 	switch(obj){
 		case 1:
 				cube->update_tex(tex_path);
 				break;
-		case 2:
-				model[0]->update_tex(tex_path);
-				break;
-		case 3:
-				model[1]->update_tex(tex_path);
-				break;
-
 		default:
+				node = scene->get_scenenode(obj);
+				if(!node){
+					return 1;
+					}
+				mdl = node->get_model();
+				if(!mdl){
+					return 2;
+					}
+				mdl->update_tex(tex_path);
 				break;
 		}
 	glutPostRedisplay();
@@ -380,17 +375,17 @@ int View::update_tex(string &tex_path,int obj)
  */
 int View::update_tex_mode(int mode,int obj)
 {
-	switch(obj){
-		case 2:
-				model[0]->update_tex_mode(mode);
-				break;
-		case 3:
-				model[1]->update_tex_mode(mode);
-				break;
-
-		default:
-				break;
+	SceneNode * node = NULL;
+	Model * mdl = NULL;
+	node = scene->get_scenenode(obj);
+	if(!node){
+		return 1;
+	}
+	mdl = node->get_model();
+	if(!mdl){
+		return 2;
 		}
+	mdl->update_tex_mode(mode);
 	glutPostRedisplay();
 	return 0;
 }
@@ -401,17 +396,17 @@ int View::update_tex_mode(int mode,int obj)
  */
 int View::update_trans_obj(float trans_x,float trans_z,int curr_obj)
 {
-	switch(curr_obj){
-		case 2:
-				model[0]->trans_obj_by(trans_x,trans_z);
-				break;
-		case 3:
-				model[1]->trans_obj_by(trans_x,trans_z);
-				break;
-
-		default:
-				break;
+		SceneNode * node = NULL;
+	Model * mdl = NULL;
+	node = scene->get_scenenode(curr_obj);
+	if(!node){
+		return 1;
+	}
+	mdl = node->get_model();
+	if(!mdl){
+		return 2;
 		}
+	mdl->trans_obj_by(trans_x,trans_z);
 	glutPostRedisplay();
 	return 0;
 }
