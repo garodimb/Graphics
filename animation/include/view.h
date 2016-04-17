@@ -5,6 +5,8 @@
 #include <model.h>
 #include <cube.h>
 #include <camera.h>
+#include <scenenode.h>
+
 class View{
 
 	private:
@@ -13,6 +15,7 @@ class View{
 		int pos[2];
 		int num_models;
 		Cube *cube;
+		SceneNode *scene;
 		Model **model;
 		Camera *camera;
 		GLfloat *track_matrix;
@@ -32,6 +35,7 @@ class View{
 		~View();
 		int init_window(const char *title,int w,int h);
 		int init(void);
+		int init_scene(int argc,char **argv);
 		void reshape(int w,int h);
 		void display(void);
 		int draw_axis();

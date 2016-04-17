@@ -3,7 +3,7 @@
 #include <GL/glut.h>
 #include <cmath>
 #include <ply.h>
-#include <control.h>
+#include <log.h>
 #include <datatypes.h>
 #include <iostream>
 #include <texture.h>

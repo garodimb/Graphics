@@ -32,28 +32,8 @@ View::View(int argc,char **argv){
 	glutDisplayFunc(on_display);
 	glutReshapeFunc(on_reshape);
 	view = this;
-	num_models = 2;
 	cube = new Cube(4.0f);
-	model = new Model*[num_models];
-	string fn1_obj,fn2_obj,tex1_path,tex2_path;
-	fn1_obj = "plyfiles/canstick.ply";
-	fn2_obj = "plyfiles/apple.ply";
-	tex1_path = "texfiles/canstick.bmp";
-	tex2_path = "texfiles/apple.bmp";
-	if(argc>=2){
-		fn1_obj = argv[1];
-		}
-	if(argc>=3){
-		fn2_obj = argv[2];
-		}
-	if(argc>=4){
-		tex1_path = argv[3];
-		}
-	if(argc>=5){
-		tex1_path = argv[4];
-		}
-	model[0] = new Model(fn1_obj,Cylinder,tex1_path);
-	model[1] = new Model(fn2_obj,Sphere,tex2_path);
+	init_scene(argc,argv);
 	}
 
 /* Desctructor */
@@ -63,6 +43,7 @@ View::~View()
 		delete model[i];
 	delete [] model;
 	delete camera;
+	delete scene;
 }
 
 /* Initialize windowing system */
@@ -136,6 +117,37 @@ int View::init(void){
 	return 0;
 	}
 
+int View::init_scene(int argc,char **argv){
+	string fn1_obj,fn2_obj,tex1_path,tex2_path;
+	num_models = 2;
+	model = new Model*[num_models];
+	scene = new SceneNode();
+	fn1_obj = "plyfiles/canstick.ply";
+	fn2_obj = "plyfiles/apple.ply";
+	tex1_path = "texfiles/canstick.bmp";
+	tex2_path = "texfiles/apple.bmp";
+	if(argc>=2){
+		fn1_obj = argv[1];
+		}
+	if(argc>=3){
+		fn2_obj = argv[2];
+		}
+	if(argc>=4){
+		tex1_path = argv[3];
+		}
+	if(argc>=5){
+		tex1_path = argv[4];
+		}
+	model[0] = new Model(fn1_obj,Cylinder,tex1_path);
+	model[1] = new Model(fn2_obj,Sphere,tex2_path);
+	SceneNode *node1 = new SceneNode();
+	SceneNode *node2 = new SceneNode();
+	node1->set_model(model[0]);
+	node2->set_model(model[1]);
+	scene->add_child(node1);
+	scene->add_child(node2);
+	return 0;
+}
 int View::get_width(){
 
 	return screen_width;
@@ -167,14 +179,13 @@ void View::display(){
 	set_headlight();
 	set_camera();
 	set_fixed_light();
-	//glTranslatef(trans_x,trans_y,trans_z);
 	glScalef(scale_all,scale_all,scale_all);
 	/* Move camera using z so to get fill of zooming */
 	/* Eye, Center and Up vector */
 	glStencilFunc(GL_ALWAYS,1,-1);
 	cube->display();
 	//draw_axis();
-	glPushMatrix();
+	/*glPushMatrix();
 	glTranslatef(0.6f,0,0);
 	glStencilFunc(GL_ALWAYS,2,-1);
 	model[0]->display();
@@ -184,6 +195,8 @@ void View::display(){
 	glStencilFunc(GL_ALWAYS,3,-1);
 	model[1]->display();
 	glPopMatrix();
+	*/
+	scene->display();
 	glutSwapBuffers();
 	}
 
@@ -280,6 +293,10 @@ int View::set_camera()
 	return 0;
 }
 
+/*
+ * Set position for fixed light
+ * To make light fix call it after camera setup
+ */
 int View::set_fixed_light()
 {
 	GLfloat light_position0[] = { 0.0, 1.0, 0.0, 1.0 };
@@ -294,6 +311,7 @@ int View::set_fixed_light()
 	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, direction);
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
+	/* check which light to enable and which to disable */
 	if(light_status[0])
 		glEnable(GL_LIGHT0);
 	else
@@ -315,6 +333,9 @@ int View::set_fixed_light()
 	return 0;
 }
 
+/*
+ * Setup moving light(headlight)
+ */
 int View::set_headlight()
 {
 	GLfloat qaLightPosition[] = {0.0, 0.0, 3.0, 1};
@@ -331,6 +352,9 @@ int View::set_headlight()
 	return 0;
 }
 
+/*
+ * Chage texture of selected object
+ */
 int View::update_tex(string &tex_path,int obj)
 {
 	switch(obj){
@@ -351,6 +375,9 @@ int View::update_tex(string &tex_path,int obj)
 	return 0;
 }
 
+/*
+ * Change texture mode of selected model(OpenGL/Manual)
+ */
 int View::update_tex_mode(int mode,int obj)
 {
 	switch(obj){
@@ -368,6 +395,10 @@ int View::update_tex_mode(int mode,int obj)
 	return 0;
 }
 
+/*
+ * Translate current selected object by given distance
+ * along floor
+ */
 int View::update_trans_obj(float trans_x,float trans_z,int curr_obj)
 {
 	switch(curr_obj){

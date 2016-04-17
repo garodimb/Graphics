@@ -3,7 +3,7 @@
 
 #include <quaternion.h>
 #include <datatypes.h>
-#include <control.h>
+#include <log.h>
 
 class Camera{
 	private:
