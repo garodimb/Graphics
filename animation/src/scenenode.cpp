@@ -1,7 +1,6 @@
 #include <GL/glut.h>
 #include <cstring>
 #include <scenenode.h>
-#include <log.h>
 
 /*
  * Constructor
@@ -96,8 +95,9 @@ int SceneNode::set_transf(float *mat)
  */
 int SceneNode::update_transf(float *mat)
 {
-	log_D("Update Transformation matrix");
-	return 1;
+	Matrix mat_obj;
+	mat_obj.mul_mat(local_trans_mat,mat,local_trans_mat);
+	return 0;
 }
 
 /*

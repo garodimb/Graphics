@@ -6,6 +6,7 @@
 #include <cube.h>
 #include <camera.h>
 #include <scenenode.h>
+#include <matrix.h>
 
 class View{
 

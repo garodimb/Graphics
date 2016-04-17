@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <datatypes.h>
 #include <model.h>
+#include <matrix.h>
+#include <log.h>
 
 using namespace std;
 class SceneNode	{

@@ -88,6 +88,9 @@ int View::init_lighting(){
 	return 0;
 	}
 
+/*
+ * Initialize camera position and vector
+ */
 int View::init_camera(void)
 {
 	Vector cam_pos,cam_up,cam_lookat;
@@ -104,6 +107,7 @@ int View::init_camera(void)
 	camera = new Camera(cam_pos,cam_lookat,cam_up);
 	return 0;
 }
+
 int View::init(void){
 
 	glClearColor(0.0,0.0,0.0,0.0);
@@ -117,8 +121,13 @@ int View::init(void){
 	return 0;
 	}
 
+/*
+ * Initialize scene
+ */
 int View::init_scene(int argc,char **argv){
 	string fn1_obj,fn2_obj,tex1_path,tex2_path;
+	float matrix[16];
+	Matrix mat;
 	num_models = 2;
 	model = new Model*[num_models];
 	scene = new SceneNode();
@@ -138,12 +147,21 @@ int View::init_scene(int argc,char **argv){
 	if(argc>=5){
 		tex1_path = argv[4];
 		}
+
+	 /* Create Models */
 	model[0] = new Model(fn1_obj,Cylinder,tex1_path);
 	model[1] = new Model(fn2_obj,Sphere,tex2_path);
 	SceneNode *node1 = new SceneNode();
 	SceneNode *node2 = new SceneNode();
+
 	node1->set_model(model[0]);
+	mat.get_Tmat(0.8,0,0,matrix);
+	node1->set_transf(matrix);
+
+	mat.get_Tmat(-0.8,0,0,matrix);
+	node2->set_transf(matrix);
 	node2->set_model(model[1]);
+
 	scene->add_child(node1);
 	scene->add_child(node2);
 	return 0;
@@ -350,21 +368,19 @@ int View::update_tex(string &tex_path,int obj)
 	 */
 	SceneNode * node = NULL;
 	Model * mdl = NULL;
-	switch(obj){
-		case 1:
-				cube->update_tex(tex_path);
-				break;
-		default:
-				node = scene->get_scenenode(obj);
-				if(!node){
-					return 1;
-					}
-				mdl = node->get_model();
-				if(!mdl){
-					return 2;
-					}
-				mdl->update_tex(tex_path);
-				break;
+	if(obj==1){
+		cube->update_tex(tex_path);
+	}
+	else{
+		node = scene->get_scenenode(obj);
+		if(!node){
+			return 1;
+			}
+		mdl = node->get_model();
+		if(!mdl){
+			return 2;
+			}
+		mdl->update_tex(tex_path);
 		}
 	glutPostRedisplay();
 	return 0;
