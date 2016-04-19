@@ -150,7 +150,7 @@ void Controller::keyboard_handler(unsigned char key,int x,int y){
 	else if(key == KEY_T || key == KEY_t){
 		static int pos = 0;
 		pos++;
-		string fn[] = {"texfiles/floor.bmp","texfiles/apple.bmp","texfiles/apple2.bmp","texfiles/canstick.bmp","texfiles/canstick2.bmp"};
+		string fn[] = {"texfiles/floor.bmp","texfiles/apple.bmp","texfiles/apple2.bmp","texfiles/canstick.bmp","texfiles/canstick2.bmp","texfiles/world.bmp"};
 		view->update_tex(fn[pos%(sizeof(fn)/sizeof(fn[0]))],curr_obj);
 		}
 	else if(key == KEY_A || key == KEY_a){

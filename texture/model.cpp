@@ -250,7 +250,7 @@ int Model::compute_sphere_cord()
 		mag = sqrtf(v.x*v.x + v.y*v.y + v.z*v.z);
 		tex_cord[i] = new TexCord;
 		/* This is not efficient mapping of texture*/
-		tex_cord[i]->u = 0.5 + (float)atan2f(v.z/mag,v.x/mag) / 2 * M_PI;
+		tex_cord[i]->u = (float)atan2f(v.z/mag,v.x/mag) / M_PI;
 		tex_cord[i]->v = 0.5 - (float)asinf(v.y/mag) / M_PI;
 		}
 	return 0;

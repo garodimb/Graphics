@@ -167,7 +167,6 @@ void View::display(){
 	set_headlight();
 	set_camera();
 	set_fixed_light();
-	//glTranslatef(trans_x,trans_y,trans_z);
 	glScalef(scale_all,scale_all,scale_all);
 	/* Move camera using z so to get fill of zooming */
 	/* Eye, Center and Up vector */
@@ -317,11 +316,11 @@ int View::set_fixed_light()
 
 int View::set_headlight()
 {
-	GLfloat qaLightPosition[] = {0.0, 0.0, 3.0, 1};
-	GLfloat dirVector0[] = { 0.3, -0.50, -4.0, 0.0};
+	GLfloat qaLightPosition[] = {0.0, 1.0, 4.0, 1};
+	GLfloat dirVector0[] = { 0.0, -0.60, -3.2, 0.0};
 
 	glLightfv(GL_LIGHT3, GL_POSITION, qaLightPosition);
-	glLightf(GL_LIGHT3, GL_SPOT_CUTOFF, 5.0);// set cutoff angle
+	glLightf(GL_LIGHT3, GL_SPOT_CUTOFF, 4.0);// set cutoff angle
     glLightfv(GL_LIGHT3, GL_SPOT_DIRECTION, dirVector0);
     glLightf(GL_LIGHT3, GL_SPOT_EXPONENT, 1); // set focusing strength
     if(light_status[3])
