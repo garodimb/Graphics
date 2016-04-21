@@ -150,7 +150,7 @@ SceneNode * SceneNode::get_scenenode(int id)
 int SceneNode::display()
 {
 		glMatrixMode(GL_MODELVIEW);
-		glEnable(GL_COLOR_MATERIAL);	// specify object color
+		//glEnable(GL_COLOR_MATERIAL);	// specify object color
 		glColor3f(1.0, 0.1, 0.1);		// redish
 		glPushMatrix();
 		glMultMatrixf(local_trans_mat);

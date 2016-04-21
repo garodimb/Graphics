@@ -1,5 +1,6 @@
 #include <iostream>
 #include <math.h>
+#include <unistd.h>
 #include <GL/glut.h>
 #include <view.h>
 
@@ -12,6 +13,11 @@ static void on_display(){
 static void on_reshape(int w,int h){
 	view->reshape(w,h);
 	}
+
+static void on_idle_func_handler()
+{
+	view->idle_func_handler();
+}
 
 /* Constructor */
 View::View(int argc,char **argv){
@@ -31,6 +37,7 @@ View::View(int argc,char **argv){
 	init_camera();
 	glutDisplayFunc(on_display);
 	glutReshapeFunc(on_reshape);
+	glutIdleFunc(on_idle_func_handler);
 	view = this;
 	cube = new Cube(4.0f);
 	init_scene(argc,argv);
@@ -62,10 +69,11 @@ int View::init_lighting(){
 	GLfloat mat_specular[] = {1.0, 1.0, 1.0, 0.0 };
 	GLfloat mat_diffuse[] = {0.8,0.8,0.8,1.0};
 	GLfloat mat_shininess[] = { 128.0 };
-	//GLfloat light_position[] = { 0.0, 1.0, 0.0, 0.0 };
+
 	GLfloat light_diffuse0[] = { 1.0, 1.0, 1.0, 0.0 };
 	GLfloat light_diffuse1[] = { 1.0, 0.0, 1.0, 0.0 };
 	GLfloat light_diffuse2[] = { 0.0, 1.0, 1.0, 0.0 };
+	GLfloat qaDiffuseLight[] = {1, 0, 1, 1.0};
 
 	/* Disable LIGHTING to view only colored cube with different colors*/
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
@@ -74,17 +82,7 @@ int View::init_lighting(){
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse0);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse1);
 	glLightfv(GL_LIGHT2, GL_DIFFUSE, light_diffuse2);
-	//glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
-	GLfloat qaAmbientLight[] = {0.1, 0.1, 0.1, 1.0};
-	GLfloat qaDiffuseLight[] = {1, 0, 1, 1.0};
-	GLfloat qaSpecularLight[]  = {1.0, 1.0, 1.0, 1.0};
-	GLfloat emitLight[] = {0.9, 0.9, 0.9, 0.01};
-	GLfloat Noemit[] = {0.0, 0.0, 0.0, 1.0};
-
-	//glLightfv(GL_LIGT0, GL_AMBIENT, qaAmbientLight);
-    glLightfv(GL_LIGHT3, GL_DIFFUSE, qaDiffuseLight);
-    //glLightfv(GL_LIGHT0, GL_SPECULAR, qaSpecularLight);
+	glLightfv(GL_LIGHT3, GL_DIFFUSE, qaDiffuseLight);
 	return 0;
 	}
 
@@ -130,6 +128,7 @@ int View::init_scene(int argc,char **argv){
 	Matrix mat;
 	num_models = 2;
 	model = new Model*[num_models];
+	node = new SceneNode*[num_nodes];
 	scene = new SceneNode();
 	fn1_obj = "plyfiles/canstick.ply";
 	fn2_obj = "plyfiles/apple.ply";
@@ -151,19 +150,19 @@ int View::init_scene(int argc,char **argv){
 	 /* Create Models */
 	model[0] = new Model(fn1_obj,Cylinder,tex1_path);
 	model[1] = new Model(fn2_obj,Sphere,tex2_path);
-	SceneNode *node1 = new SceneNode();
-	SceneNode *node2 = new SceneNode();
+	node[0] = new SceneNode();
+	node[1] = new SceneNode();
 
-	node1->set_model(model[0]);
+	node[0]->set_model(model[0]);
 	mat.get_Tmat(0.8,0,0,matrix);
-	node1->set_transf(matrix);
+	node[1]->set_transf(matrix);
 
 	mat.get_Tmat(-0.8,0,0,matrix);
-	node2->set_transf(matrix);
-	node2->set_model(model[1]);
+	node[0]->set_transf(matrix);
+	node[1]->set_model(model[1]);
 
-	scene->add_child(node1);
-	scene->add_child(node2);
+	scene->add_child(node[0]);
+	scene->add_child(node[1]);
 	return 0;
 }
 int View::get_width(){
@@ -205,6 +204,32 @@ void View::display(){
 	scene->display();
 	glutSwapBuffers();
 	}
+
+/* Idle function handler */
+void View::idle_func_handler(void)
+{
+	static float count=0.0f;
+	static int flag = 0;
+	Matrix mat;
+	float trans_mat[16];
+	mat.get_Tmat(count,0,0,trans_mat);
+	double x;
+	trans_mat[12] = modf(trans_mat[12],&x)*4;
+	trans_mat[14] = sinf(count*20)*2;
+	if(trans_mat[12]>=2){
+		flag=1;
+		}
+	if(trans_mat[12]<=-2){
+		flag=0;
+		}
+	if(!flag)
+		count += 0.001;
+	else
+		count -= 0.001;
+	node[0]->set_transf(trans_mat);
+	usleep(30000);
+	glutPostRedisplay();
+}
 
 /* Draw Reference axis */
 int View::draw_axis(){

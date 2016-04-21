@@ -15,9 +15,11 @@ class View{
 		int screen_height;
 		int pos[2];
 		int num_models;
+		int num_nodes;
 		Cube *cube;
 		SceneNode *scene;
-		Model **model;
+		SceneNode **node; //Pointers to all scenenode, convert this into vector
+		Model **model; //Pointers to all model, convert this into vector
 		Camera *camera;
 		GLfloat *track_matrix;
 		GLfloat rotate_x; // X Rotation
@@ -39,6 +41,7 @@ class View{
 		int init_scene(int argc,char **argv);
 		void reshape(int w,int h);
 		void display(void);
+		void idle_func_handler(void);
 		int draw_axis();
 		int reg_mouse_handler(void (*mouse_handler)(int button,int state,int x,int y));
 		int reg_motion_handler(void (*motion_handler)(int x,int y));
