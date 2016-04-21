@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cstring>
 #include <matrix.h>
-
+#include <math.h>
 
 Matrix::Matrix()
 {
@@ -35,9 +35,11 @@ int Matrix::get_Tmat(float x, float y, float z,float *mat)
 /*
  * Get rotation matrix 4X4
  */
-int Matrix::get_Rmat(float *mat)
+int Matrix::get_Rmat(float x,float y,float z,float angle_rad,float *mat)
 {
-	return get_Imat(mat);
+	quat.CreateFromAxisAngle(x,y,z,angle_rad);
+	quat.CreateMatrix(mat);
+	return 0;
 }
 
 /*

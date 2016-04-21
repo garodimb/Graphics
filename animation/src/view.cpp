@@ -208,11 +208,12 @@ void View::display(){
 /* Idle function handler */
 void View::idle_func_handler(void)
 {
-	static float count=0.0f;
+	static int count=0;
 	static int flag = 0;
 	Matrix mat;
 	float trans_mat[16];
-	mat.get_Tmat(count,0,0,trans_mat);
+	mat.get_Rmat(0,1,0,count,trans_mat);
+	/*mat.get_Tmat(count,0,0,trans_mat);
 	double x;
 	trans_mat[12] = modf(trans_mat[12],&x)*4;
 	trans_mat[14] = sinf(count*20)*2;
@@ -226,8 +227,11 @@ void View::idle_func_handler(void)
 		count += 0.001;
 	else
 		count -= 0.001;
+	*/
+	double x;
+	count = (count+5)%360;
 	node[0]->set_transf(trans_mat);
-	usleep(30000);
+	usleep(10000);
 	glutPostRedisplay();
 }
 
