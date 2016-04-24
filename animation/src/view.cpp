@@ -165,7 +165,7 @@ int View::init_scene(int argc,char **argv){
 	node[1]->set_model(model[1]);
 
 	scene->add_child(node[0]);
-	scene->add_child(node[1]);
+	//scene->add_child(node[1]);
 	return 0;
 }
 int View::get_width(){
@@ -215,19 +215,24 @@ void View::idle_func_handler(void)
 	static int angle = 0;
 	static int flag = 0;
 	static bool attach = false;
+	static Vector prev_v; //Does it initializing to 0
 	Matrix mat;
 	float trans_mat[16];
 	float trans_v1,trans_v2;
-	Vector u,v;
-	u.x = 1.0, u.y = 0.0, u.z = 0;
-	v.x = 0.0, v.y = 1.0, v.z = 1.0;
-	mat.get_angle(u,v);
-	mat.get_Tmat(count,0,0,trans_mat);
 	double x;
-	trans_mat[12] = modf(trans_mat[12],&x)*4;
+	Vector u,v;
+	u.x = 1.0, u.y = 0.0, u.z = 0.0;
+	v.x = 0.0, v.y = 0.0, v.z = 1.0;
 	//Sine wave for 1st model
-	trans_v1 = sinf(count*20)*2;
+	trans_v1 = sinf(count*20)*2; //Z-Values
 	trans_v2 = -sinf(count*20)*2;
+	v.x = count - prev_v.x, v.z = trans_v1 - prev_v.z;
+	prev_v.x = count, prev_v.z = trans_v1;
+	angle = mat.get_angle(u,v);
+	mat.get_Rmat(0,1,0,angle+75,trans_mat);
+	node[0]->set_transf(trans_mat);
+	mat.get_Tmat(count,0,0,trans_mat);
+	trans_mat[12] = modf(trans_mat[12],&x)*4;
 	//Check x boundary
 	if(trans_mat[12]>=2){
 		flag=1;
@@ -237,7 +242,7 @@ void View::idle_func_handler(void)
 		}
 
 	//Check whether attached/detached
-	if(abs(trans_v1-trans_v2)<=0.05){
+	/*if(abs(trans_v1-trans_v2)<=0.05){
 		if(attach){
 			node[1]->detach();
 			scene->add_child(node[1]);
@@ -248,11 +253,11 @@ void View::idle_func_handler(void)
 			node[0]->add_child(node[1]);
 			attach = true;
 			}
-		}
+		}*/
 
 	// Set transformation matrix for node[0]
 	trans_mat[14] = trans_v1;
-	node[0]->set_transf(trans_mat);
+	node[0]->update_transf(trans_mat);
 	//set transformation matrix for node[1], depending on position
 	if(!attach){
 		trans_mat[14] = trans_v2;
@@ -267,7 +272,7 @@ void View::idle_func_handler(void)
 		count += 0.001;
 	else
 		count -= 0.001;
-	angle = (angle+5)%360;
+	//angle = (angle+5)%360;
 	usleep(10000);
 	glutPostRedisplay();
 }

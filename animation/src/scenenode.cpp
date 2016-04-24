@@ -100,6 +100,16 @@ int SceneNode::update_transf(float *mat)
 	return 0;
 }
 
+ /*
+ * Return value for transformation matrix
+ */
+
+int SceneNode::get_transf(float *mat)
+{
+   memcpy(mat,local_trans_mat,16*sizeof(local_trans_mat[0]));
+   return 0;
+}
+
 /*
  * Detach current node from its parent
  * and call detach_child of parent

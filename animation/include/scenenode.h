@@ -25,6 +25,7 @@ class SceneNode	{
 		 */
 		int set_transf(float *mat);
 		int update_transf(float *mat);
+		int get_transf(float *mat);
 		/*
 		 * Detach method will detach itself from parent(parent=NULL)
 		 * Detach method will call parent's detach_child and detach
