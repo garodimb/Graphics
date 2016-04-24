@@ -54,6 +54,17 @@ int Matrix::get_Smat(float x, float y, float z,float *mat)
 	return 0;
 }
 
+
+float Matrix::get_angle(const Vector &vec1,const Vector &vec2)
+{
+	float angle = 0.0;
+	float v1_mag = sqrt(vec1.x*vec1.x + vec1.y*vec1.y + vec1.z * vec1.z);
+	float v2_mag = sqrt(vec2.x*vec2.x + vec2.y*vec2.y + vec2.z * vec2.z);
+	angle = acos(sqrt(vec1.x*vec2.x + vec1.y*vec2.y + vec1.z*vec2.z)/(v1_mag*v2_mag));
+	angle = angle * 180 / M_PI;
+	log_D("Angle: "<<angle);
+	return angle;
+}
 /*
  * MAT_C = MAT_A * MAT_B
  */

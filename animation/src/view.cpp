@@ -123,17 +123,17 @@ int View::init(void){
  * Initialize scene
  */
 int View::init_scene(int argc,char **argv){
-	string fn1_obj,fn2_obj,tex1_path,tex2_path;
+	string fn1_obj,fn2_obj,fn3_obj,tex1_path,tex2_path;
 	float matrix[16];
 	Matrix mat;
-	num_models = 2;
+	num_models = 3;
 	model = new Model*[num_models];
 	node = new SceneNode*[num_nodes];
 	scene = new SceneNode();
 	fn1_obj = "plyfiles/canstick.ply";
-	fn2_obj = "plyfiles/apple.ply";
+	fn2_obj = "plyfiles/canstick.ply";
 	tex1_path = "texfiles/canstick.bmp";
-	tex2_path = "texfiles/apple.bmp";
+	tex2_path = "texfiles/canstick.bmp";
 	if(argc>=2){
 		fn1_obj = argv[1];
 		}
@@ -141,10 +141,13 @@ int View::init_scene(int argc,char **argv){
 		fn2_obj = argv[2];
 		}
 	if(argc>=4){
-		tex1_path = argv[3];
+		fn3_obj = argv[3];
 		}
 	if(argc>=5){
 		tex1_path = argv[4];
+		}
+	if(argc>=6){
+		tex1_path = argv[5];
 		}
 
 	 /* Create Models */
@@ -155,10 +158,10 @@ int View::init_scene(int argc,char **argv){
 
 	node[0]->set_model(model[0]);
 	mat.get_Tmat(0.8,0,0,matrix);
-	node[1]->set_transf(matrix);
+	//node[1]->set_transf(matrix);
 
 	mat.get_Tmat(-0.8,0,0,matrix);
-	node[0]->set_transf(matrix);
+	//node[0]->set_transf(matrix);
 	node[1]->set_model(model[1]);
 
 	scene->add_child(node[0]);
@@ -208,29 +211,63 @@ void View::display(){
 /* Idle function handler */
 void View::idle_func_handler(void)
 {
-	static int count=0;
+	static float count=0;
+	static int angle = 0;
 	static int flag = 0;
+	static bool attach = false;
 	Matrix mat;
 	float trans_mat[16];
-	mat.get_Rmat(0,1,0,count,trans_mat);
-	/*mat.get_Tmat(count,0,0,trans_mat);
+	float trans_v1,trans_v2;
+	Vector u,v;
+	u.x = 1.0, u.y = 0.0, u.z = 0;
+	v.x = 0.0, v.y = 1.0, v.z = 1.0;
+	mat.get_angle(u,v);
+	mat.get_Tmat(count,0,0,trans_mat);
 	double x;
 	trans_mat[12] = modf(trans_mat[12],&x)*4;
-	trans_mat[14] = sinf(count*20)*2;
+	//Sine wave for 1st model
+	trans_v1 = sinf(count*20)*2;
+	trans_v2 = -sinf(count*20)*2;
+	//Check x boundary
 	if(trans_mat[12]>=2){
 		flag=1;
 		}
 	if(trans_mat[12]<=-2){
 		flag=0;
 		}
+
+	//Check whether attached/detached
+	if(abs(trans_v1-trans_v2)<=0.05){
+		if(attach){
+			node[1]->detach();
+			scene->add_child(node[1]);
+			attach = false;
+			}
+		else{
+			node[1]->detach();
+			node[0]->add_child(node[1]);
+			attach = true;
+			}
+		}
+
+	// Set transformation matrix for node[0]
+	trans_mat[14] = trans_v1;
+	node[0]->set_transf(trans_mat);
+	//set transformation matrix for node[1], depending on position
+	if(!attach){
+		trans_mat[14] = trans_v2;
+		node[1]->set_transf(trans_mat);
+	}
+	else{
+		mat.get_Tmat(0,0,0.4,trans_mat);
+		node[1]->set_transf(trans_mat);
+		}
+	//Reverse direction at end
 	if(!flag)
 		count += 0.001;
 	else
 		count -= 0.001;
-	*/
-	double x;
-	count = (count+5)%360;
-	node[0]->set_transf(trans_mat);
+	angle = (angle+5)%360;
 	usleep(10000);
 	glutPostRedisplay();
 }
@@ -441,7 +478,7 @@ int View::update_tex_mode(int mode,int obj)
  */
 int View::update_trans_obj(float trans_x,float trans_z,int curr_obj)
 {
-		SceneNode * node = NULL;
+	SceneNode * node = NULL;
 	Model * mdl = NULL;
 	node = scene->get_scenenode(curr_obj);
 	if(!node){
