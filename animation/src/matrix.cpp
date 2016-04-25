@@ -60,7 +60,13 @@ float Matrix::get_angle(const Vector &vec1,const Vector &vec2)
 	float angle = 0.0;
 	float v1_mag = sqrt(vec1.x*vec1.x + vec1.y*vec1.y + vec1.z * vec1.z);
 	float v2_mag = sqrt(vec2.x*vec2.x + vec2.y*vec2.y + vec2.z * vec2.z);
-	angle = acos((vec1.x*vec2.x + vec1.y*vec2.y + vec1.z*vec2.z)/(v1_mag*v2_mag));
+	float value = (vec1.x*vec2.x + vec1.y*vec2.y + vec1.z*vec2.z)/(v1_mag*v2_mag);
+	/* Handle corner cases where value might go sligtly outside range */
+	if(value>1.0)
+		value = 1.0f;
+	if(value<-1.0)
+		value = -1.0f;
+	angle = acos(value);
 	angle = angle * 180 / M_PI;
 	log_D("Angle: "<<angle);
 	return angle;

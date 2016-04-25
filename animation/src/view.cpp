@@ -212,24 +212,28 @@ void View::display(){
 void View::idle_func_handler(void)
 {
 	static float count=0;
-	static int angle = 0;
+	static float angle = 0;
 	static int flag = 0;
 	static bool attach = false;
-	static Vector prev_v; //Does it initializing to 0
+	static Vector prev_v ={ 1.0f, 0.0f, 0.0f }; //Does it initializing to 0
+	static Vector prev_p = {-1.0f, -2.0f, 0.0f};
+	Vector curr_v = {0.0f, -2.0f, 0.0f};
 	Matrix mat;
 	float trans_mat[16];
 	float trans_v1,trans_v2;
 	double x;
-	Vector u,v;
-	u.x = 1.0, u.y = 0.0, u.z = 0.0;
-	v.x = 0.0, v.y = 0.0, v.z = 1.0;
 	//Sine wave for 1st model
 	trans_v1 = sinf(count*20)*2; //Z-Values
 	trans_v2 = -sinf(count*20)*2;
-	v.x = count - prev_v.x, v.z = trans_v1 - prev_v.z;
-	prev_v.x = count, prev_v.z = trans_v1;
-	angle = mat.get_angle(u,v);
-	mat.get_Rmat(0,1,0,angle+75,trans_mat);
+	curr_v.x = count - prev_p.x, curr_v.z = trans_v1 - prev_p.z;
+	curr_v.y = 0;
+	angle = angle + mat.get_angle(curr_v,prev_v);
+	/* Reset angle to 0 */
+	if(angle>360)
+		angle = 0;
+	prev_p.x = count, prev_p.z = trans_v1;
+	prev_v = curr_v;
+	mat.get_Rmat(0,1,0,angle,trans_mat);
 	node[0]->set_transf(trans_mat);
 	mat.get_Tmat(count,0,0,trans_mat);
 	trans_mat[12] = modf(trans_mat[12],&x)*4;
@@ -272,7 +276,6 @@ void View::idle_func_handler(void)
 		count += 0.001;
 	else
 		count -= 0.001;
-	//angle = (angle+5)%360;
 	usleep(10000);
 	glutPostRedisplay();
 }
