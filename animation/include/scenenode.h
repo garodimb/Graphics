@@ -16,16 +16,19 @@ class SceneNode	{
 		~SceneNode();
 		Model * get_model();
 		int set_model(Model *model);
-		int scale(const Vector& modelscale);
 		int add_child(SceneNode *node);
 		/*
 		 * mat is pointer to array having 16 consecutive floats
 		 * set_transf copies data from mat to transformation matrix
 		 * update_transf, updates transformation matrix
 		 */
-		int set_transf(float *mat);
-		int update_transf(float *mat);
-		int get_transf(float *mat);
+		int set_world_transf(float *mat);
+		int update_world_transf(float *mat);
+		int get_world_transf(float *mat);
+
+		int set_local_transf(float *mat);
+		int update_local_transf(float *mat);
+		int get_local_transf(float *mat);
 		/*
 		 * Detach method will detach itself from parent(parent=NULL)
 		 * Detach method will call parent's detach_child and detach
@@ -47,7 +50,6 @@ class SceneNode	{
 		float *world_trans_mat;
 		Model *model;
 		SceneNode *parent;
-		Vector *modelscale;
 		std :: vector < SceneNode *> child;
 	};
 

@@ -12,6 +12,7 @@ SceneNode::SceneNode()
 {
 	obj_count++;
 	scene_id = obj_count+1;
+	world_trans_mat = new float[16]();
 	local_trans_mat = new float[16]();
 	float identity [] ={
 						1.0, 0.0, 0.0, 0.0,
@@ -20,13 +21,9 @@ SceneNode::SceneNode()
 						0.0, 0.0, 0.0, 1.0
 						};
 	memcpy(local_trans_mat,identity,16*sizeof(float));
+	memcpy(world_trans_mat,identity,16*sizeof(float));
 	this->parent = NULL;
 	this->model = NULL;
-	this->modelscale = new Vector;
-	if(!(this->modelscale)){
-		log_E("Unable to allocate memory to modelscale");
-		}
-	modelscale->x = modelscale->y = modelscale->z = 1;
 }
 /*
  * Destructor
@@ -35,8 +32,8 @@ SceneNode::~SceneNode()
 {
 	log_D("Freeing memory");
 	delete local_trans_mat;
+	delete world_trans_mat;
 	parent = NULL;
-	delete modelscale;
 	for( std::vector<SceneNode *>::iterator iter = child.begin(); iter != child.end(); ++iter ){
 		delete (*iter);
 	}
@@ -57,17 +54,6 @@ Model * SceneNode::get_model()
 	return model;
 }
 
-/*
- * Set scale factor for current model only and not
- * for its childern
- */
-int SceneNode::scale(const Vector& modelscale)
-{
-	this->modelscale->x = modelscale.x;
-	this->modelscale->y = modelscale.y;
-	this->modelscale->z = modelscale.z;
-	return 0;
-}
 
 /*
  * Add child to current node
@@ -78,10 +64,45 @@ int SceneNode::add_child(SceneNode *node)
 	node->parent = this;
 	return 0;
 }
+
 /*
  * Set new transformation matrix by copying values
  */
-int SceneNode::set_transf(float *mat)
+int SceneNode::set_world_transf(float *mat)
+{
+	if(mat!=NULL){
+		memcpy(world_trans_mat,mat,16*sizeof(float));
+		}
+	return 0;
+}
+
+/*
+ * Update Transformation Matrix by multiplying with
+ * current matrix
+ */
+int SceneNode::update_world_transf(float *mat)
+{
+	Matrix mat_obj;
+	mat_obj.mul_mat(world_trans_mat,mat,world_trans_mat);
+	return 0;
+}
+
+ /*
+ * Return value for transformation matrix
+ */
+
+int SceneNode::get_world_transf(float *mat)
+{
+   memcpy(mat,world_trans_mat,16*sizeof(world_trans_mat[0]));
+   return 0;
+}
+
+
+
+/*
+ * Set new transformation matrix by copying values
+ */
+int SceneNode::set_local_transf(float *mat)
 {
 	if(mat!=NULL){
 		memcpy(local_trans_mat,mat,16*sizeof(float));
@@ -93,7 +114,7 @@ int SceneNode::set_transf(float *mat)
  * Update Transformation Matrix by multiplying with
  * current matrix
  */
-int SceneNode::update_transf(float *mat)
+int SceneNode::update_local_transf(float *mat)
 {
 	Matrix mat_obj;
 	mat_obj.mul_mat(local_trans_mat,mat,local_trans_mat);
@@ -104,7 +125,7 @@ int SceneNode::update_transf(float *mat)
  * Return value for transformation matrix
  */
 
-int SceneNode::get_transf(float *mat)
+int SceneNode::get_local_transf(float *mat)
 {
    memcpy(mat,local_trans_mat,16*sizeof(local_trans_mat[0]));
    return 0;
@@ -163,15 +184,14 @@ int SceneNode::display()
 		//glEnable(GL_COLOR_MATERIAL);	// specify object color
 		glColor3f(1.0, 0.1, 0.1);		// redish
 		glPushMatrix();
-		glMultMatrixf(local_trans_mat);
+		glMultMatrixf(world_trans_mat);
 		glStencilFunc(GL_ALWAYS,scene_id,-1);
 	//This can be special node without model
 	if(model!=NULL){
-		//Scaling only current model and not child
 		glPushMatrix();
-		glScalef(modelscale->x,modelscale->y,modelscale->z);
-		glPopMatrix();
+		glMultMatrixf(local_trans_mat);
 		model->display();
+		glPopMatrix();
 		}
 	// Display all child
 	for( std::vector<SceneNode *>::iterator iter = child.begin(); iter != child.end(); ++iter ){

@@ -163,30 +163,33 @@ int View::init_scene(int argc,char **argv){
 	node[1] = new SceneNode();
 	node[2] = new SceneNode();
 
+	/* Train */
 	node[0]->set_model(model[0]);
 	mat.get_Smat(0.15,0.15,0.15,matrix);
-	node[0]->set_transf(matrix);
+	node[0]->set_local_transf(matrix);
 	mat.get_Tmat(0.0,-1.7,0,matrix);
-	node[0]->update_transf(matrix);
+	node[0]->update_local_transf(matrix);
 
+	/* Cow on Train */
 	node[1]->set_model(model[1]);
 	mat.get_Smat(0.1,0.1,0.1,matrix);
-	node[1]->set_transf(matrix);
+	node[1]->set_local_transf(matrix);
 	mat.get_Tmat(0.075,-1.27,-0.75,matrix);
-	node[1]->update_transf(matrix);
+	node[1]->update_local_transf(matrix);
 
-
+	/* Ant on Cow */
 	node[2]->set_model(model[2]);
 	mat.get_Rmat(0.0,1.0,0.0,270,matrix);
-	node[2]->set_transf(matrix);
+	node[2]->set_local_transf(matrix);
 	mat.get_Smat(0.006,0.006,0.006,matrix);
-	node[2]->update_transf(matrix);
+	node[2]->update_local_transf(matrix);
 	mat.get_Tmat(0.07,-1.25,-0.75,matrix);
-	node[2]->update_transf(matrix);
-	node[2]->get_transf(matrix);
+	node[2]->update_local_transf(matrix);
+
+	/* Connected scene */
 	scene->add_child(node[0]);
-	scene->add_child(node[1]);
-	scene->add_child(node[2]);
+	node[0]->add_child(node[1]);
+	node[1]->add_child(node[2]);
 	return 0;
 }
 int View::get_width(){
@@ -232,7 +235,6 @@ void View::display(){
 /* Idle function handler */
 void View::idle_func_handler(void)
 {
-	return;
 	static float count=0;
 	static float angle = 0;
 	static int flag = 0;
@@ -256,7 +258,7 @@ void View::idle_func_handler(void)
 	prev_p.x = count, prev_p.z = trans_v1;
 	prev_v = curr_v;
 	mat.get_Rmat(0,1,0,angle,trans_mat);
-	node[0]->set_transf(trans_mat);
+	node[0]->set_world_transf(trans_mat);
 	mat.get_Tmat(count,0,0,trans_mat);
 	trans_mat[12] = modf(trans_mat[12],&x)*4;
 	//Check x boundary
@@ -283,16 +285,16 @@ void View::idle_func_handler(void)
 
 	// Set transformation matrix for node[0]
 	trans_mat[14] = trans_v1;
-	node[0]->update_transf(trans_mat);
+	node[0]->update_world_transf(trans_mat);
 	//set transformation matrix for node[1], depending on position
-	if(!attach){
+	/*if(!attach){
 		trans_mat[14] = trans_v2;
-		node[1]->set_transf(trans_mat);
+		node[1]->set_world_transf(trans_mat);
 	}
 	else{
 		mat.get_Tmat(0,0,0.4,trans_mat);
-		node[1]->set_transf(trans_mat);
-		}
+		node[1]->set_world_transf(trans_mat);
+		}*/
 	//Reverse direction at end
 	if(!flag)
 		count += 0.001;
