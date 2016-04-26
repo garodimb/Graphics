@@ -8,6 +8,11 @@
 #include <scenenode.h>
 #include <matrix.h>
 
+/* Camera  location */
+#define IN_SPACE 0
+#define ON_OBJ_B 1
+#define ON_OBJ_C 2
+
 class View{
 
 	private:
@@ -16,6 +21,7 @@ class View{
 		int pos[2];
 		int num_models;
 		int num_nodes;
+		int cam_loc; //Where is camera w.r.t. model
 		Cube *cube;
 		SceneNode *scene;
 		SceneNode **node; //Pointers to all scenenode, convert this into vector
@@ -51,7 +57,7 @@ class View{
 		int set_camera();
 		int set_fixed_light();
 		int set_headlight();
-		int refresh(GLfloat rotate_x=0.0f, GLfloat rotate_y=0.0f, GLfloat z_distance = 5.0f,GLfloat scale_all=1.0f,GLfloat trans_x=0.0f,GLfloat trans_y=0.0f,GLfloat trans_z=0.0f,GLfloat *track_matrix=NULL,bool *light_status=NULL);
+		int refresh(GLfloat rotate_x=0.0f, GLfloat rotate_y=0.0f, GLfloat z_distance = 5.0f,GLfloat scale_all=1.0f,GLfloat trans_x=0.0f,GLfloat trans_y=0.0f,GLfloat trans_z=0.0f,GLfloat *track_matrix=NULL,bool *light_status=NULL,int cam_loc=IN_SPACE);
 		int get_width();
 		int get_height();
 		int init_lighting();

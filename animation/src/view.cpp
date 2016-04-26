@@ -92,14 +92,17 @@ int View::init_lighting(){
 int View::init_camera(void)
 {
 	Vector cam_pos,cam_up,cam_lookat;
+	cam_loc = IN_SPACE;
 	cam_pos.x = 0.0f;
 	cam_pos.y = -1.0f;
 	cam_pos.z = -4.0f;
 
-	cam_up.x = cam_up.z = 0.0f;
-	cam_up.y = 1.0;
+	cam_up.x = 0.0f;
+	cam_up.z = 0.0f;
+	cam_up.y = 1.0f;
 
-	cam_lookat.x = cam_lookat.z = 0.0f;
+	cam_lookat.x = 0.0f;
+	cam_lookat.z = 0.0f;
 	cam_lookat.y = -1.0f;
 	delete camera;
 	camera = new Camera(cam_pos,cam_lookat,cam_up);
@@ -123,17 +126,19 @@ int View::init(void){
  * Initialize scene
  */
 int View::init_scene(int argc,char **argv){
-	string fn1_obj,fn2_obj,fn3_obj,tex1_path,tex2_path;
+	string fn1_obj,fn2_obj,fn3_obj,tex1_path,tex2_path,tex3_path;
 	float matrix[16];
 	Matrix mat;
 	num_models = 3;
 	model = new Model*[num_models];
 	node = new SceneNode*[num_nodes];
 	scene = new SceneNode();
-	fn1_obj = "plyfiles/canstick.ply";
-	fn2_obj = "plyfiles/canstick.ply";
+	fn1_obj = "plyfiles/train.ply";
+	fn2_obj = "plyfiles/cow.ply";
+	fn3_obj = "plyfiles/ant.ply";
 	tex1_path = "texfiles/canstick.bmp";
 	tex2_path = "texfiles/canstick.bmp";
+	tex3_path = "texfiles/canstick.bmp";
 	if(argc>=2){
 		fn1_obj = argv[1];
 		}
@@ -153,19 +158,35 @@ int View::init_scene(int argc,char **argv){
 	 /* Create Models */
 	model[0] = new Model(fn1_obj,Cylinder,tex1_path);
 	model[1] = new Model(fn2_obj,Sphere,tex2_path);
+	model[2] = new Model(fn3_obj,Cylinder,tex3_path);
 	node[0] = new SceneNode();
 	node[1] = new SceneNode();
+	node[2] = new SceneNode();
 
 	node[0]->set_model(model[0]);
-	mat.get_Tmat(0.8,0,0,matrix);
-	//node[1]->set_transf(matrix);
+	mat.get_Smat(0.15,0.15,0.15,matrix);
+	node[0]->set_transf(matrix);
+	mat.get_Tmat(0.0,-1.7,0,matrix);
+	node[0]->update_transf(matrix);
 
-	mat.get_Tmat(-0.8,0,0,matrix);
-	//node[0]->set_transf(matrix);
 	node[1]->set_model(model[1]);
+	mat.get_Smat(0.1,0.1,0.1,matrix);
+	node[1]->set_transf(matrix);
+	mat.get_Tmat(0.075,-1.27,-0.75,matrix);
+	node[1]->update_transf(matrix);
 
+
+	node[2]->set_model(model[2]);
+	mat.get_Rmat(0.0,1.0,0.0,270,matrix);
+	node[2]->set_transf(matrix);
+	mat.get_Smat(0.006,0.006,0.006,matrix);
+	node[2]->update_transf(matrix);
+	mat.get_Tmat(0.07,-1.25,-0.75,matrix);
+	node[2]->update_transf(matrix);
+	node[2]->get_transf(matrix);
 	scene->add_child(node[0]);
-	//scene->add_child(node[1]);
+	scene->add_child(node[1]);
+	scene->add_child(node[2]);
 	return 0;
 }
 int View::get_width(){
@@ -211,6 +232,7 @@ void View::display(){
 /* Idle function handler */
 void View::idle_func_handler(void)
 {
+	return;
 	static float count=0;
 	static float angle = 0;
 	static int flag = 0;
@@ -308,7 +330,7 @@ int View::rotate(GLfloat x, GLfloat y, GLfloat z, GLfloat angle){
 	}
 
 /* Refresh view */
-int View::refresh(GLfloat rotate_x,GLfloat rotate_y,GLfloat z_distance,GLfloat scale_all,GLfloat trans_x,GLfloat trans_y,GLfloat trans_z,GLfloat *track_matrix,bool *light_status){
+int View::refresh(GLfloat rotate_x,GLfloat rotate_y,GLfloat z_distance,GLfloat scale_all,GLfloat trans_x,GLfloat trans_y,GLfloat trans_z,GLfloat *track_matrix,bool *light_status,int cam_loc){
 			this->rotate_x 	= rotate_x; // X Rotation
 			this->rotate_y 	= rotate_y; // Y Rotation
 			this->z_distance = z_distance; // Camera distance
@@ -316,6 +338,7 @@ int View::refresh(GLfloat rotate_x,GLfloat rotate_y,GLfloat z_distance,GLfloat s
 			this->track_matrix = track_matrix; //Rotation by Trackball
 			for(int i =0 ;i<5;i++)
 				this->light_status[i] = light_status[i];
+			this->cam_loc = cam_loc;
 			glutPostRedisplay();
 			return 0;
 			}
@@ -360,16 +383,22 @@ int View::set_camera()
 {
 	Quaternion q;
 	Vector curr_pos;
-	if(track_matrix){
-		q.x = track_matrix[0];
-		q.y = track_matrix[1];
-		q.z = track_matrix[2];
-		q.w = track_matrix[3];
+	if(cam_loc==IN_SPACE){
+		if(track_matrix){
+			q.x = track_matrix[0];
+			q.y = track_matrix[1];
+			q.z = track_matrix[2];
+			q.w = track_matrix[3];
+			}
+		~q;
+		camera->rotate_camera(q);
+		curr_pos = camera->get_position();
+	}
+	else if(cam_loc==ON_OBJ_B){
+		curr_pos.x = curr_pos.z = 0.0f;
+		curr_pos.y = 0.0f;
 		}
-	~q;
-	camera->rotate_camera(q);
-	curr_pos = camera->get_position();
-	gluLookAt(curr_pos.x, curr_pos.y,curr_pos.z, 0.0, -1.0, 0.0, 0.0, 1.0, 0.0);
+	camera->set_camera();
 	return 0;
 }
 

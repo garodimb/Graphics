@@ -17,6 +17,7 @@ class Camera{
 	public:
 		Camera(Vector& position, Vector& lookat, Vector &up);
 		~Camera();
+		int set_camera();
 		Vector get_position();
 		Vector get_lookat();
 		Vector get_up();

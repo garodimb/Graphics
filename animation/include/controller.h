@@ -34,6 +34,12 @@
 #define KEY_t 116
 #define KEY_A 65
 #define KEY_a 97
+#define KEY_B 66
+#define KEY_b 98
+#define KEY_C 67
+#define KEY_c 99
+#define KEY_E 69
+#define KEY_e 101
 #define KEY_M 77
 #define KEY_m 109
 
@@ -48,6 +54,10 @@
 #define FL_DRAG 1
 #define FL_PUSH 0
 
+/*Camera location */
+#define IN_SPACE 0
+#define ON_OBJ_B 1
+#define ON_OBJ_C 2
 
 class Controller{
 
@@ -65,6 +75,7 @@ class Controller{
 			GLfloat trans_z; // Z translation
 			GLint enable_roat;
 			int curr_obj;
+			int cam_loc;
 			bool light_status[5];
 	public:
 		Controller(View *view);

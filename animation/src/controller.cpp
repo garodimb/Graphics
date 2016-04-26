@@ -48,6 +48,7 @@ int Controller::init()
 	trans_y  	= 0.0f; // Y translation
 	trans_z  	= 0.0f; // Z translation
 	curr_obj	= 0;
+	cam_loc		= IN_SPACE;
 	light_status[0] = light_status[1] = light_status[2] = light_status[3] = true;
 	light_status[4]	= true;
 	memset(track_matrix,0x00,sizeof(track_matrix));
@@ -58,7 +59,7 @@ int Controller::init()
 
 /* Mouse Handler */
 void Controller::mouse_handler(int button,int state,int x,int y){
-	if(button==GLUT_LEFT_BUTTON){
+	if((button==GLUT_LEFT_BUTTON) && (cam_loc == IN_SPACE)){
 		enable_roat=1;
 		trackball_handler(FL_PUSH,x,y);
 		}
@@ -161,6 +162,21 @@ void Controller::keyboard_handler(unsigned char key,int x,int y){
 		log_D("Texture mapping manual mode");
 		view->update_tex_mode(1,curr_obj);
 		}
+	else if(key == KEY_E || key == KEY_e){
+		log_I("Placing camera in space");
+		cam_loc = IN_SPACE;
+		refresh_view();
+		}
+	else if(key == KEY_B || key == KEY_b){
+		log_I("Placing camera on object B");
+		cam_loc = ON_OBJ_B;
+		refresh_view();
+		}
+	else if(key == KEY_C || key == KEY_c){
+		log_I("Placing camera on object C");
+		cam_loc = ON_OBJ_C;
+		refresh_view();
+		}
 	}
 
 /* Keyboard Special keys handler */
@@ -198,8 +214,7 @@ void Controller::trackball_handler(int event,int xx,int yy){
              (screen_height - 2.0 * y_ang) / screen_height,
              (2.0 * xx - screen_width) / screen_width,
              (screen_height - 2.0 * yy) / screen_height);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    /* Get qaurternion */
     trackball->get_quaternion(track_matrix);
     x_ang = xx ; y_ang = yy ;
     refresh_view() ;
@@ -242,7 +257,7 @@ int Controller::reset(){
 	}
 
 int Controller::refresh_view(){
-	view->refresh(rotate_x,rotate_y,z_distance,scale_all,trans_x,trans_y,trans_z,(GLfloat *)track_matrix,light_status);
+	view->refresh(rotate_x,rotate_y,z_distance,scale_all,trans_x,trans_y,trans_z,(GLfloat *)track_matrix,light_status,cam_loc);
 	return 0;
 	}
 

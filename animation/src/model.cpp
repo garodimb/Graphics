@@ -42,7 +42,7 @@ Model::Model(string &fn,Map map,string &tex_path)
 	scale_factor = 0.0f;
 	centroid.x = centroid.y = centroid.z = 0.0f;
 	read_ply();
-	compute_scale_factor();
+	//compute_scale_factor();
 	compute_normal();
 	init_tex();
 	if(map == Sphere){
