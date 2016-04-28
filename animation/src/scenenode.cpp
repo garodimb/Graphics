@@ -97,8 +97,16 @@ int SceneNode::get_world_transf(float *mat)
    return 0;
 }
 
-
-
+/* Get global world transform,pass mat as Identity matrix */
+int SceneNode::get_global_world_tansf(float *mat)
+{
+	Matrix mat_obj;
+	if(parent!=NULL){
+		parent->get_global_world_tansf(mat);
+		}
+	mat_obj.mul_mat(mat,world_trans_mat,mat);
+	return 0;
+}
 /*
  * Set new transformation matrix by copying values
  */

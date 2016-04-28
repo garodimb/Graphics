@@ -91,3 +91,16 @@ int Matrix::mul_mat(float *mata,float *matb,float *matc)
     memcpy(matc,ans,MAT_ENT*sizeof(ans[0]));
     return 0;
 }
+
+/* Assume all are 4*4 matrices */
+int Matrix::print_mat(float *mat)
+{
+	cout<<"**************************************"<<endl;
+	for(int i=0;i<16;i++){
+		cout<<mat[i]<<"  ";
+		if((i+1)%4==0)
+			cout<<endl;
+		}
+	cout<<"**************************************"<<endl;
+
+}

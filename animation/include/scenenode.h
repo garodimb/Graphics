@@ -25,6 +25,7 @@ class SceneNode	{
 		int set_world_transf(float *mat);
 		int update_world_transf(float *mat);
 		int get_world_transf(float *mat);
+		int get_global_world_tansf(float *mat);
 
 		int set_local_transf(float *mat);
 		int update_local_transf(float *mat);

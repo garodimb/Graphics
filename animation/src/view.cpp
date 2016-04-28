@@ -95,17 +95,7 @@ int View::init_camera(void)
 {
 	Vector cam_pos,cam_up,cam_lookat;
 	cam_loc = IN_SPACE;
-	cam_pos.x = animation->cam_pos_space->x;
-	cam_pos.y = animation->cam_pos_space->y;
-	cam_pos.z = animation->cam_pos_space->z;
-
-	cam_up.x = animation->cam_up_space->x;
-	cam_up.y = animation->cam_up_space->y;
-	cam_up.z = animation->cam_up_space->z;
-
-	cam_lookat.x = animation->cam_lookat_space->x;
-	cam_lookat.y = animation->cam_lookat_space->y;
-	cam_lookat.z = animation->cam_lookat_space->z;
+	animation->get_camera(cam_pos,cam_lookat,cam_up,IN_SPACE);
 	delete camera;
 	camera = new Camera(cam_pos,cam_lookat,cam_up);
 	return 0;
@@ -191,7 +181,10 @@ int View::init_scene(int argc,char **argv){
 	/* Connected scene */
 	scene->add_child(node[0]);
 	node[0]->add_child(node[1]);
-	scene->add_child(node[2]);
+	node[1]->add_child(node[2]);
+
+	mat.get_Tmat(1.5,0.0,0.0,matrix);
+	scene->set_world_transf(matrix);
 	return 0;
 }
 int View::get_width(){
@@ -331,12 +324,26 @@ int View::set_camera()
 		camera->rotate_camera(q);
 	}
 	else if(cam_loc==ON_OBJ_B){
-		animation->get_camera(curr_pos,curr_up,curr_lookat,ON_OBJ_B);
-		camera->config_camera(curr_pos,curr_up,curr_lookat);
+		animation->get_camera(curr_pos,curr_lookat,curr_up,ON_OBJ_B);
+		camera->config_camera(curr_pos,curr_lookat,curr_up);
+		Matrix mat_obj;
+		float *mat = new float[16];
+		mat_obj.get_Imat(mat);
+		mat_obj.print_mat(mat);
+		node[1]->get_global_world_tansf(mat);
+		mat_obj.print_mat(mat);
+		delete mat;
 		}
 	else if(cam_loc == ON_OBJ_C){
-		animation->get_camera(curr_pos,curr_up,curr_lookat,ON_OBJ_C);
-		camera->config_camera(curr_pos,curr_up,curr_lookat);
+		animation->get_camera(curr_pos,curr_lookat,curr_up,ON_OBJ_C);
+		camera->config_camera(curr_pos,curr_lookat,curr_up);
+		Matrix mat_obj;
+		float *mat = new float[16];
+		mat_obj.get_Imat(mat);
+		mat_obj.print_mat(mat);
+		node[1]->get_global_world_tansf(mat);
+		mat_obj.print_mat(mat);
+		delete mat;
 		}
 	camera->set_camera();
 	return 0;
