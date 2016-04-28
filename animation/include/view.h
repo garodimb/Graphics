@@ -7,6 +7,7 @@
 #include <camera.h>
 #include <scenenode.h>
 #include <matrix.h>
+#include <animation.h>
 
 /* Camera  location */
 #define IN_SPACE 0
@@ -27,6 +28,7 @@ class View{
 		SceneNode **node; //Pointers to all scenenode, convert this into vector
 		Model **model; //Pointers to all model, convert this into vector
 		Camera *camera;
+		Animation *animation;
 		GLfloat *track_matrix;
 		GLfloat rotate_x; // X Rotation
 		GLfloat rotate_y; // Y Rotation

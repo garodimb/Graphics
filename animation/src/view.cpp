@@ -34,6 +34,7 @@ View::View(int argc,char **argv){
 	glutInit(&argc,argv);
 	init_window("Texture Mapping",1000,500);
 	init();
+	animation = new Animation();
 	init_camera();
 	glutDisplayFunc(on_display);
 	glutReshapeFunc(on_reshape);
@@ -51,6 +52,7 @@ View::~View()
 	delete [] model;
 	delete camera;
 	delete scene;
+	delete animation;
 }
 
 /* Initialize windowing system */
@@ -93,17 +95,17 @@ int View::init_camera(void)
 {
 	Vector cam_pos,cam_up,cam_lookat;
 	cam_loc = IN_SPACE;
-	cam_pos.x = 0.0f;
-	cam_pos.y = -1.0f;
-	cam_pos.z = -4.0f;
+	cam_pos.x = animation->cam_pos_space->x;
+	cam_pos.y = animation->cam_pos_space->y;
+	cam_pos.z = animation->cam_pos_space->z;
 
-	cam_up.x = 0.0f;
-	cam_up.z = 0.0f;
-	cam_up.y = 1.0f;
+	cam_up.x = animation->cam_up_space->x;
+	cam_up.y = animation->cam_up_space->y;
+	cam_up.z = animation->cam_up_space->z;
 
-	cam_lookat.x = 0.0f;
-	cam_lookat.z = 0.0f;
-	cam_lookat.y = -1.0f;
+	cam_lookat.x = animation->cam_lookat_space->x;
+	cam_lookat.y = animation->cam_lookat_space->y;
+	cam_lookat.z = animation->cam_lookat_space->z;
 	delete camera;
 	camera = new Camera(cam_pos,cam_lookat,cam_up);
 	return 0;
@@ -189,7 +191,7 @@ int View::init_scene(int argc,char **argv){
 	/* Connected scene */
 	scene->add_child(node[0]);
 	node[0]->add_child(node[1]);
-	node[1]->add_child(node[2]);
+	scene->add_child(node[2]);
 	return 0;
 }
 int View::get_width(){
@@ -232,76 +234,9 @@ void View::display(){
 	glutSwapBuffers();
 	}
 
-/* Idle function handler */
 void View::idle_func_handler(void)
 {
-	static float count=0;
-	static float angle = 0;
-	static int flag = 0;
-	static bool attach = false;
-	static Vector prev_v ={ 1.0f, 0.0f, 0.0f }; //Does it initializing to 0
-	static Vector prev_p = {-1.0f, -2.0f, 0.0f};
-	Vector curr_v = {0.0f, -2.0f, 0.0f};
-	Matrix mat;
-	float trans_mat[16];
-	float trans_v1,trans_v2;
-	double x;
-	//Sine wave for 1st model
-	trans_v1 = sinf(count*20)*2; //Z-Values
-	trans_v2 = -sinf(count*20)*2;
-	curr_v.x = count - prev_p.x, curr_v.z = trans_v1 - prev_p.z;
-	curr_v.y = 0;
-	angle = angle + mat.get_angle(curr_v,prev_v);
-	/* Reset angle to 0 */
-	if(angle>360)
-		angle = 0;
-	prev_p.x = count, prev_p.z = trans_v1;
-	prev_v = curr_v;
-	mat.get_Rmat(0,1,0,angle,trans_mat);
-	node[0]->set_world_transf(trans_mat);
-	mat.get_Tmat(count,0,0,trans_mat);
-	trans_mat[12] = modf(trans_mat[12],&x)*4;
-	//Check x boundary
-	if(trans_mat[12]>=2){
-		flag=1;
-		}
-	if(trans_mat[12]<=-2){
-		flag=0;
-		}
-
-	//Check whether attached/detached
-	/*if(abs(trans_v1-trans_v2)<=0.05){
-		if(attach){
-			node[1]->detach();
-			scene->add_child(node[1]);
-			attach = false;
-			}
-		else{
-			node[1]->detach();
-			node[0]->add_child(node[1]);
-			attach = true;
-			}
-		}*/
-
-	// Set transformation matrix for node[0]
-	trans_mat[14] = trans_v1;
-	node[0]->update_world_transf(trans_mat);
-	//set transformation matrix for node[1], depending on position
-	/*if(!attach){
-		trans_mat[14] = trans_v2;
-		node[1]->set_world_transf(trans_mat);
-	}
-	else{
-		mat.get_Tmat(0,0,0.4,trans_mat);
-		node[1]->set_world_transf(trans_mat);
-		}*/
-	//Reverse direction at end
-	if(!flag)
-		count += 0.001;
-	else
-		count -= 0.001;
-	usleep(10000);
-	glutPostRedisplay();
+	return;
 }
 
 /* Draw Reference axis */
@@ -384,7 +319,7 @@ int View::reg_keyboard_spec_handler(void (*keyboard_spec_handler)(int key,int x,
 int View::set_camera()
 {
 	Quaternion q;
-	Vector curr_pos;
+	Vector curr_pos, curr_up, curr_lookat;
 	if(cam_loc==IN_SPACE){
 		if(track_matrix){
 			q.x = track_matrix[0];
@@ -394,11 +329,14 @@ int View::set_camera()
 			}
 		~q;
 		camera->rotate_camera(q);
-		curr_pos = camera->get_position();
 	}
 	else if(cam_loc==ON_OBJ_B){
-		curr_pos.x = curr_pos.z = 0.0f;
-		curr_pos.y = 0.0f;
+		animation->get_camera(curr_pos,curr_up,curr_lookat,ON_OBJ_B);
+		camera->config_camera(curr_pos,curr_up,curr_lookat);
+		}
+	else if(cam_loc == ON_OBJ_C){
+		animation->get_camera(curr_pos,curr_up,curr_lookat,ON_OBJ_C);
+		camera->config_camera(curr_pos,curr_up,curr_lookat);
 		}
 	camera->set_camera();
 	return 0;

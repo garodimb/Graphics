@@ -18,6 +18,7 @@ class Camera{
 		Camera(Vector& position, Vector& lookat, Vector &up);
 		~Camera();
 		int set_camera();
+		int config_camera(Vector& position, Vector &lookat, Vector &up);
 		Vector get_position();
 		Vector get_lookat();
 		Vector get_up();

@@ -12,6 +12,14 @@ Camera::Camera(Vector& position, Vector& lookat, Vector &up)
 Camera::~Camera()
 {}
 
+/* Only sets current position of camera */
+int Camera::config_camera(Vector& position, Vector &lookat, Vector &up)
+{
+	curr_pos = position;
+	curr_lookat = lookat;
+	curr_up = up;
+	return 0;
+}
 Vector Camera::get_position()
 {
 	return curr_pos;

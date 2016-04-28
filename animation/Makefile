@@ -7,7 +7,7 @@ INCFLAG	:= -I$(INCLUDE) -I$(LDIR)/
 CXX		:= g++
 CC		:= gcc
 
-_OBJ 	:= model.o view.o controller.o cube.o quaternion.o trackball.o texture.o camera.o main.o plyfile.o scenenode.o matrix.o
+_OBJ 	:= model.o view.o controller.o cube.o quaternion.o trackball.o texture.o camera.o main.o plyfile.o scenenode.o matrix.o animation.o
 OBJ 	:= $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 vpath %.cpp src
