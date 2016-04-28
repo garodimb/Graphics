@@ -13,6 +13,7 @@
 #define IN_SPACE 0
 #define ON_OBJ_B 1
 #define ON_OBJ_C 2
+#define ON_OBJ_A 3
 
 class View{
 

@@ -177,6 +177,11 @@ void Controller::keyboard_handler(unsigned char key,int x,int y){
 		cam_loc = ON_OBJ_C;
 		refresh_view();
 		}
+	else if(key == KEY_D || key == KEY_d){
+		log_I("Placing camera on object A");
+		cam_loc = ON_OBJ_A;
+		refresh_view();
+		}
 	}
 
 /* Keyboard Special keys handler */

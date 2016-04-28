@@ -21,7 +21,6 @@
 #define KEY_R 114 // Right Rotation
 #define KEY_H 104
 #define KEY_V 118
-#define KEY_D 100
 #define KEY_x 120
 #define KEY_X 88
 #define KEY_y 121
@@ -38,6 +37,8 @@
 #define KEY_b 98
 #define KEY_C 67
 #define KEY_c 99
+#define KEY_D 68
+#define KEY_d 100
 #define KEY_E 69
 #define KEY_e 101
 #define KEY_M 77
@@ -58,6 +59,7 @@
 #define IN_SPACE 0
 #define ON_OBJ_B 1
 #define ON_OBJ_C 2
+#define ON_OBJ_A 3
 
 class Controller{
 

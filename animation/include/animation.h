@@ -10,6 +10,10 @@ class Animation
 		Vector *cam_up_space;
 		Vector *cam_lookat_space;
 
+		Vector *cam_pos_obja;
+		Vector *cam_up_obja;
+		Vector *cam_lookat_obja;
+
 		Vector *cam_pos_objb;
 		Vector *cam_up_objb;
 		Vector *cam_lookat_objb;

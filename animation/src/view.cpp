@@ -231,41 +231,62 @@ void View::idle_func_handler(void)
 	Matrix mat;
 	float matrix[16];
 	static int direction = 0;
-	static float x = 1.5 ,z = 1.5;
+	static float padding = 1.7;
+	static float x = 1.7, z = 1.7;
+	static float speed = 0.05;
 	static int angle = 90;
+	static bool attach = true;
 	if(direction==0){
-		x-=0.01;
-		if(x<=-1.5){
+		x-=speed;
+		if(x<=-padding){
 			angle = (angle + 90)%360;
 			direction = 1;
 			}
 		}
 	else if(direction==1){
-		z-=0.01;
-		if(z<=-1.5){
+		z-=speed;
+		if(z<=-padding){
 			angle = (angle + 90)%360;
 			direction = 2;
 			}
 		}
 	else if(direction==2){
-		x+=0.01;
-		if(x>=1.5){
+		if(x>=padding/2.0)
+			speed = 0.01;
+		x+=speed;
+		if(x>=padding){
 			angle = (angle + 90)%360;
 			direction = 3;
+			speed = 0.05;
+			if(attach){
+				node[1]->detach();
+				scene->add_child(node[1]);
+				mat.get_Tmat(x-0.8,-0.53,z+0.35,matrix);
+				node[1]->set_world_transf(matrix);
+				mat.get_Rmat(0,1,0,angle,matrix);
+				node[1]->update_world_transf(matrix);
+				attach = false;
+				}
+			else{
+				node[1]->detach();
+				node[0]->add_child(node[1]);
+				mat.get_Imat(matrix);
+				node[1]->set_world_transf(matrix);
+				attach = true;
+				}
 			}
 		}
 	else if(direction==3){
-		z+=0.01;
-		if(z>=1.5){
+		z+=speed;
+		if(z>=padding){
 			angle = (angle + 90)%360;
 			direction = 0;
 			}
 		}
 	mat.get_Tmat(x,0,z,matrix);
-	scene->set_world_transf(matrix);
+	node[0]->set_world_transf(matrix);
 	mat.get_Rmat(0,1,0,angle,matrix);
-	scene->update_world_transf(matrix);
-	usleep(10000);
+	node[0]->update_world_transf(matrix);
 	glutPostRedisplay();
 }
 
@@ -350,13 +371,30 @@ int View::set_camera()
 {
 	Quaternion q;
 	Vector curr_pos, curr_up, curr_lookat;
-	if(cam_loc==ON_OBJ_B){
+	Matrix mat_obj;
+	float *mat = new float[16];
+	if(cam_loc == ON_OBJ_A){
+		animation->get_camera(curr_pos,curr_lookat,curr_up,ON_OBJ_A);
+		mat_obj.get_Imat(mat);
+		node[0]->get_global_world_tansf(mat);
+		mat_obj.get_transf_vector(mat,curr_pos);
+		camera->config_camera(curr_pos,curr_lookat,curr_up);
+		}
+	else if(cam_loc==ON_OBJ_B){
 		/* Get configuration of camera on object B */
 		animation->get_camera(curr_pos,curr_lookat,curr_up,ON_OBJ_B);
+		mat_obj.get_Imat(mat);
+		node[1]->get_global_world_tansf(mat);
+		mat_obj.get_transf_vector(mat,curr_pos);
+		camera->config_camera(curr_pos,curr_lookat,curr_up);
 		}
 	else if(cam_loc == ON_OBJ_C){
 		/* Get configuration of camera on object C */
 		animation->get_camera(curr_pos,curr_lookat,curr_up,ON_OBJ_C);
+		mat_obj.get_Imat(mat);
+		node[2]->get_global_world_tansf(mat);
+		mat_obj.get_transf_vector(mat,curr_pos);
+		camera->config_camera(curr_pos,curr_lookat,curr_up);
 		}
 	else{
 		/* Camera in space */
@@ -369,16 +407,7 @@ int View::set_camera()
 		~q;
 		camera->rotate_camera(q);
 		}
-	if(cam_loc == ON_OBJ_B || cam_loc == ON_OBJ_C){
-		/* Apply transformation on camera position */
-		Matrix mat_obj;
-		float *mat = new float[16];
-		mat_obj.get_Imat(mat);
-		node[1]->get_global_world_tansf(mat);
-		mat_obj.get_transf_vector(mat,curr_pos);
-		camera->config_camera(curr_pos,curr_lookat,curr_up);
-		delete mat;
-	}
+	delete mat;
 	camera->set_camera();
 	return 0;
 }

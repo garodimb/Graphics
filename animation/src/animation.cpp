@@ -12,6 +12,10 @@ Animation::~Animation()
 	delete cam_up_space;
 	delete cam_lookat_space;
 
+	delete cam_pos_obja;
+	delete cam_up_obja;
+	delete cam_lookat_obja;
+
 	delete cam_pos_objb;
 	delete cam_up_objb;
 	delete cam_lookat_objb;
@@ -27,6 +31,10 @@ int Animation::config_camera()
 	cam_lookat_space = new Vector;
 	cam_up_space = new Vector;
 
+	cam_pos_obja = new Vector;
+	cam_lookat_obja = new Vector;
+	cam_up_obja = new Vector;
+
 	cam_pos_objb = new Vector;
 	cam_lookat_objb = new Vector;
 	cam_up_objb = new Vector;
@@ -36,7 +44,7 @@ int Animation::config_camera()
 	cam_up_objc = new Vector;
 
 	/* Camera in space */
-	cam_pos_space->x = 0.0f;
+	cam_pos_space->x = 2.0f;
 	cam_pos_space->y = -1.0f;
 	cam_pos_space->z = -4.0f;
 
@@ -47,6 +55,19 @@ int Animation::config_camera()
 	cam_lookat_space->x = 0.0f;
 	cam_lookat_space->y = -1.0f;
 	cam_lookat_space->z = 0.0f;
+
+	/* Camera on Model A */
+	cam_pos_obja->x = 0.0f;
+	cam_pos_obja->y = -1.0f;
+	cam_pos_obja->z = -0.0f;
+
+	cam_up_obja->x = 0.0f;
+	cam_up_obja->y = 1.0f;
+	cam_up_obja->z = 0.0f;
+
+	cam_lookat_obja->x = 0.0f;
+	cam_lookat_obja->y = -2.0f;
+	cam_lookat_obja->z = 0.0f;
 
 	/* Camera on Model B */
 	cam_pos_objb->x = 0.0f;
@@ -97,7 +118,11 @@ int Animation::get_camera(Vector& position,Vector& lookat,Vector &up,int obj)
 			lookat.x = cam_lookat_objc->x; lookat.y = cam_lookat_objc->y; lookat.z = cam_lookat_objc->z;
 			up.x = cam_up_objc->x; up.y = cam_up_objc->y; up.z = cam_up_objc->z;
 			break;
-
+		case 3:
+			position.x = cam_pos_obja->x; position.y = cam_pos_obja->y; position.z = cam_pos_obja->z;
+			lookat.x = cam_lookat_obja->x; lookat.y = cam_lookat_obja->y; lookat.z = cam_lookat_obja->z;
+			up.x = cam_up_obja->x; up.y = cam_up_obja->y; up.z = cam_up_obja->z;
+			break;
 		default:
 			log_E("Invalid Model");
 			return 1;
