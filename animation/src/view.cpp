@@ -184,11 +184,6 @@ int View::init_scene(int argc,char **argv){
 	scene->add_child(node[0]);
 	node[0]->add_child(node[1]);
 	node[1]->add_child(node[2]);
-
-	mat.get_Tmat(1.5,0.0,0.0,matrix);
-	scene->set_world_transf(matrix);
-	mat.get_Rmat(0,1,0,90,matrix);
-	scene->update_world_transf(matrix);
 	return 0;
 }
 int View::get_width(){
@@ -233,7 +228,45 @@ void View::display(){
 
 void View::idle_func_handler(void)
 {
-	return;
+	Matrix mat;
+	float matrix[16];
+	static int direction = 0;
+	static float x = 1.5 ,z = 1.5;
+	static int angle = 90;
+	if(direction==0){
+		x-=0.01;
+		if(x<=-1.5){
+			angle = (angle + 90)%360;
+			direction = 1;
+			}
+		}
+	else if(direction==1){
+		z-=0.01;
+		if(z<=-1.5){
+			angle = (angle + 90)%360;
+			direction = 2;
+			}
+		}
+	else if(direction==2){
+		x+=0.01;
+		if(x>=1.5){
+			angle = (angle + 90)%360;
+			direction = 3;
+			}
+		}
+	else if(direction==3){
+		z+=0.01;
+		if(z>=1.5){
+			angle = (angle + 90)%360;
+			direction = 0;
+			}
+		}
+	mat.get_Tmat(x,0,z,matrix);
+	scene->set_world_transf(matrix);
+	mat.get_Rmat(0,1,0,angle,matrix);
+	scene->update_world_transf(matrix);
+	usleep(10000);
+	glutPostRedisplay();
 }
 
 /* Draw Reference axis */
