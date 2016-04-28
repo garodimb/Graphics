@@ -82,9 +82,9 @@ int Matrix::mul_mat(float *mata,float *matb,float *matc)
 	for (i = 0; i < n; i++) {
       for (j = 0; j < n; j++) {
         for (k = 0; k < n; k++) {
-          sum = sum + mata[i*n+k]*matb[k*n+j];
+          sum = sum + mata[k*n+j]*matb[i*n+k];
         }
-        ans[i*n+j] = sum;
+        ans[j+i*n] = sum;
         sum = 0;
       }
     }
@@ -92,6 +92,15 @@ int Matrix::mul_mat(float *mata,float *matb,float *matc)
     return 0;
 }
 
+int Matrix::get_transf_vector(float *mat,Vector& vec)
+{
+	Vector sol;
+	sol.x = mat[0]*vec.x+mat[4]*vec.y+mat[8]*vec.z+mat[12];
+	sol.y = mat[1]*vec.x+mat[5]*vec.y+mat[9]*vec.z+mat[13];
+	sol.z = mat[2]*vec.x+mat[6]*vec.y+mat[10]*vec.z+mat[14];
+	vec = sol;
+	return 0;
+}
 /* Assume all are 4*4 matrices */
 int Matrix::print_mat(float *mat)
 {

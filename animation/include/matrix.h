@@ -19,6 +19,7 @@ class Matrix{
 		int get_Smat(float x, float y, float z,float *mat);
 		int mul_mat(float *mata,float *matb,float *matc);
 		int print_mat(float *mat);
+		int get_transf_vector(float *mat,Vector& vec);
 		float get_angle(const Vector &vec1,const Vector &vec2);
 };
 

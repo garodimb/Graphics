@@ -157,26 +157,28 @@ int View::init_scene(int argc,char **argv){
 
 	/* Train */
 	node[0]->set_model(model[0]);
-	mat.get_Smat(0.15,0.15,0.15,matrix);
-	node[0]->set_local_transf(matrix);
 	mat.get_Tmat(0.0,-1.7,0,matrix);
+	node[0]->set_local_transf(matrix);
+	mat.get_Smat(0.15,0.15,0.15,matrix);
 	node[0]->update_local_transf(matrix);
 
 	/* Cow on Train */
 	node[1]->set_model(model[1]);
-	mat.get_Smat(0.1,0.1,0.1,matrix);
-	node[1]->set_local_transf(matrix);
 	mat.get_Tmat(0.075,-1.27,-0.75,matrix);
+	node[1]->set_local_transf(matrix);
+	mat.get_Smat(0.1,0.1,0.1,matrix);
 	node[1]->update_local_transf(matrix);
+
 
 	/* Ant on Cow */
 	node[2]->set_model(model[2]);
-	mat.get_Rmat(0.0,1.0,0.0,270,matrix);
+	mat.get_Tmat(0.07,-1.25,-0.75,matrix);
 	node[2]->set_local_transf(matrix);
 	mat.get_Smat(0.006,0.006,0.006,matrix);
 	node[2]->update_local_transf(matrix);
-	mat.get_Tmat(0.07,-1.25,-0.75,matrix);
+	mat.get_Rmat(0.0,1.0,0.0,270,matrix);
 	node[2]->update_local_transf(matrix);
+
 
 	/* Connected scene */
 	scene->add_child(node[0]);
@@ -185,6 +187,8 @@ int View::init_scene(int argc,char **argv){
 
 	mat.get_Tmat(1.5,0.0,0.0,matrix);
 	scene->set_world_transf(matrix);
+	mat.get_Rmat(0,1,0,90,matrix);
+	scene->update_world_transf(matrix);
 	return 0;
 }
 int View::get_width(){
@@ -313,7 +317,16 @@ int View::set_camera()
 {
 	Quaternion q;
 	Vector curr_pos, curr_up, curr_lookat;
-	if(cam_loc==IN_SPACE){
+	if(cam_loc==ON_OBJ_B){
+		/* Get configuration of camera on object B */
+		animation->get_camera(curr_pos,curr_lookat,curr_up,ON_OBJ_B);
+		}
+	else if(cam_loc == ON_OBJ_C){
+		/* Get configuration of camera on object C */
+		animation->get_camera(curr_pos,curr_lookat,curr_up,ON_OBJ_C);
+		}
+	else{
+		/* Camera in space */
 		if(track_matrix){
 			q.x = track_matrix[0];
 			q.y = track_matrix[1];
@@ -322,29 +335,17 @@ int View::set_camera()
 			}
 		~q;
 		camera->rotate_camera(q);
+		}
+	if(cam_loc == ON_OBJ_B || cam_loc == ON_OBJ_C){
+		/* Apply transformation on camera position */
+		Matrix mat_obj;
+		float *mat = new float[16];
+		mat_obj.get_Imat(mat);
+		node[1]->get_global_world_tansf(mat);
+		mat_obj.get_transf_vector(mat,curr_pos);
+		camera->config_camera(curr_pos,curr_lookat,curr_up);
+		delete mat;
 	}
-	else if(cam_loc==ON_OBJ_B){
-		animation->get_camera(curr_pos,curr_lookat,curr_up,ON_OBJ_B);
-		camera->config_camera(curr_pos,curr_lookat,curr_up);
-		Matrix mat_obj;
-		float *mat = new float[16];
-		mat_obj.get_Imat(mat);
-		mat_obj.print_mat(mat);
-		node[1]->get_global_world_tansf(mat);
-		mat_obj.print_mat(mat);
-		delete mat;
-		}
-	else if(cam_loc == ON_OBJ_C){
-		animation->get_camera(curr_pos,curr_lookat,curr_up,ON_OBJ_C);
-		camera->config_camera(curr_pos,curr_lookat,curr_up);
-		Matrix mat_obj;
-		float *mat = new float[16];
-		mat_obj.get_Imat(mat);
-		mat_obj.print_mat(mat);
-		node[1]->get_global_world_tansf(mat);
-		mat_obj.print_mat(mat);
-		delete mat;
-		}
 	camera->set_camera();
 	return 0;
 }

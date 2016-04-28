@@ -54,8 +54,8 @@ int Animation::config_camera()
 	cam_pos_objb->z = -0.70f;
 
 	cam_up_objb->x = 0.0f;
-	cam_up_objb->y = 0.0f;
-	cam_up_objb->z = 1.0f;
+	cam_up_objb->y = 1.0f;
+	cam_up_objb->z = 0.0f;
 
 	cam_lookat_objb->x = 0.0f;
 	cam_lookat_objb->y = -2.0f;
@@ -67,8 +67,8 @@ int Animation::config_camera()
 	cam_pos_objc->z = -0.70f;
 
 	cam_up_objc->x = 0.0f;
-	cam_up_objc->y = 0.0f;
-	cam_up_objc->z = 1.0f;
+	cam_up_objc->y = 1.0f;
+	cam_up_objc->z = 0.0f;
 
 	cam_lookat_objc->x = 0.0f;
 	cam_lookat_objc->y = -2.0f;
