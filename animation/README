@@ -11,15 +11,15 @@ INTRODUCTION
 ============
 
 	This is an OpenGL application written using C++ and glut to demonstrate
-	texture mapping and lighting
+	animation using scenegraph
 
 	* Features supported
 	  ------------------
-
-		- Runtime loading of any 3D modeles from ply files
-		- Runytime loading of any texture
+		- Moving train with Cow and Ant on top of it
+		- Moving train without Cow and Ant after detaching
+		- Moving cow after detaching
+		- Cameras moving with objects
 		- Change texture by clicking on images
-		- Lighting
 		- Object selection
 		- Lighting
 
@@ -30,18 +30,11 @@ HOW TO COMPILE AND RUN
 	- Compile in non-debug mode
 	  $make
 	- Compile in debug mode
-	  $make CFLAGS='-D DEBUG'
+	  $make CFLAGS='-D DEBUG' CXXFLAGS='-D DEBUG'
 
 	This will generate an executable 'main' in same directory
 	Execute bellow command to run
-	$./main [Plyfile1 [Plyfile2 [texfile1 [texfile2]]]
-
-INPUT
-=====
-
-	This application takes 3D model described in simple plyfile as input.
-	It also takes any bmp file format for texture.
-	Default models are apple and canstick
+	$./main
 
 
 SOURCES REFERRED
@@ -55,12 +48,6 @@ SOURCES REFERRED
 KEY BINDINGS
 ============
 
-		- '+'				: Move camera close to model
-		- '-'				: Move camera away from model
-		- 'X'				: Translate selected object in +ve X direction
-		- 'x'				: Translate selected object in -ve X direction
-		- 'Z'				: Translate selected object in +ve Z direction
-		- 'z'				: Translate selected object in -ve Z direction
 		- LEFT MOUSE BUTTON : Rotation of camera by moving mouse while pressing left
 							  mouse button
 		- RIGHT MOUSE BUTTON: Select object
@@ -71,3 +58,8 @@ KEY BINDINGS
 		- NUM KEY 5			: Toggle lighting
 		- 'A'				: OpenGL algorithm for texture coordinate computation
 		- 'M'				: Manual texture computation
+		- 'D'				: Camera attached to moving train
+		- 'B'				: Camera attached to Cow
+		- 'C'				: Camera attached to Ant
+		- 'E'				: Camera in space
+		- 'T'				: Toggle texture of seletced object

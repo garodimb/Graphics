@@ -38,7 +38,7 @@ class View{
 		GLfloat trans_x; // X translation
 		GLfloat trans_y; // Y translation
 		GLfloat trans_z; // Z translation
-		bool light_status[5];
+		bool light_status[6];
 		int curr_obj;
 
 
@@ -60,6 +60,7 @@ class View{
 		int set_camera();
 		int set_fixed_light();
 		int set_headlight();
+		int set_spotlight(Vector& pos,Vector &direction);
 		int refresh(GLfloat rotate_x=0.0f, GLfloat rotate_y=0.0f, GLfloat z_distance = 5.0f,GLfloat scale_all=1.0f,GLfloat trans_x=0.0f,GLfloat trans_y=0.0f,GLfloat trans_z=0.0f,GLfloat *track_matrix=NULL,bool *light_status=NULL,int cam_loc=IN_SPACE);
 		int get_width();
 		int get_height();

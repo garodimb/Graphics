@@ -30,7 +30,7 @@ View::View(int argc,char **argv){
 	trans_y  	= 0.0f; // Y translation
 	trans_z  	= 0.0f; // Z translation
 	light_status[0] = light_status[1] = light_status[2] = light_status[3] = true;
-	light_status[4] = true;
+	light_status[4] = light_status[5] = true;
 	glutInit(&argc,argv);
 	init_window("Texture Mapping",1000,500);
 	init();
@@ -85,6 +85,7 @@ int View::init_lighting(){
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse1);
 	glLightfv(GL_LIGHT2, GL_DIFFUSE, light_diffuse2);
 	glLightfv(GL_LIGHT3, GL_DIFFUSE, qaDiffuseLight);
+	glLightfv(GL_LIGHT4, GL_DIFFUSE, qaDiffuseLight);
 	return 0;
 	}
 
@@ -121,6 +122,8 @@ int View::init_scene(int argc,char **argv){
 	string fn1_obj,fn2_obj,fn3_obj,tex1_path,tex2_path,tex3_path;
 	float matrix[16];
 	Matrix mat;
+	Vector trans,scale;
+	float angle;
 	num_models = 3;
 	model = new Model*[num_models];
 	node = new SceneNode*[num_nodes];
@@ -157,26 +160,30 @@ int View::init_scene(int argc,char **argv){
 
 	/* Train */
 	node[0]->set_model(model[0]);
-	mat.get_Tmat(0.0,-1.7,0,matrix);
+	animation->get_model_transf(trans,scale,angle,1);
+	mat.get_Tmat(trans.x,trans.y,trans.z,matrix);
 	node[0]->set_local_transf(matrix);
-	mat.get_Smat(0.15,0.15,0.15,matrix);
+	mat.get_Smat(scale.x,scale.y,scale.z,matrix);
 	node[0]->update_local_transf(matrix);
 
 	/* Cow on Train */
 	node[1]->set_model(model[1]);
-	mat.get_Tmat(0.075,-1.27,-0.75,matrix);
+	animation->get_model_transf(trans,scale,angle,2);
+	mat.get_Tmat(trans.x,trans.y,trans.z,matrix);
 	node[1]->set_local_transf(matrix);
-	mat.get_Smat(0.1,0.1,0.1,matrix);
+	mat.get_Smat(scale.x,scale.y,scale.z,matrix);
 	node[1]->update_local_transf(matrix);
 
 
 	/* Ant on Cow */
 	node[2]->set_model(model[2]);
+	animation->get_model_transf(trans,scale,angle,3);
 	mat.get_Tmat(0.07,-1.25,-0.75,matrix);
+	mat.get_Tmat(trans.x,trans.y,trans.z,matrix);
 	node[2]->set_local_transf(matrix);
-	mat.get_Smat(0.006,0.006,0.006,matrix);
+	mat.get_Smat(scale.x,scale.y,scale.z,matrix);
 	node[2]->update_local_transf(matrix);
-	mat.get_Rmat(0.0,1.0,0.0,270,matrix);
+	mat.get_Rmat(0.0,1.0,0.0,angle,matrix);
 	node[2]->update_local_transf(matrix);
 
 
@@ -217,7 +224,6 @@ void View::display(){
 	set_headlight();
 	set_camera();
 	set_fixed_light();
-	glScalef(scale_all,scale_all,scale_all);
 	/* Move camera using z so to get fill of zooming */
 	/* Eye, Center and Up vector */
 	glStencilFunc(GL_ALWAYS,1,-1);
@@ -324,8 +330,9 @@ int View::refresh(GLfloat rotate_x,GLfloat rotate_y,GLfloat z_distance,GLfloat s
 			this->z_distance = z_distance; // Camera distance
 			this->scale_all	= scale_all; // Uniform scaling in all direction
 			this->track_matrix = track_matrix; //Rotation by Trackball
-			for(int i =0 ;i<5;i++)
+			for(int i =0 ;i<6;i++){
 				this->light_status[i] = light_status[i];
+				}
 			this->cam_loc = cam_loc;
 			glutPostRedisplay();
 			return 0;
@@ -371,6 +378,9 @@ int View::set_camera()
 {
 	Quaternion q;
 	Vector curr_pos, curr_up, curr_lookat;
+	Vector spot_pos,spot_direction;
+	spot_pos.x = spot_pos.y = spot_pos.z = 0.0f;
+	spot_pos.y = -0.5f;
 	Matrix mat_obj;
 	float *mat = new float[16];
 	if(cam_loc == ON_OBJ_A){
@@ -378,6 +388,7 @@ int View::set_camera()
 		mat_obj.get_Imat(mat);
 		node[0]->get_global_world_tansf(mat);
 		mat_obj.get_transf_vector(mat,curr_pos);
+		mat_obj.get_transf_vector(mat,spot_pos);
 		camera->config_camera(curr_pos,curr_lookat,curr_up);
 		}
 	else if(cam_loc==ON_OBJ_B){
@@ -407,6 +418,14 @@ int View::set_camera()
 		~q;
 		camera->rotate_camera(q);
 		}
+
+	/* Set spotlight moving along train */
+	mat_obj.get_Imat(mat);
+	node[0]->get_global_world_tansf(mat);
+	mat_obj.get_transf_vector(mat,spot_pos);
+	spot_direction.x = spot_direction.z = 0.0f;
+	spot_direction.y = -0.5f;
+	animation->set_spot_light(spot_pos,spot_direction);
 	delete mat;
 	camera->set_camera();
 	return 0;
@@ -425,10 +444,15 @@ int View::set_fixed_light()
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
 	glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
 	glLightfv(GL_LIGHT2, GL_POSITION, light_position2);
+	glLightfv(GL_LIGHT4, GL_POSITION, light_position2);
 
 	GLfloat direction[] = {0,2.0,0.0};
 	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, direction);
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+
+	Vector pos,dir;
+	animation->get_spot_light(pos,dir);
+	set_spotlight(pos,dir);
 
 	/* check which light to enable and which to disable */
 	if(light_status[0])
@@ -444,7 +468,8 @@ int View::set_fixed_light()
 		glEnable(GL_LIGHT2);
 	else
 		glDisable(GL_LIGHT2);
-	if(light_status[4])
+
+	if(light_status[5])
 		glEnable(GL_LIGHTING);
 	else
 		glDisable(GL_LIGHTING);
@@ -468,6 +493,25 @@ int View::set_headlight()
 		glEnable(GL_LIGHT3);
 	else
 		glDisable(GL_LIGHT3);
+	return 0;
+}
+
+/* Set spotlight on moving train */
+int View::set_spotlight(Vector& pos,Vector &direction)
+{
+	GLfloat qaLightPosition[] = {pos.x, pos.y,pos.z, 1};
+	GLfloat dirVector0[] = { direction.x, direction.y,direction.z, 0.0};
+
+	glLightfv(GL_LIGHT4, GL_POSITION, qaLightPosition);
+	glLightf(GL_LIGHT4, GL_SPOT_CUTOFF, 10.0);// set cutoff angle
+    glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, dirVector0);
+    glLightf(GL_LIGHT4, GL_SPOT_EXPONENT, 1.0); // set focusing strength
+    if(light_status[4]){
+		glEnable(GL_LIGHT4);
+		}
+	else{
+		glDisable(GL_LIGHT4);
+		}
 	return 0;
 }
 

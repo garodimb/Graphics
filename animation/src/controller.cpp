@@ -50,7 +50,7 @@ int Controller::init()
 	curr_obj	= 0;
 	cam_loc		= IN_SPACE;
 	light_status[0] = light_status[1] = light_status[2] = light_status[3] = true;
-	light_status[4]	= true;
+	light_status[4]	= light_status[5] = true;
 	memset(track_matrix,0x00,sizeof(track_matrix));
 	track_matrix[0] = track_matrix[1] = track_matrix[2] = 0.0f;
 	track_matrix[3] = 1.0f;
@@ -144,7 +144,7 @@ void Controller::keyboard_handler(unsigned char key,int x,int y){
 		scale_all -= 0.1f;
 		refresh_view();
 		}
-	else if(KEY_1 <= key && key <= KEY_5){
+	else if(KEY_1 <= key && key <= KEY_6){
 		light_status[key-KEY_1]= !light_status[key-KEY_1];
 		refresh_view();
 		}
