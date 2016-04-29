@@ -69,17 +69,11 @@ class Controller{
 			GLint x_ang;
 			GLint y_ang;
 			GLfloat track_matrix[4];
-			GLfloat rotate_x; // X Rotation
-			GLfloat rotate_y; // Y Rotation
-			GLfloat z_distance; // Camera distance
-			GLfloat scale_all; // Uniform scaling in all direction
-			GLfloat trans_x; // X translation
-			GLfloat trans_y; // Y translation
-			GLfloat trans_z; // Z translation
 			GLint enable_roat;
 			int curr_obj;
 			int cam_loc;
 			bool light_status[6];
+			bool do_detach;
 	public:
 		Controller(View *view);
 		~Controller();
@@ -93,7 +87,6 @@ class Controller{
 		void trackball_handler(int event,int xx,int yy);
 
 		/* Transformations */
-		int trans_by_user(GLint x,GLint y);
 		int reset();
 		int refresh_view();
 		int set_curr_obj(int x,int y);

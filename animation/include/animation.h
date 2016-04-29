@@ -1,6 +1,8 @@
 
 #include <datatypes.h>
 #include <iostream>
+#include <unistd.h>
+
 using namespace std;
 class Animation
 {
@@ -44,11 +46,15 @@ class Animation
 		int config_light();
 
 	public:
+		bool do_detach;
+		bool do_attach;
+
 		Animation();
 		int get_camera(Vector& position,Vector& lookat,Vector &curr,int obj);
 		int get_model_transf(Vector& trans, Vector& scale,float& angle,int obj);
 		int set_spot_light(Vector& pos, Vector& direction);
 		int get_spot_light(Vector& pos, Vector& direction);
+
 		~Animation();
 
 };

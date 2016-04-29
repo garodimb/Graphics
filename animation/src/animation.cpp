@@ -6,6 +6,8 @@ Animation::Animation()
 	config_camera();
 	config_model();
 	config_light();
+	do_attach = false;
+	do_detach = false;
 }
 
 Animation::~Animation()
@@ -110,11 +112,11 @@ int Animation::config_model()
 	scale_obj_a->x = 0.15f; scale_obj_a->y = 0.15f; scale_obj_a->z = 0.15f;
 	angle_obj_a = 0.0f;
 
-	trans_obj_b->x = 0.075f; trans_obj_b->y = -1.27f; trans_obj_b->z = -0.75f;
+	trans_obj_b->x = 0.058f; trans_obj_b->y = -1.27f; trans_obj_b->z = -0.35f;
 	scale_obj_b->x = 0.1f; scale_obj_b->y = 0.1f; scale_obj_b->z = 0.1f;
 	angle_obj_b = 0.0f;
 
-	trans_obj_c->x = 0.07f; trans_obj_c->y = -1.25f; trans_obj_c->z = -0.75f;
+	trans_obj_c->x = 0.07f; trans_obj_c->y = -1.25f; trans_obj_c->z = -0.35f;
 	scale_obj_c->x = 0.006f; scale_obj_c->y = 0.006f; scale_obj_c->z = 0.006f;
 	angle_obj_c = 270.0f;
 	return 0;

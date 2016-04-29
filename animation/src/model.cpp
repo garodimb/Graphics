@@ -42,7 +42,7 @@ Model::Model(string &fn,Map map,string &tex_path)
 	scale_factor = 0.0f;
 	centroid.x = centroid.y = centroid.z = 0.0f;
 	read_ply();
-	//compute_scale_factor();
+	compute_scale_factor();
 	compute_normal();
 	init_tex();
 	if(map == Sphere){
@@ -162,7 +162,7 @@ int Model::read_ply()
 int Model::compute_scale_factor()
 {
 	/* Dynamic Scaling Factor */
-	scale_factor = 0.0f;
+	/*scale_factor = 0.0f;
 	if((float )fabs(x_max - x_min)/1.0f > scale_factor){
 		scale_factor = (float )fabs(x_max - x_min)/1.0f;
 		}
@@ -171,7 +171,8 @@ int Model::compute_scale_factor()
 		}
 	if((float )fabs(z_max - z_min)/1.0f > scale_factor){
 		scale_factor = (float )fabs(z_max - z_min)/1.0f;
-		}
+		}*/
+	scale_factor = 1.0;
 	centroid.x = (float)(x_max + x_min)/2.0f;
 	centroid.y = (float)(y_max + y_min)/2.0f;
 	centroid.z = (float)(z_max + z_min)/2.0f;

@@ -28,7 +28,6 @@ Controller::Controller(View *view){
 		view->reg_motion_handler(reg_motion_handler);
 		view->reg_keyboard_handler(reg_keyboard_handler);
 		view->reg_keyboard_spec_handler(reg_keyboard_spec_handler);
-
 	}
 
 Controller::~Controller(){
@@ -37,16 +36,8 @@ Controller::~Controller(){
 
 int Controller::init()
 {
-
 	x_ang = 0;
 	y_ang = 0;
-	rotate_x 	= 0.0; // X Rotation
-	rotate_y 	= 0.0; // Y Rotation
-	z_distance 	= 0.0f; // Camera distance relative to current position
-	scale_all	= 1.0f; // Uniform scaling in all direction
-	trans_x  	= 0.0f; // X translation
-	trans_y  	= 0.0f; // Y translation
-	trans_z  	= 0.0f; // Z translation
 	curr_obj	= 0;
 	cam_loc		= IN_SPACE;
 	light_status[0] = light_status[1] = light_status[2] = light_status[3] = true;
@@ -66,7 +57,6 @@ void Controller::mouse_handler(int button,int state,int x,int y){
 	else if(button==GLUT_RIGHT_BUTTON && state==GLUT_DOWN){
 		enable_roat=0;
 		set_curr_obj(x,y);
-		//trans_by_user(x,y);
 		}
 	}
 
@@ -88,62 +78,6 @@ void Controller::keyboard_handler(unsigned char key,int x,int y){
 		reset();
 		refresh_view();
 		}
-	else if(key==ZOOMIN){
-		log_D("Moving Camera Near");
-		z_distance-=0.1;
-		refresh_view();
-		}
-	else if(key==ZOOMOUT){
-		log_D("Moving Camera far");
-		z_distance+=0.1;
-		refresh_view();
-		}
-	else if(key == KEY_X){
-		log_D("Translating +X");
-		trans_x = 0.05f;
-		view->update_trans_obj(trans_x,0.0,curr_obj);
-		trans_x = 0.0f;
-		}
-	else if(key == KEY_x){
-		log_D("Translating -X");
-		trans_x = -0.05f;
-		view->update_trans_obj(trans_x,0.0,curr_obj);
-		trans_x = 0.0f;
-		}
-	else if(key == KEY_Y){
-		log_D("Translating +Y");
-		trans_y = 0.1f;
-		refresh_view();
-		trans_y = 0.0f;
-		}
-	else if(key == KEY_y){
-		log_D("Translating -Y");
-		trans_y = -0.1f;
-		refresh_view();
-		trans_y = 0.0f;
-		}
-	else if(key == KEY_Z){
-		log_D("Translating +Z");
-		trans_z = 0.05f;
-		view->update_trans_obj(0.0,trans_z,curr_obj);
-		trans_z = 0.0f;
-		}
-	else if(key == KEY_z){
-		log_D("Translating -Z");
-		trans_z = -0.05f;
-		view->update_trans_obj(0.0,trans_z,curr_obj);
-		trans_z = 0.0f;
-		}
-	else if(key == KEY_S){
-		log_D("Scaling +X, +Y, +Z");
-		scale_all += 0.1f;
-		refresh_view();
-		}
-	else if(key == KEY_s){
-		log_D("Scaling -X, -Y, -Z");
-		scale_all -= 0.1f;
-		refresh_view();
-		}
 	else if(KEY_1 <= key && key <= KEY_6){
 		light_status[key-KEY_1]= !light_status[key-KEY_1];
 		refresh_view();
@@ -162,46 +96,35 @@ void Controller::keyboard_handler(unsigned char key,int x,int y){
 		log_D("Texture mapping manual mode");
 		view->update_tex_mode(1,curr_obj);
 		}
-	else if(key == KEY_E || key == KEY_e){
-		log_I("Placing camera in space");
+	else if(key == KEY_S || key == KEY_s){
+		log_D("Placing camera in space");
 		cam_loc = IN_SPACE;
 		refresh_view();
 		}
-	else if(key == KEY_B || key == KEY_b){
+	else if(key == KEY_Z || key == KEY_z){
 		log_I("Placing camera on object B");
 		cam_loc = ON_OBJ_B;
 		refresh_view();
 		}
-	else if(key == KEY_C || key == KEY_c){
+	else if(key == KEY_Y || key == KEY_y){
 		log_I("Placing camera on object C");
 		cam_loc = ON_OBJ_C;
 		refresh_view();
 		}
-	else if(key == KEY_D || key == KEY_d){
+	else if(key == KEY_X || key == KEY_x){
 		log_I("Placing camera on object A");
 		cam_loc = ON_OBJ_A;
 		refresh_view();
+		}
+	else if(key == KEY_D || key == KEY_d){
+		log_I("Detach object");
+		view->detach_node();
 		}
 	}
 
 /* Keyboard Special keys handler */
 void Controller::keyboard_spec_handler(int key,int x,int y){
-	//  Right arrow - increase rotation by 5 degree
-	if (key == GLUT_KEY_RIGHT){
-		rotate_y += ROTATE_ANGLE;
-		}
-	//  Left arrow - decrease rotation by 5 degree
-	else if (key == GLUT_KEY_LEFT){
-		rotate_y -= ROTATE_ANGLE;
-	}
-	else if (key == GLUT_KEY_UP){
-		rotate_x += ROTATE_ANGLE;
-	}
-	else if (key == GLUT_KEY_DOWN){
-		rotate_x -= ROTATE_ANGLE;
-	}
-	//  Request display update
-	//refresh_view();
+	return ;
 	}
 
 /* Trackball Handler */
@@ -226,35 +149,6 @@ void Controller::trackball_handler(int event,int xx,int yy){
     }
 }
 
-/* Do Translation by user defined distance */
-int Controller::trans_by_user(GLint x,GLint y){
-	GLfloat x_dist,y_dist,dist;
-	static GLint t_point_count = -1;
-	static Vertex trans_point;
-	if(t_point_count==-1){
-		/* Add first point for finding translation distance */
-		trans_point.x = x;
-		trans_point.y = y;
-		trans_point.z = 0;
-		t_point_count = 0;
-		}
-	else if(t_point_count==0){
-		/* Calculate distance between two points */
-		dist = sqrt(pow(trans_point.x - x, 2)+ pow(trans_point.y - y, 2));
-		t_point_count = -1;
-
-		/* Set X & Y direction */
-		x_dist = ( x >= trans_point.x)? dist : -dist;
-		y_dist = ( y >= trans_point.y)? dist : -dist;
-		log_D("Translating");
-		log_D("x_dist: "<<x_dist<<", y_dist: "<<y_dist);
-		trans_x += (float )x_dist/view->get_width();
-		trans_y += (float )-y_dist/view->get_height();
-		refresh_view();
-		}
-	return 0;
-	}
-
 /* Reset all transformations */
 int Controller::reset(){
 	init();
@@ -262,7 +156,7 @@ int Controller::reset(){
 	}
 
 int Controller::refresh_view(){
-	view->refresh(rotate_x,rotate_y,z_distance,scale_all,trans_x,trans_y,trans_z,(GLfloat *)track_matrix,light_status,cam_loc);
+	view->refresh((GLfloat *)track_matrix,light_status,cam_loc);
 	return 0;
 	}
 

@@ -22,13 +22,6 @@ static void on_idle_func_handler()
 /* Constructor */
 View::View(int argc,char **argv){
 	track_matrix= NULL; // Trackball Matrix
-	rotate_x 	= 0.0f; // X Rotation
-	rotate_y 	= 0.0f; // Y Rotation
-	z_distance 	= 0.0f; // Camera distance relative to current position
-	scale_all	= 1.0f; // Uniform scaling in all direction
-	trans_x  	= 0.0f; // X translation
-	trans_y  	= 0.0f; // Y translation
-	trans_z  	= 0.0f; // Z translation
 	light_status[0] = light_status[1] = light_status[2] = light_status[3] = true;
 	light_status[4] = light_status[5] = true;
 	glutInit(&argc,argv);
@@ -178,7 +171,6 @@ int View::init_scene(int argc,char **argv){
 	/* Ant on Cow */
 	node[2]->set_model(model[2]);
 	animation->get_model_transf(trans,scale,angle,3);
-	mat.get_Tmat(0.07,-1.25,-0.75,matrix);
 	mat.get_Tmat(trans.x,trans.y,trans.z,matrix);
 	node[2]->set_local_transf(matrix);
 	mat.get_Smat(scale.x,scale.y,scale.z,matrix);
@@ -191,8 +183,11 @@ int View::init_scene(int argc,char **argv){
 	scene->add_child(node[0]);
 	node[0]->add_child(node[1]);
 	node[1]->add_child(node[2]);
+
+	do_detach = do_attach = false;
 	return 0;
 }
+
 int View::get_width(){
 
 	return screen_width;
@@ -236,17 +231,60 @@ void View::idle_func_handler(void)
 {
 	Matrix mat;
 	float matrix[16];
-	static int direction = 0;
+	static int direction = 0, cow_direction = 0;
 	static float padding = 1.7;
-	static float x = 1.7, z = 1.7;
+	static float x = 1.7, z = 1.7, cow_x, cow_z;
 	static float speed = 0.05;
-	static int angle = 90;
+	static int angle = 90, cow_angle = 90;
 	static bool attach = true;
+	static bool cow_reached = false;
+	if(do_detach){
+		node[1]->detach();
+		scene->add_child(node[1]);
+		if(direction==0){
+			cow_x = x;
+			cow_z = z + 0.70;
+		}
+		else if(direction==1){
+			cow_x = x - 0.70;
+			cow_z = z;
+			}
+		else if(direction==2){
+			cow_x = x;
+			cow_z = z - 0.70;
+			}
+		else{
+			cow_x = x + 0.70;
+			cow_z = z;
+			}
+		mat.get_Tmat(cow_x,-0.53,cow_z,matrix);
+		node[1]->set_world_transf(matrix);
+		mat.get_Rmat(0,1,0,angle,matrix);
+		node[1]->update_world_transf(matrix);
+		cow_direction = direction;
+		cow_reached = false;
+		attach = false;
+		do_detach = false;
+		cow_angle = angle-90;
+	}
+	if(!cow_reached || cow_direction != direction){
+		do_attach = false;
+	}
+	if(do_attach){
+		node[1]->detach();
+		node[0]->add_child(node[1]);
+		mat.get_Imat(matrix);
+		node[1]->set_world_transf(matrix);
+		attach = true;
+		do_attach = false;
+		cow_reached = false;
+	}
 	if(direction==0){
 		x-=speed;
 		if(x<=-padding){
 			angle = (angle + 90)%360;
 			direction = 1;
+			do_attach = true;
 			}
 		}
 	else if(direction==1){
@@ -254,32 +292,16 @@ void View::idle_func_handler(void)
 		if(z<=-padding){
 			angle = (angle + 90)%360;
 			direction = 2;
+			do_attach = true;
 			}
 		}
 	else if(direction==2){
-		if(x>=padding/2.0)
-			speed = 0.01;
 		x+=speed;
 		if(x>=padding){
 			angle = (angle + 90)%360;
-			direction = 3;
 			speed = 0.05;
-			if(attach){
-				node[1]->detach();
-				scene->add_child(node[1]);
-				mat.get_Tmat(x-0.8,-0.53,z+0.35,matrix);
-				node[1]->set_world_transf(matrix);
-				mat.get_Rmat(0,1,0,angle,matrix);
-				node[1]->update_world_transf(matrix);
-				attach = false;
-				}
-			else{
-				node[1]->detach();
-				node[0]->add_child(node[1]);
-				mat.get_Imat(matrix);
-				node[1]->set_world_transf(matrix);
-				attach = true;
-				}
+			direction = 3;
+			do_attach = true;
 			}
 		}
 	else if(direction==3){
@@ -287,7 +309,37 @@ void View::idle_func_handler(void)
 		if(z>=padding){
 			angle = (angle + 90)%360;
 			direction = 0;
+			do_attach = true;
 			}
+		}
+	if(!attach && !cow_reached){
+		if(cow_direction == 0){
+			cow_x += 0.02;
+			if(cow_x>=padding){
+				cow_reached = true;
+				}
+			}
+		else if(cow_direction == 1){
+			cow_z += 0.02;
+			if(cow_z>=padding)
+				cow_reached = true;
+			}
+		else if(cow_direction == 2){
+			cow_x-=0.02;
+			if(cow_x<=-padding){
+				cow_reached = true;
+				}
+			}
+		else if(cow_direction == 3){
+			cow_z-=0.02;
+			if(cow_z<=-padding){
+				cow_reached = true;
+				}
+			}
+		mat.get_Tmat(cow_x,-0.53,cow_z,matrix);
+		node[1]->set_world_transf(matrix);
+		mat.get_Rmat(0,1,0,cow_angle,matrix);
+		node[1]->update_world_transf(matrix);
 		}
 	mat.get_Tmat(x,0,z,matrix);
 	node[0]->set_world_transf(matrix);
@@ -315,20 +367,8 @@ int View::draw_axis(){
 	return 0;
 	}
 
-/* Rotate using Quternion, Arraow Rotation */
-int View::rotate(GLfloat x, GLfloat y, GLfloat z, GLfloat angle){
-	Quaternion quaternion;
-	quaternion.CreateFromAxisAngle(x,y,z,angle);
-	camera->rotate_camera(quaternion);
-	return 0;
-	}
-
 /* Refresh view */
-int View::refresh(GLfloat rotate_x,GLfloat rotate_y,GLfloat z_distance,GLfloat scale_all,GLfloat trans_x,GLfloat trans_y,GLfloat trans_z,GLfloat *track_matrix,bool *light_status,int cam_loc){
-			this->rotate_x 	= rotate_x; // X Rotation
-			this->rotate_y 	= rotate_y; // Y Rotation
-			this->z_distance = z_distance; // Camera distance
-			this->scale_all	= scale_all; // Uniform scaling in all direction
+int View::refresh(GLfloat *track_matrix,bool *light_status,int cam_loc){
 			this->track_matrix = track_matrix; //Rotation by Trackball
 			for(int i =0 ;i<6;i++){
 				this->light_status[i] = light_status[i];
@@ -563,23 +603,9 @@ int View::update_tex_mode(int mode,int obj)
 	return 0;
 }
 
-/*
- * Translate current selected object by given distance
- * along floor
- */
-int View::update_trans_obj(float trans_x,float trans_z,int curr_obj)
+/* sets flag do_detach */
+int View::detach_node()
 {
-	SceneNode * node = NULL;
-	Model * mdl = NULL;
-	node = scene->get_scenenode(curr_obj);
-	if(!node){
-		return 1;
-	}
-	mdl = node->get_model();
-	if(!mdl){
-		return 2;
-		}
-	mdl->trans_obj_by(trans_x,trans_z);
-	glutPostRedisplay();
+	do_detach = true;
 	return 0;
 }

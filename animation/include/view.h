@@ -31,15 +31,10 @@ class View{
 		Camera *camera;
 		Animation *animation;
 		GLfloat *track_matrix;
-		GLfloat rotate_x; // X Rotation
-		GLfloat rotate_y; // Y Rotation
-		GLfloat z_distance; // Camera distance
-		GLfloat scale_all; // Uniform scaling in all direction
-		GLfloat trans_x; // X translation
-		GLfloat trans_y; // Y translation
-		GLfloat trans_z; // Z translation
 		bool light_status[6];
 		int curr_obj;
+		bool do_detach;
+		bool do_attach;
 
 
 	public:
@@ -56,15 +51,15 @@ class View{
 		int reg_motion_handler(void (*motion_handler)(int x,int y));
 		int reg_keyboard_handler(void (*keyboard_handler)(unsigned char key,int x,int y));
 		int reg_keyboard_spec_handler(void (*keyboard_spec_handler)(int key,int x,int y));
-		int rotate(GLfloat x, GLfloat y, GLfloat z, GLfloat angle);
 		int set_camera();
 		int set_fixed_light();
 		int set_headlight();
 		int set_spotlight(Vector& pos,Vector &direction);
-		int refresh(GLfloat rotate_x=0.0f, GLfloat rotate_y=0.0f, GLfloat z_distance = 5.0f,GLfloat scale_all=1.0f,GLfloat trans_x=0.0f,GLfloat trans_y=0.0f,GLfloat trans_z=0.0f,GLfloat *track_matrix=NULL,bool *light_status=NULL,int cam_loc=IN_SPACE);
+		int refresh(GLfloat *track_matrix=NULL,bool *light_status=NULL,int cam_loc=IN_SPACE);
 		int get_width();
 		int get_height();
 		int init_lighting();
+		int detach_node();
 		int update_tex(string &tex_path,int obj);
 		int update_tex_mode(int mode,int obj);
 		int init_camera(void);
