@@ -18,6 +18,7 @@ INTRODUCTION
 		- Moving train with Cow and Ant on top of it
 		- Moving train without Cow and Ant after detaching
 		- Moving cow after detaching
+		- Detach at any place
 		- Cameras moving with objects
 		- Change texture by clicking on images
 		- Object selection
@@ -55,11 +56,15 @@ KEY BINDINGS
 		- NUM KEY 2			: Toggle light 2
 		- NUM KEY 3			: Toggle light 3
 		- NUM KEY 4			: Toggle headlight
-		- NUM KEY 5			: Toggle lighting
+		- NUM KEY 5			: Toggle spotlight focusing on train
+		- NUM KEY 6			: Toggle lighting
 		- 'A'				: OpenGL algorithm for texture coordinate computation
 		- 'M'				: Manual texture computation
-		- 'D'				: Camera attached to moving train
-		- 'B'				: Camera attached to Cow
-		- 'C'				: Camera attached to Ant
-		- 'E'				: Camera in space
+		- 'X'				: Camera attached to moving train
+		- 'Y'				: Camera attached to Cow
+		- 'Z'				: Camera attached to Ant
+		- 'S'				: Camera in space
 		- 'T'				: Toggle texture of seletced object
+		- 'D'				: Detach cow from train
+		- SPACE				: Pause/Play animation
+		- ARROW KEYS		: Speed control for cow and train

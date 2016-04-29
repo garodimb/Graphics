@@ -81,34 +81,36 @@ void Controller::keyboard_handler(unsigned char key,int x,int y){
 		refresh_view();
 		}
 	else if(KEY_1 <= key && key <= KEY_6){
+		log_I("Toggeling light");
 		light_status[key-KEY_1]= !light_status[key-KEY_1];
 		refresh_view();
 		}
 	else if(key == KEY_T || key == KEY_t){
+		log_I("Changing texture");
 		static int pos = 0;
 		pos++;
-		string fn[] = {"texfiles/floor.bmp","texfiles/apple.bmp","texfiles/apple2.bmp","texfiles/canstick.bmp","texfiles/canstick2.bmp"};
+		string fn[] = {"texfiles/floor.bmp","texfiles/apple.bmp","texfiles/apple2.bmp","texfiles/canstick.bmp","texfiles/ant.bmp","texfiles/cow.bmp"};
 		view->update_tex(fn[pos%(sizeof(fn)/sizeof(fn[0]))],curr_obj);
 		}
 	else if(key == KEY_A || key == KEY_a){
-		log_D("Texture mapping OpenGL mode");
+		log_I("Texture mapping OpenGL mode");
 		view->update_tex_mode(0,curr_obj);
 		}
 	else if(key == KEY_M || key == KEY_m){
-		log_D("Texture mapping manual mode");
+		log_I("Texture mapping manual mode");
 		view->update_tex_mode(1,curr_obj);
 		}
 	else if(key == KEY_S || key == KEY_s){
-		log_D("Placing camera in space");
+		log_I("Placing camera in space");
 		cam_loc = IN_SPACE;
 		refresh_view();
 		}
-	else if(key == KEY_Z || key == KEY_z){
+	else if(key == KEY_Y || key == KEY_y){
 		log_I("Placing camera on object B");
 		cam_loc = ON_OBJ_B;
 		refresh_view();
 		}
-	else if(key == KEY_Y || key == KEY_y){
+	else if(key == KEY_Z || key == KEY_z){
 		log_I("Placing camera on object C");
 		cam_loc = ON_OBJ_C;
 		refresh_view();
@@ -123,7 +125,7 @@ void Controller::keyboard_handler(unsigned char key,int x,int y){
 		view->detach_node();
 		}
 	else if(key == KEY_SPACE){
-		log_D("Toggling animation");
+		log_I("Toggling animation");
 		enable_animation =!enable_animation;
 		refresh_view();
 		}

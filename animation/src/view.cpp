@@ -127,8 +127,8 @@ int View::init_scene(int argc,char **argv){
 	fn2_obj = "plyfiles/cow.ply";
 	fn3_obj = "plyfiles/ant.ply";
 	tex1_path = "texfiles/canstick.bmp";
-	tex2_path = "texfiles/canstick.bmp";
-	tex3_path = "texfiles/canstick.bmp";
+	tex2_path = "texfiles/cow.bmp";
+	tex3_path = "texfiles/ant.bmp";
 	if(argc>=2){
 		fn1_obj = argv[1];
 		}
@@ -238,7 +238,7 @@ void View::idle_func_handler(void)
 	static int direction = 0, cow_direction = 0;
 	static float padding = 1.7;
 	static float x = 1.7, z = 1.7, cow_x, cow_z;
-	static int angle = 90, cow_angle = 90;
+	static float angle = 90, cow_angle = 90, smooth_angle = 0;
 	static bool attach = true;
 	static bool cow_reached = false;
 	if(do_detach){
@@ -284,32 +284,52 @@ void View::idle_func_handler(void)
 	}
 	if(direction==0){
 		x-=train_speed;
+		if(x<=-padding/1.5f){
+			smooth_angle+=(1.5 * (train_speed/0.01f));
+			z-=train_speed;
+			}
 		if(x<=-padding){
-			angle = (angle + 90)%360;
+			smooth_angle = 0;
+			angle = angle + 90;
 			direction = 1;
 			do_attach = true;
 			}
 		}
 	else if(direction==1){
 		z-=train_speed;
+		if(z<=-padding/1.5f){
+			smooth_angle+=(1.5 * (train_speed/0.01f));
+			x+=train_speed;
+			}
 		if(z<=-padding){
-			angle = (angle + 90)%360;
+			smooth_angle = 0;
+			angle = angle + 90;
 			direction = 2;
 			do_attach = true;
 			}
 		}
 	else if(direction==2){
 		x+=train_speed;
+		if(x>=padding/1.5f){
+			smooth_angle+=(1.5 * (train_speed/0.01f));
+			z+=train_speed;
+			}
 		if(x>=padding){
-			angle = (angle + 90)%360;
+			smooth_angle = 0;
+			angle = angle + 90;
 			direction = 3;
 			do_attach = true;
 			}
 		}
 	else if(direction==3){
 		z+=train_speed;
+		if(z>=padding/1.5f){
+			smooth_angle+=(1.5 * (train_speed/0.01f));
+			x-=train_speed;
+			}
 		if(z>=padding){
-			angle = (angle + 90)%360;
+			smooth_angle = 0;
+			angle = angle + 90;
 			direction = 0;
 			do_attach = true;
 			}
@@ -345,8 +365,11 @@ void View::idle_func_handler(void)
 		}
 	mat.get_Tmat(x,0,z,matrix);
 	node[0]->set_world_transf(matrix);
-	mat.get_Rmat(0,1,0,angle,matrix);
+	mat.get_Rmat(0,1,0,angle+smooth_angle,matrix);
 	node[0]->update_world_transf(matrix);
+	if(angle>=360){
+		angle = 0;
+		}
 	glutPostRedisplay();
 }
 

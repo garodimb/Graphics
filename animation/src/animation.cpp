@@ -43,7 +43,7 @@ int Animation::config_camera()
 	cam_up_objc = new Vector;
 
 	/* Camera in space */
-	cam_pos_space->x = 2.0f; cam_pos_space->y = -1.0f; cam_pos_space->z = -4.0f;
+	cam_pos_space->x = 0.0f; cam_pos_space->y = -1.0f; cam_pos_space->z = -4.0f;
 	cam_up_space->x = 0.0f; cam_up_space->y = 1.0f; cam_up_space->z = 0.0f;
 	cam_lookat_space->x = 0.0f; cam_lookat_space->y = -1.0f; cam_lookat_space->z = 0.0f;
 
