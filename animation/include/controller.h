@@ -50,7 +50,7 @@
 #define KEY_4 52
 #define KEY_5 53
 #define KEY_6 54
-
+#define KEY_SPACE 32
 /* Rotation Angle */
 #define ROTATE_ANGLE 5.0
 #define FL_DRAG 1
@@ -74,6 +74,8 @@ class Controller{
 			int cam_loc;
 			bool light_status[6];
 			bool do_detach;
+			bool enable_animation;
+			float cow_speed,train_speed;
 	public:
 		Controller(View *view);
 		~Controller();

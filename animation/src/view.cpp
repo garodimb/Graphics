@@ -24,6 +24,8 @@ View::View(int argc,char **argv){
 	track_matrix= NULL; // Trackball Matrix
 	light_status[0] = light_status[1] = light_status[2] = light_status[3] = true;
 	light_status[4] = light_status[5] = true;
+	enable_animation = true;
+	cow_speed = train_speed = 0.01;
 	glutInit(&argc,argv);
 	init_window("Texture Mapping",1000,500);
 	init();
@@ -229,12 +231,13 @@ void View::display(){
 
 void View::idle_func_handler(void)
 {
+	if(!enable_animation)
+		return;
 	Matrix mat;
 	float matrix[16];
 	static int direction = 0, cow_direction = 0;
 	static float padding = 1.7;
 	static float x = 1.7, z = 1.7, cow_x, cow_z;
-	static float speed = 0.05;
 	static int angle = 90, cow_angle = 90;
 	static bool attach = true;
 	static bool cow_reached = false;
@@ -280,7 +283,7 @@ void View::idle_func_handler(void)
 		cow_reached = false;
 	}
 	if(direction==0){
-		x-=speed;
+		x-=train_speed;
 		if(x<=-padding){
 			angle = (angle + 90)%360;
 			direction = 1;
@@ -288,7 +291,7 @@ void View::idle_func_handler(void)
 			}
 		}
 	else if(direction==1){
-		z-=speed;
+		z-=train_speed;
 		if(z<=-padding){
 			angle = (angle + 90)%360;
 			direction = 2;
@@ -296,16 +299,15 @@ void View::idle_func_handler(void)
 			}
 		}
 	else if(direction==2){
-		x+=speed;
+		x+=train_speed;
 		if(x>=padding){
 			angle = (angle + 90)%360;
-			speed = 0.05;
 			direction = 3;
 			do_attach = true;
 			}
 		}
 	else if(direction==3){
-		z+=speed;
+		z+=train_speed;
 		if(z>=padding){
 			angle = (angle + 90)%360;
 			direction = 0;
@@ -314,24 +316,24 @@ void View::idle_func_handler(void)
 		}
 	if(!attach && !cow_reached){
 		if(cow_direction == 0){
-			cow_x += 0.02;
+			cow_x += cow_speed;
 			if(cow_x>=padding){
 				cow_reached = true;
 				}
 			}
 		else if(cow_direction == 1){
-			cow_z += 0.02;
+			cow_z += cow_speed;
 			if(cow_z>=padding)
 				cow_reached = true;
 			}
 		else if(cow_direction == 2){
-			cow_x-=0.02;
+			cow_x-= cow_speed;
 			if(cow_x<=-padding){
 				cow_reached = true;
 				}
 			}
 		else if(cow_direction == 3){
-			cow_z-=0.02;
+			cow_z-= cow_speed;
 			if(cow_z<=-padding){
 				cow_reached = true;
 				}
@@ -368,15 +370,18 @@ int View::draw_axis(){
 	}
 
 /* Refresh view */
-int View::refresh(GLfloat *track_matrix,bool *light_status,int cam_loc){
-			this->track_matrix = track_matrix; //Rotation by Trackball
-			for(int i =0 ;i<6;i++){
-				this->light_status[i] = light_status[i];
-				}
-			this->cam_loc = cam_loc;
-			glutPostRedisplay();
-			return 0;
-			}
+int View::refresh(GLfloat *track_matrix,bool *light_status,int cam_loc,bool enable_animation,float train_speed,float cow_speed){
+	this->track_matrix = track_matrix; //Rotation by Trackball
+	for(int i =0 ;i<6;i++){
+		this->light_status[i] = light_status[i];
+		}
+	this->cam_loc = cam_loc;
+	this->enable_animation = enable_animation;
+	this->train_speed = train_speed;
+	this->cow_speed = cow_speed;
+	glutPostRedisplay();
+	return 0;
+	}
 
 /* Mouse Handler registration */
 int View::reg_mouse_handler(void (*mouse_handler)(int button,int state,int x,int y)){

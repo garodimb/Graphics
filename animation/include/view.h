@@ -35,7 +35,8 @@ class View{
 		int curr_obj;
 		bool do_detach;
 		bool do_attach;
-
+		bool enable_animation;
+		float cow_speed, train_speed;
 
 	public:
 		View(int argc,char **argv);
@@ -55,7 +56,7 @@ class View{
 		int set_fixed_light();
 		int set_headlight();
 		int set_spotlight(Vector& pos,Vector &direction);
-		int refresh(GLfloat *track_matrix=NULL,bool *light_status=NULL,int cam_loc=IN_SPACE);
+		int refresh(GLfloat *track_matrix=NULL,bool *light_status=NULL,int cam_loc=IN_SPACE,bool enable_animation=true,float train_speed=0.02,float cow_speed=0.02);
 		int get_width();
 		int get_height();
 		int init_lighting();

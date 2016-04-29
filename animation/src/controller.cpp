@@ -45,6 +45,8 @@ int Controller::init()
 	memset(track_matrix,0x00,sizeof(track_matrix));
 	track_matrix[0] = track_matrix[1] = track_matrix[2] = 0.0f;
 	track_matrix[3] = 1.0f;
+	enable_animation = true;
+	train_speed = cow_speed = 0.01;
 	return 0;
 }
 
@@ -120,10 +122,40 @@ void Controller::keyboard_handler(unsigned char key,int x,int y){
 		log_I("Detach object");
 		view->detach_node();
 		}
+	else if(key == KEY_SPACE){
+		log_D("Toggling animation");
+		enable_animation =!enable_animation;
+		refresh_view();
+		}
 	}
 
 /* Keyboard Special keys handler */
 void Controller::keyboard_spec_handler(int key,int x,int y){
+	if(key == GLUT_KEY_UP){
+		train_speed+=0.01;
+		if(train_speed>=0.5){
+			train_speed = 0.5;
+			}
+		}
+	else if( key == GLUT_KEY_DOWN){
+		train_speed-=0.01;
+		if(train_speed<=0){
+			train_speed = 0;
+			}
+		}
+	else if(key == GLUT_KEY_RIGHT){
+		cow_speed+=0.01;
+		if(cow_speed>=0.5){
+			cow_speed = 0.5;
+			}
+		}
+	else if(key == GLUT_KEY_LEFT){
+		cow_speed-=0.01;
+		if(cow_speed<=0){
+			cow_speed=0;
+			}
+		}
+	refresh_view();
 	return ;
 	}
 
@@ -156,7 +188,7 @@ int Controller::reset(){
 	}
 
 int Controller::refresh_view(){
-	view->refresh((GLfloat *)track_matrix,light_status,cam_loc);
+	view->refresh((GLfloat *)track_matrix,light_status,cam_loc,enable_animation,train_speed,cow_speed);
 	return 0;
 	}
 
