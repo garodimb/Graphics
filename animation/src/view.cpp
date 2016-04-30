@@ -241,7 +241,7 @@ void View::idle_func_handler(void)
 	static float angle = 90, cow_angle = 90, smooth_angle = 0;
 	static bool attach = true;
 	static bool cow_reached = false;
-	if(do_detach){
+	if(do_detach && attach){
 		node[1]->detach();
 		scene->add_child(node[1]);
 		if(direction==0){
@@ -281,6 +281,7 @@ void View::idle_func_handler(void)
 		attach = true;
 		do_attach = false;
 		cow_reached = false;
+		do_detach = false;
 	}
 	if(direction==0){
 		x-=train_speed;

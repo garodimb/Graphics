@@ -121,7 +121,7 @@ void Controller::keyboard_handler(unsigned char key,int x,int y){
 		refresh_view();
 		}
 	else if(key == KEY_D || key == KEY_d){
-		log_I("Detach object");
+		log_I("Request for detach");
 		view->detach_node();
 		}
 	else if(key == KEY_SPACE){
