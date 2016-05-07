@@ -26,6 +26,10 @@ PlyProperty face_props[] = { /* list of property information for a vertex */
    1, PLY_UCHAR, PLY_UCHAR, offsetof(Face,nverts)},
 };
 
+/*
+ * Constructor: Reads model from ply file, computes scale factor
+ * to fit into cube, compute per vertex normal, compute texure coordinates
+ */
 Model::Model(string &fn,Map map,string &tex_path)
 {
 	this->fn = fn;
@@ -53,17 +57,21 @@ Model::Model(string &fn,Map map,string &tex_path)
 	}
 }
 
+/* Destructor to clear dynamic memory */
 Model::~Model()
 {
+	/* Delete vertices,normals,text_cord */
 	for(int i=0;i<nvertices;i++){
 		delete vlist[i];
 		delete normal[i];
 		delete tex_cord[i];
 		}
+
+	/* Delete triangle list */
 	for(int i=0;i<ntriangles;i++){
 		delete flist[i];
 		}
-
+	/* Delete vertex list, triangle list */
 	delete [] vlist;
 	delete [] flist;
 	delete [] normal;
@@ -177,6 +185,8 @@ int Model::compute_scale_factor()
 	centroid.z = (float)(z_max + z_min)/2.0f;
 	return 0;
 }
+
+/* Compute per vertex normal */
 int Model::compute_normal(){
 	Vector v1, v2;
 	int i;
@@ -195,17 +205,22 @@ int Model::compute_normal(){
 		v1.y = vlist[flist[i]->verts[1]]->y - vlist[flist[i]->verts[0]]->y; // a2
 		v1.z = vlist[flist[i]->verts[1]]->z - vlist[flist[i]->verts[0]]->z; // a3
 
-		v2.x = vlist[flist[i]->verts[2]]->x - vlist[flist[i]->verts[1]]->x; // a1
-		v2.y = vlist[flist[i]->verts[2]]->y - vlist[flist[i]->verts[1]]->y; // a2
-		v2.z = vlist[flist[i]->verts[2]]->z - vlist[flist[i]->verts[1]]->z; // a3
+		v2.x = vlist[flist[i]->verts[2]]->x - vlist[flist[i]->verts[1]]->x; // b1
+		v2.y = vlist[flist[i]->verts[2]]->y - vlist[flist[i]->verts[1]]->y; // b2
+		v2.z = vlist[flist[i]->verts[2]]->z - vlist[flist[i]->verts[1]]->z; // b3
 
 		//Matrix Multiplication
 
 		//Cross Product: (a2b3-a3b2)i - (a1b3 - a3b1)j + (a1b2 - a2b1)k
-		//Here changing to original size giving normals inward
+
 		x =  (v1.y*v2.z - v1.z*v2.y);
 		y = -(v1.x*v2.z - v1.z*v2.x);
 		z =  (v1.x*v2.y - v1.y*v2.x);
+
+		/*
+		 * Add normals from adjacent faces
+		 * This should be normalized and enabled GL_NORMAL
+		 */
 		normal[flist[i]->verts[0]]->x += x;
 		normal[flist[i]->verts[0]]->y += y;
 		normal[flist[i]->verts[0]]->z += z;
@@ -223,9 +238,11 @@ int Model::compute_normal(){
 
 int Model::init_tex()
 {
+	/* Initialize all texture parameters */
 	glGenTextures(1, &tex_name);
 	glBindTexture(GL_TEXTURE_2D, tex_name);
 	texture = new Texture(tex_path);
+	/* Repeat if texture coordinate out of range [0,1] */
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -237,7 +254,7 @@ int Model::init_tex()
 	return 0;
 }
 
-
+/* Compute spherical coordinates for texture mapping */
 int Model::compute_sphere_cord()
 {
 	float mag;
@@ -249,23 +266,24 @@ int Model::compute_sphere_cord()
 		v.z = (vlist[i]->z - centroid.z);
 		mag = sqrtf(v.x*v.x + v.y*v.y + v.z*v.z);
 		tex_cord[i] = new TexCord;
-		/* This is not efficient mapping of texture*/
-		tex_cord[i]->u = 0.5 + (float)atan2f(v.z/mag,v.x/mag) / (2 * M_PI);
+		/* Compute coordinates and map into [0,1] */
+		tex_cord[i]->u = 0.5 + (float)atan2f(v.x,v.z) / (2 * M_PI);
 		tex_cord[i]->v = 0.5 - (float)asinf(v.y/mag) / M_PI;
 		}
 	return 0;
 }
 
+/* Compute cylindrical coordinates */
 int Model::compute_cyl_cord()
 {
 	tex_cord = new TexCord*[nvertices];
 	float mag;
 	for(int i=0;i<nvertices;i++){
 		tex_cord[i] = new TexCord;
-		/* This is not efficient mapping of texture */
+		/* Compute cylindrical coordinates and map to [0,1] */
 		mag = sqrtf(vlist[i]->x * vlist[i]->x+ vlist[i]->y * vlist[i]->y + vlist[i]->z * vlist[i]->z);
-		tex_cord[i]->u = (float)atan2f(vlist[i]->x/mag,vlist[i]->z/mag)/ (2 * M_PI) + 0.5;
-		tex_cord[i]->v = (float)vlist[i]->y/y_max;
+		tex_cord[i]->u = (float)atan2f(vlist[i]->x,vlist[i]->z)/ (2 * M_PI) + 0.5;
+		tex_cord[i]->v = (float)(vlist[i]->y-y_min)/(y_max-y_min);
 		}
 	return 0;
 }
@@ -279,10 +297,19 @@ int Model::display(){
 	glPushMatrix();
 	if(scale_factor==0)
 		scale_factor = 1.0f;
+	/* Scale according to scale factor */
 	glScalef(1.0f/scale_factor,1.0f/scale_factor,1.0f/scale_factor);
+
+	/* Move centroid to center */
 	glTranslatef(-centroid.x,-centroid.y,-centroid.z);
+
+	/* Move model to floor */
 	float new_trans =(centroid.y - y_min)/scale_factor - 2.0;
+
+	/* Move model by trans_x, trans_z along floor */
 	glTranslatef(trans_x*scale_factor,new_trans*scale_factor,trans_z*scale_factor);
+
+	/* Display model */
 	for(i=0;i<ntriangles;i++){
 		glBegin(GL_POLYGON);
 				glNormal3f(normal[flist[i]->verts[0]]->x,normal[flist[i]->verts[0]]->y,normal[flist[i]->verts[0]]->z);
@@ -303,6 +330,7 @@ int Model::display(){
 	return 0;
 	}
 
+/* Change texture */
 int Model::update_tex(string& tex_path)
 {
 	delete texture;
@@ -318,6 +346,12 @@ int Model::update_tex(string& tex_path)
 	return 0;
 }
 
+/* Enable texture
+ * Note: As this function is getting called from display
+ * after applying all matrices to MODEL, gives undesirable
+ * effects while rotating or translating or changing camera
+ * view
+ */
 int Model::enable_tex()
 {
 	glMatrixMode (GL_TEXTURE);
@@ -326,7 +360,8 @@ int Model::enable_tex()
 	glBindTexture(GL_TEXTURE_2D, tex_name);
 	//Automatic Mode
 	if(tex_mode==0){
-		if(map = Sphere){
+		/* Compute texture coordinates for Sphere otherwise keep it default*/
+		if(map == Sphere){
 			glTexGeni(GL_S,GL_TEXTURE_GEN_MODE,GL_SPHERE_MAP);
 			glTexGeni(GL_T,GL_TEXTURE_GEN_MODE,GL_SPHERE_MAP);
 			}
@@ -339,6 +374,7 @@ int Model::enable_tex()
 	return 0;
 }
 
+/* Disable texture */
 int Model::disable_tex()
 {
 	glDisable(GL_TEXTURE_GEN_T);
@@ -347,12 +383,14 @@ int Model::disable_tex()
 	return 0;
 }
 
+/* Change texture mode */
 int Model::update_tex_mode(int mode)
 {
 	tex_mode = mode;
 	return 0;
 }
 
+/* Translate object along floor */
 int Model::trans_obj_by(float trans_x,float trans_z)
 {
 	this->trans_x += trans_x;
@@ -360,6 +398,7 @@ int Model::trans_obj_by(float trans_x,float trans_z)
 	return 0;
 }
 
+/* Translate object along floor */
 int Model::trans_obj_to(float trans_x,float trans_z)
 {
 	this->trans_x = trans_x;
